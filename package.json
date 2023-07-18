@@ -10,7 +10,8 @@
     "test:e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
     "test:e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\"",
     "test:component": "cypress open --component",
-    "component:headless": "cypress run --component"
+    "component:headless": "cypress run --component",
+    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx)\""
   },
   "dependencies": {
     "@types/node": "20.4.2",
@@ -28,6 +29,8 @@
   },
   "devDependencies": {
     "cypress": "^12.17.1",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^3.0.0",
     "start-server-and-test": "^2.0.0"
   }
 }
