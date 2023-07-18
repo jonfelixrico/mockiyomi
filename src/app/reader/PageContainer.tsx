@@ -1,3 +1,5 @@
+'use client'
+
 import { Dimensions } from '../types/dimensions.interface'
 
 export default function PageContainer({
