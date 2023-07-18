@@ -11,7 +11,7 @@
     "test:e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\"",
     "test:component": "cypress open --component",
     "component:headless": "cypress run --component",
-    "format": "prettier --write \"src/**/*.+(js|jsx|json|ts|tsx)\""
+    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx)\""
   },
   "dependencies": {
     "@types/node": "20.4.2",
