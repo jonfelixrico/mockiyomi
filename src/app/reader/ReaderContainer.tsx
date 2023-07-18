@@ -1,23 +1,29 @@
 'use client'
 
 import { useMeasure } from 'react-use'
-import { Dimensions } from '../types/dimensions.interface'
+import PageContainer from './PageContainer'
 
 export default function ReaderContainer({
-  onResize,
+  srcArr,
   className,
 }: {
-  onResize: (dims: Dimensions) => React.ReactNode
-  className: string
+  className?: string
+  srcArr: string[]
 }) {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   return (
     <div ref={ref} className={className}>
-      {onResize({
-        width,
-        height,
-      })}
+      {srcArr.map((src, idx) => (
+        <PageContainer
+          dimensions={{
+            width,
+            height,
+          }}
+          src={src}
+          key={idx}
+        />
+      ))}
     </div>
   )
 }
