@@ -5,6 +5,7 @@ specifiers:
   '@types/react': 18.2.15
   '@types/react-dom': 18.2.7
   autoprefixer: 10.4.14
+  classnames: ^2.3.2
   cypress: ^12.17.1
   eslint: 8.45.0
   eslint-config-next: 13.4.10
@@ -24,6 +25,7 @@ dependencies:
   '@types/react': 18.2.15
   '@types/react-dom': 18.2.7
   autoprefixer: 10.4.14_postcss@8.4.26
+  classnames: 2.3.2
   eslint: 8.45.0
   eslint-config-next: 13.4.10_ko3fmmbeyij36muomfgt2u76xu
   next: 13.4.10_biqbaboplfbrettd7655fr4n2y
@@ -827,6 +829,10 @@ packages:
     resolution: {integrity: sha512-eXTggHWSooYhq49F2opQhuHWgzucfF2YgODK4e1566GQs5BIfP30B0oenwBJHfWxAs2fyPB1s7Mg949zLf61Yw==}
     engines: {node: '>=8'}
     dev: true
+
+  /classnames/2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
 
   /clean-stack/2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
