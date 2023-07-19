@@ -1,4 +1,4 @@
-import ReaderContainer from './ReaderContainer'
+import ReaderContainerV2 from './ReaderContainerV2'
 
 const URLS = [
   '/placeholder/1.jpg',
@@ -10,7 +10,11 @@ const URLS = [
 export default function Reader() {
   return (
     <>
-      <ReaderContainer srcArr={URLS} className="h-screen w-screen" />
+      <ReaderContainerV2
+        current={URLS[0]}
+        next={URLS[1]}
+        className="h-screen w-screen"
+      />
     </>
   )
 }
