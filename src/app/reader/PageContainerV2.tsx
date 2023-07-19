@@ -22,7 +22,10 @@ export default function PageContainerV2({
         height,
         width,
       }}
-      className={joinCn('overscroll-auto', props.className)}
+      className={joinCn(
+        'overscroll-auto flex flex-row justify-center',
+        props.className
+      )}
     >
       {!loaded ? (
         <div className="h-full w-full absolute z-10">loading</div>
