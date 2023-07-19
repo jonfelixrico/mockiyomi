@@ -11,8 +11,9 @@ export default function Reader() {
   return (
     <>
       <ReaderContainerV2
-        current={URLS[0]}
-        next={URLS[1]}
+        current={URLS[1]}
+        next={URLS[2]}
+        prev={URLS[0]}
         className="h-screen w-screen"
       />
     </>

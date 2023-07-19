@@ -2,7 +2,10 @@
 
 import { useMeasure } from 'react-use'
 import PageContainerV2 from './PageContainerV2'
-import cnJoin from 'classnames'
+import cnBind from 'classnames/bind'
+import style from './reader.css'
+
+const cnJoin = cnBind.bind(style)
 
 export default function ReaderContainerV2(props: {
   className?: string
@@ -13,12 +16,15 @@ export default function ReaderContainerV2(props: {
   const [ref, dims] = useMeasure<HTMLDivElement>()
 
   return (
-    <div ref={ref} className={cnJoin(props.className, 'relative')}>
+    <div
+      ref={ref}
+      className={cnJoin(props.className, 'relative overflow-hidden')}
+    >
       {props.prev ? (
         <PageContainerV2
           src={props.prev}
           dimensions={dims}
-          className="absolute z-10"
+          className="absolute z-10 prev"
         />
       ) : null}
 
@@ -26,7 +32,7 @@ export default function ReaderContainerV2(props: {
         <PageContainerV2
           src={props.next}
           dimensions={dims}
-          className="absolute z-10"
+          className="absolute z-10 next"
         />
       ) : null}
 

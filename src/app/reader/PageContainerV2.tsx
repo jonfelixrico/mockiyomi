@@ -28,8 +28,11 @@ export default function PageContainerV2({
       )}
     >
       {!loaded ? (
-        <div className="h-full w-full absolute z-10">loading</div>
+        <div className="h-full w-full absolute z-10 flex flex-row justify-center items-center">
+          loading
+        </div>
       ) : null}
+
       <img src={src} onLoad={() => setLoaded(true)} />
     </div>
   )
