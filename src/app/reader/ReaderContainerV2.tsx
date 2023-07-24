@@ -24,7 +24,10 @@ export default function ReaderContainerV2(props: {
     if (isFinal) {
       setTranslateX(0)
     } else {
-      setTranslateX((val) => val + delta.x)
+      setTranslateX((val) => {
+        const newGross = val + delta.x
+        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
+      })
     }
   })
 
