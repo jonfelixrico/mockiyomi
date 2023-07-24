@@ -2,19 +2,7 @@
 
 import { isEventTargetWithinElement } from '@/utils/event-utils'
 import { RefObject, useEffect, useState } from 'react'
-
-interface Coords {
-  x: number
-  y: number
-}
-
-export type PanEvent = {
-  location: Coords
-  delta: Coords
-
-  isFirst: boolean
-  isFinal: boolean
-}
+import { Coords, PanEvent } from './pan-types'
 
 function getLocationRelativeToRect(
   e: MouseEvent,
