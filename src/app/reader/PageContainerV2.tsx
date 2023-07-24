@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Dimensions } from '@/types/dimensions.interface'
 import joinCn from 'classnames'
 
@@ -14,7 +14,12 @@ export default function PageContainerV2({
   src: string
   className?: string
 }) {
+  const ref = useRef<HTMLImageElement>(null)
   const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    setLoaded(!!ref.current?.complete)
+  }, [ref])
 
   return (
     <div
@@ -33,7 +38,7 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <img src={src} onLoad={() => setLoaded(true)} />
+      <img src={src} ref={ref} />
     </div>
   )
 }
