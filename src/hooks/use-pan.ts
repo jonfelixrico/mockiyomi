@@ -22,8 +22,17 @@ function isDescendant(ancestor: Element, target: EventTarget | null) {
   )
 }
 
-function getLocation(e: MouseEvent, relativeTo: Element): Coords {
-  const rect = relativeTo.getBoundingClientRect()
+function getLocationRelativeToRect(
+  e: MouseEvent,
+  rect: DOMRect | null
+): Coords {
+  if (!rect) {
+    return {
+      x: 0,
+      y: 0,
+    }
+  }
+
   return {
     x: e.clientX - rect.x,
     y: e.clientY - rect.y,
@@ -42,6 +51,7 @@ export function useMousePan(
   hookHandler: (event: PanEvent) => void
 ) {
   const [lastEvt, setLastEvt] = useState<PanEvent | null>(null)
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const target = ref.current
 
   useEffect(() => {
@@ -53,10 +63,12 @@ export function useMousePan(
       e.preventDefault()
       document.body.classList.add('dragging')
 
+      const originRect = target.getBoundingClientRect()
+
       const panEvt = {
         isFinal: false,
         isFirst: true,
-        location: getLocation(e, target),
+        location: getLocationRelativeToRect(e, originRect),
         delta: {
           x: 0,
           y: 0,
@@ -65,6 +77,7 @@ export function useMousePan(
 
       hookHandler(panEvt)
       setLastEvt(panEvt)
+      setOriginRect(originRect)
     }
 
     window.addEventListener('mousedown', handler)
@@ -77,7 +90,7 @@ export function useMousePan(
         return
       }
 
-      const location = getLocation(e, target)
+      const location = getLocationRelativeToRect(e, originRect)
 
       const panEvt = {
         isFinal: false,
@@ -100,7 +113,7 @@ export function useMousePan(
         return
       }
 
-      const location = getLocation(e, target)
+      const location = getLocationRelativeToRect(e, originRect)
       const panEvt = {
         isFinal: true,
         isFirst: false,
@@ -110,6 +123,7 @@ export function useMousePan(
 
       hookHandler(panEvt)
       setLastEvt(null)
+      setOriginRect(null)
 
       document.body.classList.remove('dragging')
     }
