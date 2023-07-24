@@ -48,6 +48,7 @@ export function useTouchPan(
       }
 
       document.body.classList.add('dragging')
+      e.preventDefault()
 
       const originRect = refEl.getBoundingClientRect()
       setOriginRect(originRect)
@@ -97,20 +98,19 @@ export function useTouchPan(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || lastEvt === null || e.touches.length !== 1) {
+      if (!refEl || lastEvt === null) {
         return
       }
 
-      const touch = getTouch(e)
-      const location = getLocationRelativeToRect(touch, originRect)
-      const panEvt = {
+      hookHandler({
+        ...lastEvt,
         isFinal: true,
         isFirst: false,
-        location,
-        delta: getDelta(lastEvt.location, location),
-      }
-
-      hookHandler(panEvt)
+        delta: {
+          x: 0,
+          y: 0,
+        },
+      })
       setLastEvt(null)
       setOriginRect(null)
 
@@ -118,6 +118,10 @@ export function useTouchPan(
     }
 
     window.addEventListener('touchend', handler)
-    return () => window.removeEventListener('touchend', handler)
+    window.addEventListener('touchcancel', handler)
+    return () => {
+      window.removeEventListener('touchend', handler)
+      window.removeEventListener('touchcancel', handler)
+    }
   })
 }
