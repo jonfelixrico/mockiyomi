@@ -1,6 +1,5 @@
 'use client'
 
-import { isEventTargetWithinElement } from '@/utils/event-utils'
 import { RefObject, useEffect, useState } from 'react'
 import { Coords, PanEvent } from './pan-types'
 
@@ -29,23 +28,24 @@ function getDelta(past: Coords, current: Coords): Coords {
 }
 
 export function useMousePan(
-  ref: RefObject<Element>,
+  ref: RefObject<HTMLElement>,
   hookHandler: (event: PanEvent) => void
 ) {
   const [lastEvt, setLastEvt] = useState<PanEvent | null>(null)
   const [originRect, setOriginRect] = useState<DOMRect | null>(null)
-  const target = ref.current
+  const refEl = ref.current
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!target || !isEventTargetWithinElement(target, e.target)) {
+      if (!refEl) {
         return
       }
 
       e.preventDefault()
       document.body.classList.add('dragging')
 
-      const originRect = target.getBoundingClientRect()
+      const originRect = refEl.getBoundingClientRect()
+      setOriginRect(originRect)
 
       const panEvt = {
         isFinal: false,
@@ -59,16 +59,15 @@ export function useMousePan(
 
       hookHandler(panEvt)
       setLastEvt(panEvt)
-      setOriginRect(originRect)
     }
 
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
+    refEl?.addEventListener('mousedown', handler)
+    return () => refEl?.removeEventListener('mousedown', handler)
   })
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!target || lastEvt === null) {
+      if (!refEl || lastEvt === null) {
         return
       }
 
@@ -91,7 +90,7 @@ export function useMousePan(
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!target || lastEvt === null) {
+      if (!refEl || lastEvt === null) {
         return
       }
 
