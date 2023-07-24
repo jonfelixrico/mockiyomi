@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 
 interface Coords {
   x: number
@@ -30,18 +30,19 @@ function getLocation(e: MouseEvent, relativeTo: Element): Coords {
 }
 
 export function useMousePan(
-  target: Element,
+  ref: RefObject<Element>,
   hookHandler: (event: PanEvent) => void
 ) {
   const [lastEvt, setLastEvt] = useState<PanEvent | null>(null)
+  const target = ref.current
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!isDescendant(target, e.target)) {
+      if (!target || !isDescendant(target, e.target)) {
         return
       }
 
-      document.body.classList.add('pointer-events-none')
+      document.body.classList.add('dragging')
 
       const panEvt = {
         isFinal: false,
@@ -58,7 +59,7 @@ export function useMousePan(
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (lastEvt === null) {
+      if (!target || lastEvt === null) {
         return
       }
 
@@ -77,7 +78,7 @@ export function useMousePan(
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (lastEvt === null) {
+      if (!target || lastEvt === null) {
         return
       }
 
@@ -89,7 +90,7 @@ export function useMousePan(
       hookHandler(panEvt)
       setLastEvt(null)
 
-      document.body.classList.remove('pointer-events-none')
+      document.body.classList.remove('dragging')
     }
 
     document.body.addEventListener('mouseup', handler)
