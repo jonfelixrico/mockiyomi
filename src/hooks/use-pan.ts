@@ -9,6 +9,7 @@ interface Coords {
 
 export type PanEvent = {
   location: Coords
+  delta: Coords
 
   isFirst: boolean
   isFinal: boolean
@@ -26,6 +27,13 @@ function getLocation(e: MouseEvent, relativeTo: Element): Coords {
   return {
     x: e.clientX - rect.x,
     y: e.clientY - rect.y,
+  }
+}
+
+function getDelta(past: Coords, current: Coords): Coords {
+  return {
+    x: current.x - past.x,
+    y: current.y - past.y,
   }
 }
 
@@ -48,7 +56,12 @@ export function useMousePan(
         isFinal: false,
         isFirst: true,
         location: getLocation(e, target),
+        delta: {
+          x: 0,
+          y: 0,
+        },
       }
+
       hookHandler(panEvt)
       setLastEvt(panEvt)
     }
@@ -63,11 +76,15 @@ export function useMousePan(
         return
       }
 
+      const location = getLocation(e, target)
+
       const panEvt = {
         isFinal: false,
         isFirst: false,
-        location: getLocation(e, target),
+        location,
+        delta: getDelta(lastEvt.location, location),
       }
+
       hookHandler(panEvt)
       setLastEvt(panEvt)
     }
@@ -82,11 +99,14 @@ export function useMousePan(
         return
       }
 
+      const location = getLocation(e, target)
       const panEvt = {
         isFinal: true,
         isFirst: false,
-        location: getLocation(e, target),
+        location,
+        delta: getDelta(lastEvt.location, location),
       }
+
       hookHandler(panEvt)
       setLastEvt(null)
 
