@@ -6,7 +6,7 @@ import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
 import { useRef, useState } from 'react'
-import { useMousePan } from '@/hooks/use-pan'
+import { useMousePan } from '@/hooks/pan/use-mouse-pan'
 
 const cnJoin = cnBind.bind(style)
 
