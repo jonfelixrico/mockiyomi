@@ -50,6 +50,7 @@ export function useMousePan(
         return
       }
 
+      e.preventDefault()
       document.body.classList.add('dragging')
 
       const panEvt = {
@@ -66,8 +67,8 @@ export function useMousePan(
       setLastEvt(panEvt)
     }
 
-    document.body.addEventListener('mousedown', handler)
-    return () => document.body.removeEventListener('mousedown', handler)
+    window.addEventListener('mousedown', handler)
+    return () => window.removeEventListener('mousedown', handler)
   })
 
   useEffect(() => {
@@ -89,8 +90,8 @@ export function useMousePan(
       setLastEvt(panEvt)
     }
 
-    document.body.addEventListener('mousemove', handler)
-    return () => document.body.removeEventListener('mousemove', handler)
+    window.addEventListener('mousemove', handler)
+    return () => window.removeEventListener('mousemove', handler)
   })
 
   useEffect(() => {
@@ -113,7 +114,7 @@ export function useMousePan(
       document.body.classList.remove('dragging')
     }
 
-    document.body.addEventListener('mouseup', handler)
-    return () => document.body.removeEventListener('mouseup', handler)
+    window.addEventListener('mouseup', handler)
+    return () => window.removeEventListener('mouseup', handler)
   })
 }
