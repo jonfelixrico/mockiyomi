@@ -34,7 +34,9 @@ export default function ReaderContainerV2(props: {
   return (
     <div
       ref={ref}
-      className={cnJoin(props.className, 'relative')}
+      className={cnJoin(props.className, 'relative', {
+        'transition-transform': !translateX,
+      })}
       data-test={translateX}
       style={{
         transform: `translateX(${translateX}px)`,
