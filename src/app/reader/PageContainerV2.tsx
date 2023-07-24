@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Dimensions } from '../types/dimensions.interface'
+import { Dimensions } from '@/types/dimensions.interface'
 import joinCn from 'classnames'
 
 export default function PageContainerV2({

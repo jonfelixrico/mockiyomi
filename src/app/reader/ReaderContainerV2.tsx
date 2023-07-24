@@ -20,23 +20,25 @@ export default function ReaderContainerV2(props: {
       ref={ref}
       className={cnJoin(props.className, 'relative overflow-hidden')}
     >
-      {props.prev ? (
-        <PageContainerV2
-          src={props.prev}
-          dimensions={dims}
-          className="absolute z-10 prev"
-        />
-      ) : null}
+      <div className="absolute">
+        {props.prev ? (
+          <PageContainerV2
+            src={props.prev}
+            dimensions={dims}
+            className="absolute z-10 prev"
+          />
+        ) : null}
 
-      {props.next ? (
-        <PageContainerV2
-          src={props.next}
-          dimensions={dims}
-          className="absolute z-10 next"
-        />
-      ) : null}
+        {props.next ? (
+          <PageContainerV2
+            src={props.next}
+            dimensions={dims}
+            className="absolute z-10 next"
+          />
+        ) : null}
 
-      <PageContainerV2 src={props.current} dimensions={dims} />
+        <PageContainerV2 src={props.current} dimensions={dims} />
+      </div>
     </div>
   )
 }
