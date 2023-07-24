@@ -1,6 +1,5 @@
 'use client'
 
-import { isEventTargetWithinElement } from '@/utils/event-utils'
 import { RefObject, useEffect, useState } from 'react'
 import { Coords, PanEvent } from './pan-types'
 
