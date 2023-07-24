@@ -5,7 +5,7 @@ import PageContainerV2 from './PageContainerV2'
 import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useMousePan } from '@/hooks/use-pan'
 
 const cnJoin = cnBind.bind(style)
@@ -17,15 +17,25 @@ export default function ReaderContainerV2(props: {
   next?: string
   dims: Dimensions
 }) {
+  const [translateX, setTranslateX] = useState(0)
+
   const ref = useRef<null | HTMLDivElement>(null)
-  useMousePan(ref, (e) => {
-    console.log(e)
+  useMousePan(ref, ({ isFinal, delta }) => {
+    if (isFinal) {
+      setTranslateX(0)
+    } else {
+      setTranslateX((val) => val + delta.x)
+    }
   })
 
   return (
     <div
       ref={ref}
-      className={cnJoin(props.className, 'relative overflow-hidden')}
+      className={cnJoin(props.className, 'relative')}
+      data-test={translateX}
+      style={{
+        transform: `translateX(${translateX}px)`,
+      }}
     >
       {props.prev ? (
         <PageContainerV2

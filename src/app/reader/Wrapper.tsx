@@ -13,7 +13,7 @@ const URLS = [
 export default function Wrapper() {
   const [ref, dims] = useMeasure<HTMLDivElement>()
   return (
-    <div ref={ref} className="h-screen w-screen">
+    <div ref={ref} className="h-screen w-screen overflow-hidden">
       <ReaderContainerV2
         dims={dims}
         current={URLS[1]}
