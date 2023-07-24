@@ -15,10 +15,13 @@ export type PanEvent = {
   isFinal: boolean
 }
 
-function isDescendant(ancestor: Element, target: EventTarget | null) {
+function isEventTargetWithinElement(
+  containingElement: Element,
+  eventTarget: EventTarget | null
+) {
   return (
-    ancestor === target ||
-    (target instanceof Element && ancestor.contains(target))
+    containingElement === eventTarget ||
+    (eventTarget instanceof Element && containingElement.contains(eventTarget))
   )
 }
 
@@ -56,7 +59,7 @@ export function useMousePan(
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!target || !isDescendant(target, e.target)) {
+      if (!target || !isEventTargetWithinElement(target, e.target)) {
         return
       }
 
