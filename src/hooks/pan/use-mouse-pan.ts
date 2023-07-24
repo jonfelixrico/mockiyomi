@@ -1,5 +1,6 @@
 'use client'
 
+import { isEventTargetWithinElement } from '@/utils/event-utils'
 import { RefObject, useEffect, useState } from 'react'
 
 interface Coords {
@@ -13,16 +14,6 @@ export type PanEvent = {
 
   isFirst: boolean
   isFinal: boolean
-}
-
-function isEventTargetWithinElement(
-  containingElement: Element,
-  eventTarget: EventTarget | null
-) {
-  return (
-    containingElement === eventTarget ||
-    (eventTarget instanceof Element && containingElement.contains(eventTarget))
-  )
 }
 
 function getLocationRelativeToRect(
