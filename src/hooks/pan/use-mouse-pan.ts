@@ -2,6 +2,7 @@
 
 import { RefObject, useEffect, useState } from 'react'
 import { PanEvent } from './pan-types'
+import { Coords } from '@/types/coords.interface'
 
 function getLocationRelativeToRect(
   e: MouseEvent,
