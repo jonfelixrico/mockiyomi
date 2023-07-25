@@ -1,9 +1,39 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import { Dimensions } from '@/types/dimensions.interface'
 import joinCn from 'classnames'
+
+function useImageMetadata(ref: RefObject<HTMLImageElement>) {
+  const [loaded, setLoaded] = useState(false)
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0,
+  })
+
+  useEffect(() => {
+    setLoaded(!!ref.current?.complete)
+  }, [ref])
+
+  useEffect(() => {
+    const img = ref.current
+
+    if (!img?.complete) {
+      return
+    }
+
+    setDimensions({
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+    })
+  }, [ref])
+
+  return {
+    loaded,
+    dimensions,
+  }
+}
 
 export default function PageContainerV2({
   dimensions: { height, width },
@@ -15,11 +45,7 @@ export default function PageContainerV2({
   className?: string
 }) {
   const ref = useRef<HTMLImageElement>(null)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    setLoaded(!!ref.current?.complete)
-  }, [ref])
+  const { loaded, dimensions: imgDims } = useImageMetadata(ref)
 
   return (
     <div
