@@ -5,8 +5,7 @@ import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
 import { useRef, useState } from 'react'
-import { useMousePan } from '@/hooks/pan/use-mouse-pan'
-import { useTouchPan } from '@/hooks/pan/use-touch-pan'
+import { usePan } from '@/hooks/pan/use-pan'
 
 const cnJoin = cnBind.bind(style)
 
@@ -20,18 +19,7 @@ export default function ReaderContainerV2(props: {
   const [translateX, setTranslateX] = useState(0)
 
   const ref = useRef<null | HTMLDivElement>(null)
-  useMousePan(ref, ({ isFinal, delta }) => {
-    if (isFinal) {
-      setTranslateX(0)
-    } else {
-      setTranslateX((val) => {
-        const newGross = val + delta.x
-        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
-      })
-    }
-  })
-
-  useTouchPan(ref, ({ isFinal, delta }) => {
+  usePan(ref, ({ isFinal, delta }) => {
     if (isFinal) {
       setTranslateX(0)
     } else {
