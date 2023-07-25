@@ -10,17 +10,13 @@ function useImageMetadata(ref: RefObject<HTMLImageElement>) {
   const [ratio, setRatio] = useState(1)
 
   useEffect(() => {
-    setLoaded(!!ref.current?.complete)
-  }, [ref])
-
-  useEffect(() => {
     const img = ref.current
 
-    if (!img?.complete) {
-      return
-    }
+    setLoaded(!!img?.complete)
 
-    setRatio(img.naturalWidth / img.naturalHeight)
+    if (img?.complete) {
+      setRatio(img.naturalWidth / img.naturalHeight)
+    }
   }, [ref])
 
   return {
