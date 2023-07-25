@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { Dimensions } from '@/types/dimensions.interface'
 import joinCn from 'classnames'
 
@@ -26,7 +26,7 @@ function useImageMetadata(ref: RefObject<HTMLImageElement>) {
 }
 
 export default function PageContainerV2({
-  dimensions: { height, width },
+  dimensions,
   src,
   ...props
 }: {
@@ -37,12 +37,25 @@ export default function PageContainerV2({
   const ref = useRef<HTMLImageElement>(null)
   const { loaded, ratio } = useImageMetadata(ref)
 
+  const containerDims = useMemo(() => {
+    if (dimensions.width >= dimensions.height) {
+      // landscape or square
+      return {
+        height: dimensions.height,
+        width: dimensions.height * ratio,
+      }
+    }
+
+    // portrait
+    return {
+      width: dimensions.width,
+      height: dimensions.width / ratio,
+    }
+  }, [ratio, dimensions])
+
   return (
     <div
-      style={{
-        height,
-        width,
-      }}
+      style={dimensions}
       className={joinCn('flex flex-row justify-center', props.className)}
     >
       {!loaded ? (
@@ -51,7 +64,9 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <img src={src} ref={ref} />
+      <div style={containerDims}>
+        <img src={src} ref={ref} />
+      </div>
     </div>
   )
 }
