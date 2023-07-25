@@ -33,6 +33,7 @@ export default function PageContainerV2({
   dimensions: Dimensions
   src: string
   className?: string
+  scale?: number
 }) {
   const ref = useRef<HTMLImageElement>(null)
   const { loaded, ratio } = useImageMetadata(ref)
@@ -53,6 +54,14 @@ export default function PageContainerV2({
     }
   }, [ratio, dimensions])
 
+  const scaledDims = useMemo(() => {
+    const scale = props.scale ?? 1
+    return {
+      width: containerDims.width * scale,
+      height: containerDims.height * scale,
+    }
+  }, [containerDims, props.scale])
+
   return (
     <div
       style={dimensions}
@@ -64,7 +73,7 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <div style={containerDims}>
+      <div style={scaledDims}>
         <img src={src} ref={ref} />
       </div>
     </div>
