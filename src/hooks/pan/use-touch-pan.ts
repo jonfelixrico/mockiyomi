@@ -1,7 +1,8 @@
 'use client'
 
 import { RefObject, useEffect, useState } from 'react'
-import { Coords, PanEvent } from './pan-types'
+import { PanEvent } from './pan-types'
+import { Coords } from '@/types/coords.interface'
 
 function getLocationRelativeToRect(e: Touch, rect: DOMRect | null): Coords {
   if (!rect) {

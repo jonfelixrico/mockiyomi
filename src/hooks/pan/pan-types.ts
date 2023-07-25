@@ -1,7 +1,4 @@
-export interface Coords {
-  x: number
-  y: number
-}
+import { Coords } from '@/types/coords.interface'
 
 export type PanEvent = {
   location: Coords

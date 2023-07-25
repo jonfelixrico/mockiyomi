@@ -1,7 +1,7 @@
 'use client'
 
 import { RefObject, useEffect, useState } from 'react'
-import { Coords, PanEvent } from './pan-types'
+import { PanEvent } from './pan-types'
 
 function getLocationRelativeToRect(
   e: MouseEvent,
