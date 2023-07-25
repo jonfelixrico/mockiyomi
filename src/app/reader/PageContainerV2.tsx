@@ -61,7 +61,9 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <img src={src} ref={ref} />
+      <div style={imgDims}>
+        <img src={src} ref={ref} />
+      </div>
     </div>
   )
 }
