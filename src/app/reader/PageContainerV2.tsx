@@ -7,10 +7,7 @@ import joinCn from 'classnames'
 
 function useImageMetadata(ref: RefObject<HTMLImageElement>) {
   const [loaded, setLoaded] = useState(false)
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  })
+  const [ratio, setRatio] = useState(1)
 
   useEffect(() => {
     setLoaded(!!ref.current?.complete)
@@ -23,15 +20,12 @@ function useImageMetadata(ref: RefObject<HTMLImageElement>) {
       return
     }
 
-    setDimensions({
-      width: img.naturalWidth,
-      height: img.naturalHeight,
-    })
+    setRatio(img.naturalWidth / img.naturalHeight)
   }, [ref])
 
   return {
     loaded,
-    dimensions,
+    ratio,
   }
 }
 
@@ -45,7 +39,7 @@ export default function PageContainerV2({
   className?: string
 }) {
   const ref = useRef<HTMLImageElement>(null)
-  const { loaded, dimensions: imgDims } = useImageMetadata(ref)
+  const { loaded, ratio } = useImageMetadata(ref)
 
   return (
     <div
@@ -61,9 +55,7 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <div style={imgDims}>
-        <img src={src} ref={ref} />
-      </div>
+      <img src={src} ref={ref} />
     </div>
   )
 }
