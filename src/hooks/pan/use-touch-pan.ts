@@ -44,7 +44,7 @@ export function useTouchPan(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || e.touches.length !== 1) {
+      if (!refEl) {
         return
       }
 
@@ -75,7 +75,7 @@ export function useTouchPan(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || lastEvt === null || e.touches.length !== 1) {
+      if (!refEl || lastEvt === null) {
         return
       }
 
@@ -99,7 +99,7 @@ export function useTouchPan(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || lastEvt === null) {
+      if (!refEl || lastEvt === null || e.touches.length > 0) {
         return
       }
 
