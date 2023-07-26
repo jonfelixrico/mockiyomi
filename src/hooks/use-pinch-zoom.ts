@@ -51,12 +51,8 @@ export function usePinchZoom(
       }
     }
 
-    window.addEventListener('touchstart', handler, { passive: true })
     window.addEventListener('touchmove', handler, { passive: true })
-    return () => {
-      window.removeEventListener('touchstart', handler)
-      window.removeEventListener('touchmove', handler)
-    }
+    return () => window.removeEventListener('touchmove', handler)
   })
 
   useEffect(() => {
