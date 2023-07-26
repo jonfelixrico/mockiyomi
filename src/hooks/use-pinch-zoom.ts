@@ -51,9 +51,8 @@ export function usePinchZoom(
       }
     }
 
-    window.addEventListener('touchstart', handler)
-    window.addEventListener('touchmove', handler)
-
+    window.addEventListener('touchstart', handler, { passive: true })
+    window.addEventListener('touchmove', handler, { passive: true })
     return () => {
       window.removeEventListener('touchstart', handler)
       window.removeEventListener('touchmove', handler)
@@ -69,7 +68,7 @@ export function usePinchZoom(
       setLastDistance(null)
     }
 
-    window.addEventListener('touchend', handler)
+    window.addEventListener('touchend', handler, { passive: true })
     return () => window.removeEventListener('touchend', handler)
   })
 }
