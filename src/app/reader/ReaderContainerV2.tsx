@@ -18,6 +18,7 @@ export default function ReaderContainerV2(props: {
   dims: Dimensions
 }) {
   const [translateX, setTranslateX] = useState(0)
+  const [scale, setScale] = useState(1)
 
   const ref = useRef<null | HTMLDivElement>(null)
   usePan(ref, ({ isFinal, delta }) => {
@@ -31,7 +32,13 @@ export default function ReaderContainerV2(props: {
     }
   })
 
-  usePinchZoom(ref, () => {})
+  usePinchZoom(ref, ({ delta }) => {
+    if (delta > 0) {
+      setScale((scale) => scale + 0.1)
+    } else if (delta < 0) {
+      setScale((scale) => scale - 0.1)
+    }
+  })
 
   return (
     <div
@@ -60,7 +67,11 @@ export default function ReaderContainerV2(props: {
         />
       ) : null}
 
-      <PageContainerV2 src={props.current} dimensions={props.dims} />
+      <PageContainerV2
+        src={props.current}
+        dimensions={props.dims}
+        scale={scale}
+      />
     </div>
   )
 }
