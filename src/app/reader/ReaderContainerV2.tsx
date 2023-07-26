@@ -20,16 +20,16 @@ export default function ReaderContainerV2(props: {
   const [translateX, setTranslateX] = useState(0)
 
   const ref = useRef<null | HTMLDivElement>(null)
-  // usePan(ref, ({ isFinal, delta }) => {
-  //   if (isFinal) {
-  //     setTranslateX(0)
-  //   } else {
-  //     setTranslateX((val) => {
-  //       const newGross = val + delta.x
-  //       return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
-  //     })
-  //   }
-  // })
+  usePan(ref, ({ isFinal, delta }) => {
+    if (isFinal) {
+      setTranslateX(0)
+    } else {
+      setTranslateX((val) => {
+        const newGross = val + delta.x
+        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
+      })
+    }
+  })
 
   usePinchZoom(ref, () => {})
 
