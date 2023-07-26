@@ -1,79 +1,36 @@
 'use client'
 
 import { RefObject, useEffect, useState } from 'react'
-import { Coords } from '@/types/coords.interface'
 
 export type PinchZoomEvent = {
-  location: Coords
-  delta: Coords
-
-  isFirst: boolean
-  isFinal: boolean
+  delta: number
 }
 
-function getLocationRelativeToRect(e: Touch, rect: DOMRect | null): Coords {
-  if (!rect) {
-    return {
-      x: 0,
-      y: 0,
-    }
-  }
+function getDistance(e: TouchEvent) {
+  const a = e.touches.item(0)
+  const b = e.touches.item(1)
 
-  return {
-    x: e.clientX - rect.x,
-    y: e.clientY - rect.y,
-  }
-}
+  const xPart = Math.pow((a?.clientX ?? 0) - (b?.clientX ?? 0), 2)
+  const yPart = Math.pow((a?.clientY ?? 0) - (b?.clientY ?? 0), 2)
 
-function getDelta(past: Coords, current: Coords): Coords {
-  return {
-    x: current.x - past.x,
-    y: current.y - past.y,
-  }
-}
-
-function getTouch(e: TouchEvent) {
-  const touch = e.touches.item(0)
-  if (!touch) {
-    throw new Error('test')
-  }
-
-  return touch
+  return Math.abs(Math.sqrt(xPart + yPart))
 }
 
 export function usePinchZoom(
   ref: RefObject<HTMLElement>,
   hookHandler: (event: PinchZoomEvent) => void
 ) {
-  const [lastEvt, setLastEvt] = useState<PinchZoomEvent | null>(null)
-  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const refEl = ref.current
+
+  const [lastDistance, setLastDistance] = useState<number | null>(null)
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || e.touches.length !== 1) {
+      if (!refEl) {
         return
       }
 
       document.body.classList.add('dragging')
-      e.preventDefault()
-
-      const originRect = refEl.getBoundingClientRect()
-      setOriginRect(originRect)
-
-      const touch = getTouch(e)
-      const panEvt = {
-        isFinal: false,
-        isFirst: true,
-        location: getLocationRelativeToRect(touch, originRect),
-        delta: {
-          x: 0,
-          y: 0,
-        },
-      }
-
-      hookHandler(panEvt)
-      setLastEvt(panEvt)
     }
 
     refEl?.addEventListener('touchstart', handler)
@@ -82,22 +39,34 @@ export function usePinchZoom(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || lastEvt === null || e.touches.length !== 1) {
+      if (!refEl) {
         return
       }
 
-      const touch = getTouch(e)
-      const location = getLocationRelativeToRect(touch, originRect)
+      if (e.touches.length === 2 && lastDistance !== null) {
+        const prev = lastDistance
+        const curr = getDistance(e)
 
-      const panEvt = {
-        isFinal: false,
-        isFirst: false,
-        location,
-        delta: getDelta(lastEvt.location, location),
+        setLastDistance(curr)
+
+        if (prev > curr) {
+          hookHandler({
+            delta: 1,
+          })
+        } else if (prev < curr) {
+          hookHandler({
+            delta: -1,
+          })
+        } else {
+          hookHandler({
+            delta: 0,
+          })
+        }
+      } else if (e.touches.length === 2) {
+        setLastDistance(getDistance(e))
+      } else {
+        setLastDistance(null)
       }
-
-      hookHandler(panEvt)
-      setLastEvt(panEvt)
     }
 
     window.addEventListener('touchmove', handler)
@@ -106,30 +75,16 @@ export function usePinchZoom(
 
   useEffect(() => {
     const handler = (e: TouchEvent) => {
-      if (!refEl || lastEvt === null) {
+      if (!refEl) {
         return
       }
 
-      hookHandler({
-        ...lastEvt,
-        isFinal: true,
-        isFirst: false,
-        delta: {
-          x: 0,
-          y: 0,
-        },
-      })
-      setLastEvt(null)
-      setOriginRect(null)
+      setLastDistance(null)
 
       document.body.classList.remove('dragging')
     }
 
     window.addEventListener('touchend', handler)
-    window.addEventListener('touchcancel', handler)
-    return () => {
-      window.removeEventListener('touchend', handler)
-      window.removeEventListener('touchcancel', handler)
-    }
+    return () => window.removeEventListener('touchend', handler)
   })
 }
