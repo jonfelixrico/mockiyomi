@@ -30,38 +30,20 @@ export function usePinchZoom(
         return
       }
 
-      document.body.classList.add('dragging')
-    }
-
-    refEl?.addEventListener('touchstart', handler)
-    return () => refEl?.removeEventListener('touchstart', handler)
-  })
-
-  useEffect(() => {
-    const handler = (e: TouchEvent) => {
-      if (!refEl) {
-        return
-      }
-
       if (e.touches.length === 2 && lastDistance !== null) {
         const prev = lastDistance
         const curr = getDistance(e)
 
         setLastDistance(curr)
 
-        if (prev > curr) {
-          hookHandler({
-            delta: 1,
-          })
-        } else if (prev < curr) {
-          hookHandler({
-            delta: -1,
-          })
-        } else {
-          hookHandler({
-            delta: 0,
-          })
-        }
+        hookHandler({
+          /*
+           * If positive, then zooming out
+           * If negative, then zooming in
+           * Else, no change
+           */
+          delta: curr - prev,
+        })
       } else if (e.touches.length === 2) {
         setLastDistance(getDistance(e))
       } else {
@@ -69,8 +51,13 @@ export function usePinchZoom(
       }
     }
 
+    window.addEventListener('touchstart', handler)
     window.addEventListener('touchmove', handler)
-    return () => window.removeEventListener('touchmove', handler)
+
+    return () => {
+      window.removeEventListener('touchstart', handler)
+      window.removeEventListener('touchmove', handler)
+    }
   })
 
   useEffect(() => {
@@ -80,8 +67,6 @@ export function usePinchZoom(
       }
 
       setLastDistance(null)
-
-      document.body.classList.remove('dragging')
     }
 
     window.addEventListener('touchend', handler)
