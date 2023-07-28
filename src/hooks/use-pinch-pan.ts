@@ -57,6 +57,9 @@ export function usePinchPan(
       }
 
       if (getPointerCount() === 0) {
+        // Needed to prevent causing highlights once the interaction has started
+        e.preventDefault()
+
         document.body.classList.add('dragging')
 
         const rect = refEl.getBoundingClientRect()
@@ -120,7 +123,7 @@ export function usePinchPan(
       })
     }
 
-    window.addEventListener('pointerdown', handler, { passive: true })
+    window.addEventListener('pointerdown', handler)
     return () => window.removeEventListener('pointerdown', handler)
   })
 
