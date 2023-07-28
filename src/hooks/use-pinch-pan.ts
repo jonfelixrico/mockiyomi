@@ -18,6 +18,10 @@ export function usePinchZoom(
   const refEl = ref.current
 
   const [pointers, setPointers] = useState<Record<string, PointerEvent>>({})
+  function getPointerCount() {
+    return Object.keys(pointers).length
+  }
+
   const [origin, setOrigin] = useState<Coords | null>(null)
 
   useEffect(() => {
@@ -26,7 +30,7 @@ export function usePinchZoom(
         return
       }
 
-      if (Object.keys(pointers).length === 0) {
+      if (getPointerCount() === 0) {
         document.body.classList.add('dragging')
 
         const rect = refEl.getBoundingClientRect()
@@ -87,7 +91,7 @@ export function usePinchZoom(
         return
       }
 
-      if (Object.keys(pointers).length === 1) {
+      if (getPointerCount() === 1) {
         // all touches have been removed
 
         hookListener({
@@ -108,6 +112,8 @@ export function usePinchZoom(
         setOrigin(null)
         document.body.classList.remove('dragging')
       } else {
+        // pointer count > 1; can't be 0 at this point
+
         hookListener({
           isFirst: false,
           isFinal: false,
