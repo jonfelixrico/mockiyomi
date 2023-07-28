@@ -17,6 +17,20 @@ export type PinchPanEvent = {
   isFinal: boolean
 }
 
+function getCoordsRelativeToTarget(origin: Origin, e: PointerEvent): Coords {
+  return {
+    x: e.clientX - origin.client.x,
+    y: e.clientY - origin.client.y,
+  }
+}
+
+function getDelta(prev: Coords, now: Coords): Coords {
+  return {
+    x: now.x - prev.x,
+    y: now.y - prev.y,
+  }
+}
+
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void
@@ -112,24 +126,23 @@ export function usePinchPan(
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl) {
+      if (!refEl || !origin) {
         return
       }
 
       if (getPointerCount() === 1) {
         // all touches have been removed
 
+        const currCoords = getCoordsRelativeToTarget(origin, e)
+
         emit({
           isFirst: false,
           isFinal: true,
 
-          origin: origin?.target as Coords,
-          location: origin?.target as Coords, // TODO fix this
+          origin: origin.target,
+          location: currCoords,
 
-          panDelta: {
-            x: 0,
-            y: 0,
-          },
+          panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
 
           pinchDelta: 0,
         })
@@ -148,8 +161,8 @@ export function usePinchPan(
           isFirst: false,
           isFinal: false,
 
-          origin: origin?.target as Coords,
-          location: origin?.target as Coords, // TODO fix this
+          origin: origin.target,
+          location: origin.target, // TODO fix this
 
           panDelta: {
             x: 0,
@@ -178,22 +191,16 @@ export function usePinchPan(
         return
       }
 
-      const currentCoords = {
-        x: e.clientX - origin.client.x,
-        y: e.clientY - origin.client.y,
-      }
+      const currCoords = getCoordsRelativeToTarget(origin, e)
 
       emit({
         isFirst: false,
         isFinal: false,
 
         origin: origin.target as Coords,
-        location: currentCoords,
+        location: currCoords,
 
-        panDelta: {
-          x: 0,
-          y: 0,
-        },
+        panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
 
         pinchDelta: 0,
       })
