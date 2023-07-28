@@ -21,7 +21,16 @@ export default function ReaderContainerV2(props: {
 
   const ref = useRef<null | HTMLDivElement>(null)
 
-  usePinchPan(ref, () => {})
+  usePinchPan(ref, ({ isFinal, panDelta }) => {
+    if (isFinal) {
+      setTranslateX(0)
+    } else {
+      setTranslateX((val) => {
+        const newGross = val + panDelta.x
+        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
+      })
+    }
+  })
 
   return (
     <div
