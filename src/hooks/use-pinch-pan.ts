@@ -7,12 +7,13 @@ export type PinchPanEvent = {
   panDelta: Coords
   pinchDelta: number
 
+  isFirst: boolean
   isFinal: boolean
 }
 
 export function usePinchZoom(
   ref: RefObject<HTMLElement>,
-  hookHandler: (event: PinchPanEvent) => void
+  hookListener: (event: PinchPanEvent) => void
 ) {
   const refEl = ref.current
 
@@ -33,6 +34,24 @@ export function usePinchZoom(
           ...pointers,
           [e.pointerId]: e,
         }
+      })
+
+      hookListener({
+        isFirst: true,
+        isFinal: false,
+
+        location: {
+          // TODO fix dummy data
+          x: 0,
+          y: 0,
+        },
+
+        panDelta: {
+          x: 0,
+          y: 0,
+        },
+
+        pinchDelta: 0,
       })
     }
 
@@ -60,6 +79,24 @@ export function usePinchZoom(
 
         return clone
       })
+
+      hookListener({
+        isFirst: false,
+        isFinal: true,
+
+        location: {
+          // TODO fix dummy data
+          x: 0,
+          y: 0,
+        },
+
+        panDelta: {
+          x: 0,
+          y: 0,
+        },
+
+        pinchDelta: 0,
+      })
     }
 
     window.addEventListener('pointerup', handler, { passive: true })
@@ -71,6 +108,24 @@ export function usePinchZoom(
       if (!refEl) {
         return
       }
+
+      hookListener({
+        isFirst: false,
+        isFinal: false,
+
+        location: {
+          // TODO fix dummy data
+          x: 0,
+          y: 0,
+        },
+
+        panDelta: {
+          x: 0,
+          y: 0,
+        },
+
+        pinchDelta: 0,
+      })
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
