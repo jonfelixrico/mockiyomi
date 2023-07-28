@@ -5,8 +5,7 @@ import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
 import { useRef, useState } from 'react'
-import { usePan } from '@/hooks/pan/use-pan'
-import { usePinchZoom } from '@/hooks/use-pinch-zoom'
+import { usePinchPan } from '@/hooks/use-pinch-pan'
 
 const cnJoin = cnBind.bind(style)
 
@@ -21,24 +20,8 @@ export default function ReaderContainerV2(props: {
   const [scale, setScale] = useState(1)
 
   const ref = useRef<null | HTMLDivElement>(null)
-  usePan(ref, ({ isFinal, delta }) => {
-    if (isFinal) {
-      setTranslateX(0)
-    } else {
-      setTranslateX((val) => {
-        const newGross = val + delta.x
-        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
-      })
-    }
-  })
 
-  usePinchZoom(ref, ({ delta }) => {
-    if (delta > 0) {
-      setScale((scale) => scale + 0.1)
-    } else if (delta < 0) {
-      setScale((scale) => scale - 0.1)
-    }
-  })
+  usePinchPan(ref, () => {})
 
   return (
     <div
