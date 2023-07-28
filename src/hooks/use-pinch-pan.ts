@@ -8,6 +8,7 @@ interface Origin {
 
 export type PinchPanEvent = {
   origin: Coords
+  location: Coords
 
   panDelta: Coords
   pinchDelta: number
@@ -62,6 +63,7 @@ export function usePinchPan(
           isFinal: false,
 
           origin: targetOrigin,
+          location: targetOrigin,
 
           panDelta: {
             x: 0,
@@ -83,6 +85,7 @@ export function usePinchPan(
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
           origin: origin?.target as Coords,
+          location: origin?.target as Coords, // TODO fix this
 
           panDelta: {
             x: 0,
@@ -119,6 +122,7 @@ export function usePinchPan(
           isFinal: true,
 
           origin: origin?.target as Coords,
+          location: origin?.target as Coords, // TODO fix this
 
           panDelta: {
             x: 0,
@@ -143,6 +147,7 @@ export function usePinchPan(
           isFinal: false,
 
           origin: origin?.target as Coords,
+          location: origin?.target as Coords, // TODO fix this
 
           panDelta: {
             x: 0,
@@ -171,11 +176,17 @@ export function usePinchPan(
         return
       }
 
+      const currentCoords = {
+        x: e.clientX - origin.client.x,
+        y: e.clientY - origin.client.y,
+      }
+
       emit({
         isFirst: false,
         isFinal: false,
 
         origin: origin.target as Coords,
+        location: currentCoords,
 
         panDelta: {
           x: 0,
