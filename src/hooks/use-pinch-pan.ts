@@ -175,7 +175,7 @@ export function usePinchPan(
         isFirst: false,
         isFinal: false,
 
-        origin: origin?.target as Coords,
+        origin: origin.target as Coords,
 
         panDelta: {
           x: 0,
