@@ -37,9 +37,17 @@ export function usePinchPan(
 ) {
   const refEl = ref.current
 
-  const [pointers, setPointers] = useState<Record<string, PointerEvent>>({})
+  const [pointerMap, setPointerMap] = useState<Record<string, PointerEvent>>({})
   function getPointerCount() {
-    return Object.keys(pointers).length
+    return Object.keys(pointerMap).length
+  }
+  function setPointer(e: PointerEvent) {
+    setPointerMap((map) => {
+      return {
+        ...map,
+        [e.pointerId]: e,
+      }
+    })
   }
 
   const [origin, setOrigin] = useState<Origin | null>(null)
@@ -115,12 +123,7 @@ export function usePinchPan(
         })
       }
 
-      setPointers((pointers) => {
-        return {
-          ...pointers,
-          [e.pointerId]: e,
-        }
-      })
+      setPointer(e)
     }
 
     window.addEventListener('pointerdown', handler)
@@ -176,7 +179,7 @@ export function usePinchPan(
         })
       }
 
-      setPointers((pointers) => {
+      setPointerMap((pointers) => {
         const clone = { ...pointers }
         delete clone[e.pointerId]
 
@@ -207,6 +210,8 @@ export function usePinchPan(
 
         pinchDelta: 0,
       })
+
+      setPointer(e)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
