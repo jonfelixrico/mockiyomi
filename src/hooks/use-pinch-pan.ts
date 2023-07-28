@@ -53,8 +53,8 @@ export function usePinchPan(
         setOrigin({
           target: targetOrigin,
           client: {
-            x: e.clientX,
-            y: e.clientY,
+            x: rect.x,
+            y: rect.y,
           },
         })
 
