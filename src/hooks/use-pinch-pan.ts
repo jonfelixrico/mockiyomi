@@ -53,6 +53,9 @@ export function usePinchZoom(
 
           pinchDelta: 0,
         })
+
+        // TODO remove
+        console.log('started dragging')
       } else {
         hookListener({
           isFirst: false,
@@ -111,6 +114,9 @@ export function usePinchZoom(
         // cleanup logic
         setOrigin(null)
         document.body.classList.remove('dragging')
+
+        // TODO remove
+        console.log('stopped dragging')
       } else {
         // pointer count > 1; can't be 0 at this point
 
