@@ -5,7 +5,7 @@ import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
 import { useRef, useState } from 'react'
-import { usePinchPan } from '@/hooks/use-pinch-pan'
+import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 
 const cnJoin = cnBind.bind(style)
 
