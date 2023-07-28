@@ -2,7 +2,7 @@ import { Coords } from '@/types/coords.interface'
 import { RefObject, useEffect, useState } from 'react'
 
 export type PinchPanEvent = {
-  location: Coords
+  origin: Coords
 
   panDelta: Coords
   pinchDelta: number
@@ -40,7 +40,7 @@ export function usePinchZoom(
         isFirst: true,
         isFinal: false,
 
-        location: {
+        origin: {
           // TODO fix dummy data
           x: 0,
           y: 0,
@@ -84,7 +84,7 @@ export function usePinchZoom(
         isFirst: false,
         isFinal: true,
 
-        location: {
+        origin: {
           // TODO fix dummy data
           x: 0,
           y: 0,
@@ -113,7 +113,7 @@ export function usePinchZoom(
         isFirst: false,
         isFinal: false,
 
-        location: {
+        origin: {
           // TODO fix dummy data
           x: 0,
           y: 0,
