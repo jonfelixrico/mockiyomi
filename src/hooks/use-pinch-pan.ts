@@ -130,6 +130,7 @@ export function usePinchPan(
 
         // cleanup logic
         setOrigin(null)
+        setLastEmitted(null)
         document.body.classList.remove('dragging')
 
         // TODO remove
