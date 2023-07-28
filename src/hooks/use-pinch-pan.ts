@@ -1,6 +1,11 @@
 import { Coords } from '@/types/coords.interface'
 import { RefObject, useEffect, useState } from 'react'
 
+interface Origin {
+  client: Coords
+  target: Coords
+}
+
 export type PinchPanEvent = {
   origin: Coords
 
@@ -22,7 +27,7 @@ export function usePinchPan(
     return Object.keys(pointers).length
   }
 
-  const [origin, setOrigin] = useState<Coords | null>(null)
+  const [origin, setOrigin] = useState<Origin | null>(null)
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -34,17 +39,23 @@ export function usePinchPan(
         document.body.classList.add('dragging')
 
         const rect = refEl.getBoundingClientRect()
-        const origin = {
+        const targetOrigin = {
           x: e.clientX - rect.x,
           y: e.clientY - rect.y,
         }
-        setOrigin(origin)
+        setOrigin({
+          target: targetOrigin,
+          client: {
+            x: e.clientX,
+            y: e.clientY,
+          },
+        })
 
         hookListener({
           isFirst: true,
           isFinal: false,
 
-          origin,
+          origin: targetOrigin,
 
           panDelta: {
             x: 0,
@@ -65,7 +76,7 @@ export function usePinchPan(
            * Logically, this cannot be origin.
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
-          origin: origin as Coords,
+          origin: origin?.target as Coords,
 
           panDelta: {
             x: 0,
@@ -101,7 +112,7 @@ export function usePinchPan(
           isFirst: false,
           isFinal: true,
 
-          origin: origin as Coords,
+          origin: origin?.target as Coords,
 
           panDelta: {
             x: 0,
@@ -124,7 +135,7 @@ export function usePinchPan(
           isFirst: false,
           isFinal: false,
 
-          origin: origin as Coords,
+          origin: origin?.target as Coords,
 
           panDelta: {
             x: 0,
@@ -149,7 +160,7 @@ export function usePinchPan(
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl) {
+      if (!refEl || !origin) {
         return
       }
 
@@ -157,7 +168,7 @@ export function usePinchPan(
         isFirst: false,
         isFinal: false,
 
-        origin: origin as Coords,
+        origin: origin?.target as Coords,
 
         panDelta: {
           x: 0,
