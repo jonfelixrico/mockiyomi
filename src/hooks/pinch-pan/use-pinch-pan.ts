@@ -1,5 +1,6 @@
 import { Coords } from '@/types/coords.interface'
 import { RefObject, useEffect, useState } from 'react'
+import { usePointerTracker } from './use-pointer-tracker'
 
 interface Origin {
   client: Coords
@@ -37,26 +38,7 @@ export function usePinchPan(
 ) {
   const refEl = ref.current
 
-  const [pointerMap, setPointerMap] = useState<Record<string, PointerEvent>>({})
-  function getPointerCount() {
-    return Object.keys(pointerMap).length
-  }
-  function setPointer(e: PointerEvent) {
-    setPointerMap((map) => {
-      return {
-        ...map,
-        [e.pointerId]: e,
-      }
-    })
-  }
-  function removePointer(e: PointerEvent) {
-    setPointerMap((map) => {
-      const clone = { ...map }
-      delete clone[e.pointerId]
-
-      return clone
-    })
-  }
+  const { pointerCount, removePointer, setPointer } = usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
 
@@ -72,7 +54,7 @@ export function usePinchPan(
         return
       }
 
-      if (getPointerCount() === 0) {
+      if (pointerCount === 0) {
         // Needed to prevent causing highlights once the interaction has started
         e.preventDefault()
 
@@ -144,7 +126,7 @@ export function usePinchPan(
         return
       }
 
-      if (getPointerCount() === 1) {
+      if (pointerCount === 1) {
         // all touches have been removed
 
         const currCoords = getCoordsRelativeToTarget(origin, e)
