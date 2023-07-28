@@ -49,6 +49,14 @@ export function usePinchPan(
       }
     })
   }
+  function removePointer(e: PointerEvent) {
+    setPointerMap((map) => {
+      const clone = { ...map }
+      delete clone[e.pointerId]
+
+      return clone
+    })
+  }
 
   const [origin, setOrigin] = useState<Origin | null>(null)
 
@@ -179,12 +187,7 @@ export function usePinchPan(
         })
       }
 
-      setPointerMap((pointers) => {
-        const clone = { ...pointers }
-        delete clone[e.pointerId]
-
-        return clone
-      })
+      removePointer(e)
     }
 
     window.addEventListener('pointerup', handler, { passive: true })
