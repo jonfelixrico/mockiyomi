@@ -29,6 +29,12 @@ export function usePinchPan(
 
   const [origin, setOrigin] = useState<Origin | null>(null)
 
+  const [lastEmitted, setLastEmitted] = useState<PinchPanEvent | null>(null)
+  function emit(e: PinchPanEvent) {
+    hookListener(e)
+    setLastEmitted(e)
+  }
+
   useEffect(() => {
     const handler = (e: PointerEvent) => {
       if (!refEl) {
@@ -51,7 +57,7 @@ export function usePinchPan(
           },
         })
 
-        hookListener({
+        emit({
           isFirst: true,
           isFinal: false,
 
@@ -68,7 +74,7 @@ export function usePinchPan(
         // TODO remove
         console.log('started dragging')
       } else {
-        hookListener({
+        emit({
           isFirst: false,
           isFinal: false,
 
@@ -108,7 +114,7 @@ export function usePinchPan(
       if (getPointerCount() === 1) {
         // all touches have been removed
 
-        hookListener({
+        emit({
           isFirst: false,
           isFinal: true,
 
@@ -131,7 +137,7 @@ export function usePinchPan(
       } else {
         // pointer count > 1; can't be 0 at this point
 
-        hookListener({
+        emit({
           isFirst: false,
           isFinal: false,
 
@@ -164,7 +170,7 @@ export function usePinchPan(
         return
       }
 
-      hookListener({
+      emit({
         isFirst: false,
         isFinal: false,
 
