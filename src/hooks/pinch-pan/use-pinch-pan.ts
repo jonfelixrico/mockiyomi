@@ -38,7 +38,8 @@ export function usePinchPan(
 ) {
   const refEl = ref.current
 
-  const { pointerCount, removePointer, setPointer } = usePointerTracker()
+  const { pointerCount, removePointer, setPointer, originPointer } =
+    usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
 
@@ -102,7 +103,7 @@ export function usePinchPan(
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
           origin: origin?.target as Coords,
-          location: origin?.target as Coords, // TODO fix this
+          location: getCoordsRelativeToTarget(origin as Origin, originPointer),
 
           panDelta: {
             x: 0,

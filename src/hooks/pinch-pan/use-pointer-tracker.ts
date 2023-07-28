@@ -43,6 +43,6 @@ export function usePointerTracker() {
     pointerCount: pointerCache.length,
     setPointer,
     removePointer,
-    originPointer: pointerCache[0]?.pointerId ?? null,
+    originPointer: pointerCache[0] ?? null,
   }
 }
