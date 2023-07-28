@@ -18,6 +18,7 @@ export function usePinchZoom(
   const refEl = ref.current
 
   const [pointers, setPointers] = useState<Record<string, PointerEvent>>({})
+  const [origin, setOrigin] = useState<Coords | null>(null)
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -27,6 +28,45 @@ export function usePinchZoom(
 
       if (Object.keys(pointers).length === 0) {
         document.body.classList.add('dragging')
+
+        const rect = refEl.getBoundingClientRect()
+        const origin = {
+          x: e.clientX - rect.x,
+          y: e.clientY - rect.y,
+        }
+        setOrigin(origin)
+
+        hookListener({
+          isFirst: true,
+          isFinal: false,
+
+          origin,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinchDelta: 0,
+        })
+      } else {
+        hookListener({
+          isFirst: false,
+          isFinal: false,
+
+          /*
+           * Logically, this cannot be origin.
+           * We're pretty much doing a "just trust me bro" to the compiler.
+           */
+          origin: origin as Coords,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinchDelta: 0,
+        })
       }
 
       setPointers((pointers) => {
@@ -34,24 +74,6 @@ export function usePinchZoom(
           ...pointers,
           [e.pointerId]: e,
         }
-      })
-
-      hookListener({
-        isFirst: true,
-        isFinal: false,
-
-        origin: {
-          // TODO fix dummy data
-          x: 0,
-          y: 0,
-        },
-
-        panDelta: {
-          x: 0,
-          y: 0,
-        },
-
-        pinchDelta: 0,
       })
     }
 
@@ -69,6 +91,7 @@ export function usePinchZoom(
         // all touches have been removed
 
         document.body.classList.remove('dragging')
+        setOrigin(null)
       } else {
         // TODO do impl
       }
