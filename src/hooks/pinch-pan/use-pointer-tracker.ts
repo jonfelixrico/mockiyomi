@@ -5,19 +5,27 @@ export function usePointerTracker() {
 
   function setPointer(e: PointerEvent) {
     setPointerCache((cache) => {
-      const index = cache.findIndex((p) => p.pointerId === e.pointerId)
+      const index = cache.findIndex(
+        (cached) => cached.pointerId === e.pointerId
+      )
+
+      // new pointer, so append
       if (index === -1) {
         return [...cache, e]
       }
 
       // replace the old record of the pointer with the new one
-      return cache.slice().splice(index, 1, e)
+      const clone = [...cache]
+      clone[index] = e
+      return clone
     })
   }
 
   function removePointer(e: PointerEvent) {
     setPointerCache((cache) => {
-      const index = cache.findIndex((p) => p.pointerId === e.pointerId)
+      const index = cache.findIndex(
+        (cached) => cached.pointerId === e.pointerId
+      )
 
       if (index === -1) {
         // pointer not found so do nothing
@@ -25,7 +33,9 @@ export function usePointerTracker() {
       }
 
       // remove pointer from the cache
-      return cache.slice().splice(index, 1)
+      const clone = [...cache]
+      clone.splice(index, 1)
+      return clone
     })
   }
 
