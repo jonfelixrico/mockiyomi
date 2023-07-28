@@ -76,6 +76,8 @@ export function usePinchPan(
         // TODO remove
         console.log('started dragging')
       } else {
+        // added more fingers to the touchscreen
+
         emit({
           isFirst: false,
           isFinal: false,
