@@ -145,11 +145,7 @@ export function usePinchZoom(
         isFirst: false,
         isFinal: false,
 
-        origin: {
-          // TODO fix dummy data
-          x: 0,
-          y: 0,
-        },
+        origin: origin as Coords,
 
         panDelta: {
           x: 0,
