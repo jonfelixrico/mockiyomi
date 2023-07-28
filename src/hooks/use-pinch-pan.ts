@@ -11,7 +11,7 @@ export type PinchPanEvent = {
   isFinal: boolean
 }
 
-export function usePinchZoom(
+export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void
 ) {
