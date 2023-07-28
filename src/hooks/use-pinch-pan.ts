@@ -90,10 +90,37 @@ export function usePinchZoom(
       if (Object.keys(pointers).length === 1) {
         // all touches have been removed
 
-        document.body.classList.remove('dragging')
+        hookListener({
+          isFirst: false,
+          isFinal: true,
+
+          origin: origin as Coords,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinchDelta: 0,
+        })
+
+        // cleanup logic
         setOrigin(null)
+        document.body.classList.remove('dragging')
       } else {
-        // TODO do impl
+        hookListener({
+          isFirst: false,
+          isFinal: false,
+
+          origin: origin as Coords,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinchDelta: 0,
+        })
       }
 
       setPointers((pointers) => {
@@ -101,24 +128,6 @@ export function usePinchZoom(
         delete clone[e.pointerId]
 
         return clone
-      })
-
-      hookListener({
-        isFirst: false,
-        isFinal: true,
-
-        origin: {
-          // TODO fix dummy data
-          x: 0,
-          y: 0,
-        },
-
-        panDelta: {
-          x: 0,
-          y: 0,
-        },
-
-        pinchDelta: 0,
       })
     }
 
