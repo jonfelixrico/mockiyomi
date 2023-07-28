@@ -103,7 +103,7 @@ export function usePinchPan(
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
           origin: origin?.target as Coords,
-          location: getCoordsRelativeToTarget(origin as Origin, originPointer),
+          location: lastEmitted?.location as Coords,
 
           panDelta: {
             x: 0,
@@ -183,19 +183,40 @@ export function usePinchPan(
         return
       }
 
-      const currCoords = getCoordsRelativeToTarget(origin, e)
+      if (
+        pointerCount === 1 ||
+        // two or more pointers but the mover is the original one
+        e.pointerId === originPointer.pointerId
+      ) {
+        const currCoords = getCoordsRelativeToTarget(origin, e)
+        emit({
+          isFirst: false,
+          isFinal: false,
 
-      emit({
-        isFirst: false,
-        isFinal: false,
+          origin: origin.target as Coords,
+          location: currCoords,
 
-        origin: origin.target as Coords,
-        location: currCoords,
+          panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
 
-        panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
+          pinchDelta: 0,
+        })
+      } else {
+        // two or more touches, case 2
+        emit({
+          isFirst: false,
+          isFinal: false,
 
-        pinchDelta: 0,
-      })
+          origin: origin.target as Coords,
+          location: lastEmitted?.location as Coords,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinchDelta: 0,
+        })
+      }
 
       setPointer(e)
     }
