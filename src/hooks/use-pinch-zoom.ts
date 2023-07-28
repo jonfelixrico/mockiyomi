@@ -16,7 +16,7 @@ function getDistance(e: TouchEvent) {
   return Math.abs(Math.sqrt(xPart + yPart))
 }
 
-export function usePinchPan(
+export function usePinchZoom(
   ref: RefObject<HTMLElement>,
   hookHandler: (event: PinchZoomEvent) => void
 ) {
