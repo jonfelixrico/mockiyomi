@@ -1,6 +1,7 @@
 import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
 import { usePointerTracker } from './use-pointer-tracker'
+import { getCentroid, getDistanceOfTwoPoints } from './point-utils'
 
 interface Origin {
   client: Point
@@ -32,33 +33,11 @@ function getDelta(prev: Point, now: Point): Point {
   }
 }
 
-function getCentroid(coords: Point[]): Point {
-  let sumX = 0
-  let sumY = 0
-
-  for (const { x, y } of coords) {
-    sumX += x
-    sumY += y
-  }
-
-  return {
-    x: sumX / coords.length,
-    y: sumY / coords.length,
-  }
-}
-
-function getDistanceViaDistanceFormula(a: Point, b: Point): number {
-  const dx = Math.pow(b.x - a.x, 2)
-  const dy = Math.pow(b.y - a.y, 2)
-
-  return Math.sqrt(dx + dy)
-}
-
 function getDistance(points: Point[]): number {
   if (points.length <= 1) {
     return 0
   } else if (points.length === 2) {
-    return getDistanceViaDistanceFormula(points[0], points[1])
+    return getDistanceOfTwoPoints(points[0], points[1])
   } else {
     // TODO impl convex hull
     return 0
@@ -166,7 +145,7 @@ export function usePinchPan(
         )
         setLastPoint(getCentroid(uniquePointers))
         setLastDistance(
-          getDistanceViaDistanceFormula(uniquePointers[0], uniquePointers[1])
+          getDistanceOfTwoPoints(uniquePointers[0], uniquePointers[1])
         )
       }
 
@@ -252,7 +231,7 @@ export function usePinchPan(
       const distance =
         pointerCount === 1
           ? 0
-          : getDistanceViaDistanceFormula(uniquePointers[0], uniquePointers[1])
+          : getDistanceOfTwoPoints(uniquePointers[0], uniquePointers[1])
 
       hookListener({
         isFirst: false,
