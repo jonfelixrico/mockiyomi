@@ -1,5 +1,4 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { Point } from '@/types/point.interface'
 import { ReactNode, useEffect, useRef } from 'react'
 
 export interface ScrollPosition {
@@ -42,8 +41,6 @@ export default function PageScroller({
        * the child if its width/height is smaller than the dimension props'
        * width/height
        */}
-
-      <div className="absolute">{JSON.stringify(scroll)}</div>
       <div
         className="flex flex-row justify-center block-inline flex-nowrap"
         style={{
