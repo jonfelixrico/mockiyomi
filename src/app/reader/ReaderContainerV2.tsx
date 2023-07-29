@@ -18,6 +18,7 @@ export default function ReaderContainerV2(props: {
 }) {
   const [translateX, setTranslateX] = useState(0)
   const [scale, setScale] = useState(1)
+  const [lastDelta, setLastDelta] = useState(1)
 
   const ref = useRef<null | HTMLDivElement>(null)
 
@@ -31,11 +32,11 @@ export default function ReaderContainerV2(props: {
         return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
       })
 
-      if (pinchDelta === 0) {
-        return
+      if (pinchDelta) {
+        setScale(pinchDelta)
       }
 
-      setScale((scale) => scale * pinchDelta)
+      setLastDelta(pinchDelta)
     }
   })
 
@@ -67,7 +68,10 @@ export default function ReaderContainerV2(props: {
       ) : null}
 
       <div>
-        <div className="absolute">{scale}</div>
+        <div className="absolute">
+          <div>{scale}</div>
+          <div>{lastDelta}</div>
+        </div>
         <PageContainerV2
           src={props.current}
           dimensions={props.dims}
