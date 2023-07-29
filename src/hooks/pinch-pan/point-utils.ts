@@ -16,10 +16,9 @@ export function getCentroid(coords: Point[]): Point {
   }
 }
 
-/**
- * Formula is from https://byjus.com/maths/distance-between-two-points-formula
- */
 export function getDistanceOfTwoPoints(a: Point, b: Point): number {
+  // Formula is from https://byjus.com/maths/distance-between-two-points-formula
+
   const dx = Math.pow(b.x - a.x, 2)
   const dy = Math.pow(b.y - a.y, 2)
 
