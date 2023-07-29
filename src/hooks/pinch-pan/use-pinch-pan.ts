@@ -50,7 +50,7 @@ function getCentroid(coords: Coords[]): Coords {
   }
 }
 
-function getDistance(a: Coords, b: Coords): number {
+function getDistanceViaDistanceFormula(a: Coords, b: Coords): number {
   const dx = Math.pow(b.x - a.x, 2)
   const dy = Math.pow(b.y - a.y, 2)
 
@@ -157,7 +157,9 @@ export function usePinchPan(
           origin as Origin
         )
         setLastCoords(getCentroid(uniquePointers))
-        setLastDistance(getDistance(uniquePointers[0], uniquePointers[1]))
+        setLastDistance(
+          getDistanceViaDistanceFormula(uniquePointers[0], uniquePointers[1])
+        )
       }
 
       setPointer(e)
@@ -242,7 +244,7 @@ export function usePinchPan(
       const distance =
         pointerCount === 1
           ? 0
-          : getDistance(uniquePointers[0], uniquePointers[1])
+          : getDistanceViaDistanceFormula(uniquePointers[0], uniquePointers[1])
 
       hookListener({
         isFirst: false,
