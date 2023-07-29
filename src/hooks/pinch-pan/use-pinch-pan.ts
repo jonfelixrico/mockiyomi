@@ -12,15 +12,22 @@ interface Origin {
   target: Point
 }
 
-export type PinchPanEvent = {
+export interface PinchPanEvent {
   origin: Point
   location: Point
 
   panDelta: Point
-  pinchDelta: number
+  pinch: PinchEvent | null
 
   isFirst: boolean
   isFinal: boolean
+}
+
+export interface PinchEvent {
+  isFirst: boolean
+  isFinal: boolean
+
+  delta: number
 }
 
 function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
@@ -67,6 +74,7 @@ function getPointsFromPointers(
   )
 }
 
+// TODO handle three or more pointers
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void
@@ -78,7 +86,7 @@ export function usePinchPan(
 
   const [origin, setOrigin] = useState<Origin | null>(null)
   const [lastPoint, setLastPoint] = useState<Point | null>(null)
-  const [refDistance, setRefDistance] = useState<number | null>(null)
+  const [distanceData, setDistanceData] = useState<number | null>(null)
 
   // pointer down
   useEffect(() => {
@@ -118,11 +126,11 @@ export function usePinchPan(
             y: 0,
           },
 
-          pinchDelta: 0,
+          pinch: null,
         })
 
         setLastPoint(targetOrigin)
-        setRefDistance(0)
+        setDistanceData(null)
       } else {
         // added more fingers to the touchscreen
 
@@ -142,7 +150,11 @@ export function usePinchPan(
             y: 0,
           },
 
-          pinchDelta: 0,
+          pinch: {
+            delta: 0,
+            isFirst: true,
+            isFinal: false,
+          },
         })
 
         const extractedPoints = getPointsFromPointers(
@@ -150,7 +162,7 @@ export function usePinchPan(
           origin as Origin
         )
         setLastPoint(getCentroid(extractedPoints))
-        setRefDistance(getDistance(extractedPoints))
+        setDistanceData(getDistance(extractedPoints))
       }
 
       setPointer(e)
@@ -168,7 +180,7 @@ export function usePinchPan(
       }
 
       if (pointerCount === 1) {
-        // all touches have been removed
+        // the last finger will be removed
 
         const currCoords = getPointRelativeToTarget(origin, e)
 
@@ -181,16 +193,16 @@ export function usePinchPan(
 
           panDelta: getDelta(lastPoint as Point, currCoords),
 
-          pinchDelta: 0,
+          pinch: null,
         })
 
         // cleanup logic
         setOrigin(null)
         setLastPoint(null)
-        setRefDistance(null)
+        setDistanceData(null)
         document.body.classList.remove('dragging')
       } else {
-        // fingers stll remain on the screen
+        // only one finger will remain
 
         const extractedPoints = getPointsFromPointers(
           pointers.filter((p) => p.pointerId !== e.pointerId),
@@ -210,13 +222,15 @@ export function usePinchPan(
             y: 0,
           },
 
-          pinchDelta: 0,
+          pinch: {
+            delta: 0,
+            isFinal: true,
+            isFirst: false,
+          },
         })
 
         setLastPoint(currCoords)
-        if (pointerCount > 2) {
-          setRefDistance(getDistance(extractedPoints))
-        }
+        setDistanceData(null)
       }
 
       removePointer(e)
@@ -237,17 +251,35 @@ export function usePinchPan(
       const currCoords = getCentroid(extractedPoints)
       const distance = getDistance(extractedPoints)
 
-      hookListener({
-        isFirst: false,
-        isFinal: false,
+      if (pointerCount === 1) {
+        hookListener({
+          isFirst: false,
+          isFinal: false,
 
-        origin: origin.target as Point,
-        location: currCoords,
+          origin: origin.target as Point,
+          location: currCoords,
 
-        panDelta: getDelta(lastPoint as Point, currCoords),
+          panDelta: getDelta(lastPoint as Point, currCoords),
 
-        pinchDelta: distance / (refDistance as number),
-      })
+          pinch: null,
+        })
+      } else {
+        hookListener({
+          isFirst: false,
+          isFinal: false,
+
+          origin: origin.target as Point,
+          location: currCoords,
+
+          panDelta: getDelta(lastPoint as Point, currCoords),
+
+          pinch: {
+            isFinal: false,
+            isFirst: false,
+            delta: distance / (distanceData as number),
+          },
+        })
+      }
 
       setLastPoint(currCoords)
       setPointer(e)
