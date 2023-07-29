@@ -59,8 +59,8 @@ function usePinchPanInterface(
     ({ panDelta }) => {
       setScroll((val) => {
         return {
-          top: val.top + panDelta.y,
-          left: val.left + panDelta.x,
+          top: val.top - panDelta.y,
+          left: val.left - panDelta.x,
         }
       })
     },
