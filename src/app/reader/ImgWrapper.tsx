@@ -1,5 +1,5 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function getDimensionsToFitContainer(
   containerDims: Dimensions,
@@ -58,17 +58,16 @@ export default function ImgWrapper({
     }
   }, [ref])
 
-  const fittingDims = useMemo(
-    () => getDimensionsToFitContainer(containerDimensions, ratio),
-    [containerDimensions, ratio]
-  )
+  const fittingDims = getDimensionsToFitContainer(containerDimensions, ratio)
+  const scaledDims = scaleDimensions(fittingDims, props.scale)
+
   useEffect(() => {
     if (!onDimensionsEmit) {
       return
     }
 
-    onDimensionsEmit(fittingDims)
-  }, [onDimensionsEmit, fittingDims])
+    onDimensionsEmit(scaledDims)
+  }, [onDimensionsEmit, scaledDims])
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -77,7 +76,7 @@ export default function ImgWrapper({
       alt={props.alt}
       className="max-w-none"
       ref={ref}
-      style={scaleDimensions(fittingDims, props.scale)}
+      style={scaledDims}
     />
 
     /*
