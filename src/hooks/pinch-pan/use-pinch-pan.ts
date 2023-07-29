@@ -32,18 +32,49 @@ function getDelta(prev: Coords, now: Coords): Coords {
   }
 }
 
+function getCentroid(...coords: Coords[]): Coords {
+  let sumX = 0
+  let sumY = 0
+
+  for (const { x, y } of coords) {
+    sumX += x
+    sumY += y
+  }
+
+  return {
+    x: sumX / coords.length,
+    y: sumY / coords.length,
+  }
+}
+
+function getUniquePointers(pointers: PointerEvent[]): Coords {
+  const uniquesMap: Record<string, PointerEvent> = {}
+
+  for (const evt of pointers) {
+    /*
+     * We're using the concept of maps to do something like a unique-by-latest
+     * operation. Lower-index same-id entries will be overridden by
+     * higher-index ones.
+     */
+    uniquesMap[evt.pointerId] = evt
+  }
+
+  return getCentroid(...Object.values(uniquesMap))
+}
+
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void
 ) {
   const refEl = ref.current
 
-  const { pointerCount, removePointer, setPointer, originPointer } =
+  const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
   const [lastCoords, setLastCoords] = useState<Coords | null>(null)
 
+  // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
       if (!refEl) {
@@ -84,6 +115,8 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
+        setLastCoords(targetOrigin)
+
         // TODO remove
         console.log('started dragging')
       } else {
@@ -107,6 +140,8 @@ export function usePinchPan(
 
           pinchDelta: 0,
         })
+
+        setLastCoords(getCentroid(getUniquePointers(pointers)))
       }
 
       setPointer(e)
@@ -116,6 +151,7 @@ export function usePinchPan(
     return () => window.removeEventListener('pointerdown', handler)
   })
 
+  // pointer up
   useEffect(() => {
     const handler = (e: PointerEvent) => {
       if (!refEl || !origin) {
@@ -154,7 +190,11 @@ export function usePinchPan(
           isFinal: false,
 
           origin: origin.target,
-          location: origin.target, // TODO fix this
+          location: getCentroid(
+            getUniquePointers(
+              pointers.filter((p) => p.pointerId !== e.pointerId)
+            )
+          ),
 
           panDelta: {
             x: 0,
@@ -172,46 +212,26 @@ export function usePinchPan(
     return () => window.removeEventListener('pointerup', handler)
   })
 
+  // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
       if (!refEl || !origin) {
         return
       }
 
-      if (
-        pointerCount === 1 ||
-        // two or more pointers but the mover is the original one
-        e.pointerId === originPointer.pointerId
-      ) {
-        const currCoords = getCoordsRelativeToTarget(origin, e)
-        hookListener({
-          isFirst: false,
-          isFinal: false,
+      const currCoords = getCentroid(getUniquePointers([...pointers, e]))
 
-          origin: origin.target as Coords,
-          location: currCoords,
+      hookListener({
+        isFirst: false,
+        isFinal: false,
 
-          panDelta: getDelta(lastCoords as Coords, currCoords),
+        origin: origin.target as Coords,
+        location: currCoords,
 
-          pinchDelta: 0,
-        })
-      } else {
-        // two or more touches, case 2
-        hookListener({
-          isFirst: false,
-          isFinal: false,
+        panDelta: getDelta(lastCoords as Coords, currCoords),
 
-          origin: origin.target as Coords,
-          location: lastCoords as Coords,
-
-          panDelta: {
-            x: 0,
-            y: 0,
-          },
-
-          pinchDelta: 0,
-        })
-      }
+        pinchDelta: 0,
+      })
 
       setPointer(e)
     }

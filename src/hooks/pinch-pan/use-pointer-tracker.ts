@@ -44,5 +44,6 @@ export function usePointerTracker() {
     setPointer,
     removePointer,
     originPointer: pointerCache[0] ?? null,
+    pointers: pointerCache,
   }
 }
