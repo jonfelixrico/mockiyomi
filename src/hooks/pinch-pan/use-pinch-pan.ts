@@ -244,7 +244,6 @@ export function usePinchPan(
 
         panDelta: getDelta(lastPoint as Point, currCoords),
 
-        // to avoid divide by zero
         pinchDelta: distance - lastDistance,
       })
 
