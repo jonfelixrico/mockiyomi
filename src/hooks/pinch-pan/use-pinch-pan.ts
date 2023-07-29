@@ -18,10 +18,10 @@ export type PinchPanEvent = {
   isFinal: boolean
 }
 
-function getCoordsRelativeToTarget(target: Coords, e: PointerEvent): Coords {
+function getCoordsRelativeToTarget(origin: Origin, e: PointerEvent): Coords {
   return {
-    x: e.clientX - target.x,
-    y: e.clientY - target.y,
+    x: e.clientX - origin.client.x,
+    y: e.clientY - origin.client.y,
   }
 }
 
@@ -190,7 +190,7 @@ export function usePinchPan(
       if (pointerCount === 1) {
         // all touches have been removed
 
-        const currCoords = getCoordsRelativeToTarget(origin.target, e)
+        const currCoords = getCoordsRelativeToTarget(origin, e)
 
         hookListener({
           isFirst: false,
