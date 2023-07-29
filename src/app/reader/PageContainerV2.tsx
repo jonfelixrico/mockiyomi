@@ -29,6 +29,7 @@ function useImageMetadata(ref: RefObject<HTMLImageElement>) {
 export default function PageContainerV2({
   dimensions,
   src,
+  onLimitsBroadcast: onSizeBroadcast,
   ...props
 }: {
   dimensions: Dimensions
@@ -36,6 +37,7 @@ export default function PageContainerV2({
   className?: string
   scale?: number
   scroll?: Point
+  onLimitsBroadcast?: (dims: Point) => void
 }) {
   const imgRef = useRef<HTMLImageElement>(null)
   const { loaded, ratio } = useImageMetadata(imgRef)
@@ -63,6 +65,19 @@ export default function PageContainerV2({
       height: imageDims.height * scale,
     }
   }, [imageDims, props.scale])
+
+  const scrollOuterLimits = useMemo(() => {
+    return {
+      x: scaledImageDims.width - dimensions.width,
+      y: scaledImageDims.height - dimensions.height,
+    }
+  }, [scaledImageDims, dimensions])
+
+  useEffect(() => {
+    if (onSizeBroadcast) {
+      onSizeBroadcast(scrollOuterLimits)
+    }
+  }, [onSizeBroadcast, scrollOuterLimits])
 
   const divRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
