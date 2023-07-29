@@ -67,6 +67,8 @@ function getPointsFromPointers(
   )
 }
 
+const LAST_MOVE_HANDLING_DEBOUNCE = 200
+
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void
@@ -79,6 +81,7 @@ export function usePinchPan(
   const [origin, setOrigin] = useState<Origin | null>(null)
   const [lastPoint, setLastPoint] = useState<Point | null>(null)
   const [lastDistance, setLastDistance] = useState(0)
+  const [lastMoveHandledTs, setLastMoveHandledTs] = useState(Date.now())
 
   // pointer down
   useEffect(() => {
@@ -227,7 +230,12 @@ export function usePinchPan(
   // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl || !origin) {
+      const handleTime = Date.now()
+      if (
+        !refEl ||
+        !origin ||
+        handleTime - lastMoveHandledTs < LAST_MOVE_HANDLING_DEBOUNCE
+      ) {
         return
       }
 
@@ -250,6 +258,7 @@ export function usePinchPan(
       setLastPoint(currCoords)
       setPointer(e)
       setLastDistance(distance)
+      setLastMoveHandledTs(handleTime)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
