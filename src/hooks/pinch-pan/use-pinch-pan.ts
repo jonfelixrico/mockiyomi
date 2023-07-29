@@ -74,10 +74,15 @@ function getPointsFromPointers(
   )
 }
 
+interface Options {
+  className?: string
+}
+
 // TODO handle three or more pointers
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
-  hookListener: (event: PinchPanEvent) => void
+  hookListener: (event: PinchPanEvent) => void,
+  options?: Options
 ) {
   const refEl = ref.current
 
@@ -100,6 +105,9 @@ export function usePinchPan(
         e.preventDefault()
 
         document.body.classList.add('dragging')
+        if (options?.className) {
+          document.body.classList.add(options.className)
+        }
 
         const rect = refEl.getBoundingClientRect()
         const targetOrigin = {
@@ -201,6 +209,9 @@ export function usePinchPan(
         setLastPoint(null)
         setDistanceData(null)
         document.body.classList.remove('dragging')
+        if (options?.className) {
+          document.body.classList.remove(options.className)
+        }
       } else {
         // only one finger will remain
 
