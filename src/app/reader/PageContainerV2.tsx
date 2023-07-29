@@ -4,6 +4,7 @@
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { Dimensions } from '@/types/dimensions.interface'
 import joinCn from 'classnames'
+import { Point } from '@/types/point.interface'
 
 function useImageMetadata(ref: RefObject<HTMLImageElement>) {
   const [loaded, setLoaded] = useState(false)
@@ -34,6 +35,7 @@ export default function PageContainerV2({
   src: string
   className?: string
   scale?: number
+  scroll?: Point
 }) {
   const ref = useRef<HTMLImageElement>(null)
   const { loaded, ratio } = useImageMetadata(ref)
@@ -76,7 +78,17 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <img src={src} ref={ref} style={scaledImageDims} className="max-w-none" />
+      <img
+        src={src}
+        ref={ref}
+        style={{
+          ...scaledImageDims,
+          transform: `translateX(${props.scroll?.x ?? 0}px) translateY(${
+            props.scroll?.y ?? 0
+          }px)`,
+        }}
+        className="max-w-none"
+      />
     </div>
   )
 }

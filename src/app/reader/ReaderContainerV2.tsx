@@ -16,17 +16,23 @@ export default function ReaderContainerV2(props: {
   next?: string
   dims: Dimensions
 }) {
-  const [translateX, setTranslateX] = useState(0)
   const [scale, setScale] = useState(1)
   const [tempScale, setTempScale] = useState<number | null>(null)
 
+  const [scroll, setScroll] = useState({
+    x: 0,
+    y: 0,
+  })
+
   const ref = useRef<null | HTMLDivElement>(null)
 
-  usePinchPan(ref, ({ isFinal, panDelta, pinch }) => {
-    // setTranslateX((val) => {
-    //   const newGross = val + panDelta.x
-    //   return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
-    // })
+  usePinchPan(ref, ({ panDelta, pinch }) => {
+    setScroll(({ x, y }) => {
+      return {
+        x: x + panDelta.x,
+        y: y + panDelta.y,
+      }
+    })
 
     if (pinch) {
       if (pinch.isFinal) {
@@ -41,26 +47,13 @@ export default function ReaderContainerV2(props: {
   })
 
   return (
-    <div
-      ref={ref}
-      className={cnJoin(props.className, 'relative touch-none', {
-        'transition-transform': !translateX,
-      })}
-      data-test={translateX}
-      style={{
-        transform: `translateX(${translateX}px)`,
-      }}
-    >
-      <div>
-        <div className="absolute">
-          <div>{scale}</div>
-        </div>
-        <PageContainerV2
-          src={props.current}
-          dimensions={props.dims}
-          scale={tempScale ? scale * tempScale : scale}
-        />
-      </div>
+    <div ref={ref} className={cnJoin(props.className, 'relative touch-none')}>
+      <PageContainerV2
+        src={props.current}
+        dimensions={props.dims}
+        scale={tempScale ? scale * tempScale : scale}
+        scroll={scroll}
+      />
     </div>
   )
 }
