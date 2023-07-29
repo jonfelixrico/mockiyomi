@@ -71,7 +71,7 @@ export default function ReaderContainerV2(props: {
       ) : null}
 
       <div>
-        <div className="absoluite">{scale}</div>
+        <div className="absolute">{scale}</div>
         <PageContainerV2
           src={props.current}
           dimensions={props.dims}

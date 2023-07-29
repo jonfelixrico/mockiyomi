@@ -38,7 +38,7 @@ export default function PageContainerV2({
   const ref = useRef<HTMLImageElement>(null)
   const { loaded, ratio } = useImageMetadata(ref)
 
-  const containerDims = useMemo(() => {
+  const imageDims = useMemo(() => {
     if (dimensions.width >= dimensions.height) {
       // landscape or square
       return {
@@ -54,18 +54,21 @@ export default function PageContainerV2({
     }
   }, [ratio, dimensions])
 
-  const scaledDims = useMemo(() => {
+  const scaledImageDims = useMemo(() => {
     const scale = props.scale ?? 1
     return {
-      width: containerDims.width * scale,
-      height: containerDims.height * scale,
+      width: imageDims.width * scale,
+      height: imageDims.height * scale,
     }
-  }, [containerDims, props.scale])
+  }, [imageDims, props.scale])
 
   return (
     <div
       style={dimensions}
-      className={joinCn('flex flex-row justify-center', props.className)}
+      className={joinCn(
+        'flex flex-row justify-center overflow-hidden',
+        props.className
+      )}
     >
       {!loaded ? (
         <div className="h-full w-full absolute z-10 flex flex-row justify-center items-center">
@@ -73,9 +76,7 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <div style={scaledDims}>
-        <img src={src} ref={ref} />
-      </div>
+      <img src={src} ref={ref} style={scaledImageDims} className="max-w-none" />
     </div>
   )
 }
