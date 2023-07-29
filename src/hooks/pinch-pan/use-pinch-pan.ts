@@ -18,7 +18,7 @@ export type PinchPanEvent = {
   isFinal: boolean
 }
 
-function getCoordsRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
+function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
   return {
     x: e.clientX - client.x,
     y: e.clientY - client.y,
@@ -67,7 +67,7 @@ function preparePointers(pointers: PointerEvent[], origin: Origin): Point[] {
   }
 
   return Object.values(uniquesMap).map((pointer) =>
-    getCoordsRelativeToTarget(origin, pointer)
+    getPointRelativeToTarget(origin, pointer)
   )
 }
 
@@ -81,7 +81,7 @@ export function usePinchPan(
     usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
-  const [lastCoords, setLastCoords] = useState<Point | null>(null)
+  const [lastPoint, setLastPoint] = useState<Point | null>(null)
   const [lastDistance, setLastDistance] = useState(0)
 
   // pointer down
@@ -125,7 +125,7 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
-        setLastCoords(targetOrigin)
+        setLastPoint(targetOrigin)
         setLastDistance(0)
       } else {
         // added more fingers to the touchscreen
@@ -139,7 +139,7 @@ export function usePinchPan(
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
           origin: origin?.target as Point,
-          location: lastCoords as Point,
+          location: lastPoint as Point,
 
           panDelta: {
             x: 0,
@@ -153,7 +153,7 @@ export function usePinchPan(
           [...pointers, e],
           origin as Origin
         )
-        setLastCoords(getCentroid(uniquePointers))
+        setLastPoint(getCentroid(uniquePointers))
         setLastDistance(
           getDistanceViaDistanceFormula(uniquePointers[0], uniquePointers[1])
         )
@@ -176,7 +176,7 @@ export function usePinchPan(
       if (pointerCount === 1) {
         // all touches have been removed
 
-        const currCoords = getCoordsRelativeToTarget(origin, e)
+        const currCoords = getPointRelativeToTarget(origin, e)
 
         hookListener({
           isFirst: false,
@@ -185,14 +185,14 @@ export function usePinchPan(
           origin: origin.target,
           location: currCoords,
 
-          panDelta: getDelta(lastCoords as Point, currCoords),
+          panDelta: getDelta(lastPoint as Point, currCoords),
 
           pinchDelta: 0,
         })
 
         // cleanup logic
         setOrigin(null)
-        setLastCoords(null)
+        setLastPoint(null)
         document.body.classList.remove('dragging')
       } else {
         // assume that at this point, we only have 1 pointer left
@@ -217,7 +217,7 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
-        setLastCoords(remainingPointer)
+        setLastPoint(remainingPointer)
         setLastDistance(0)
       }
 
@@ -250,12 +250,12 @@ export function usePinchPan(
         origin: origin.target as Point,
         location: currCoords,
 
-        panDelta: getDelta(lastCoords as Point, currCoords),
+        panDelta: getDelta(lastPoint as Point, currCoords),
 
         pinchDelta: pointerCount === 1 ? 0 : distance / lastDistance,
       })
 
-      setLastCoords(currCoords)
+      setLastPoint(currCoords)
       setPointer(e)
 
       if (pointerCount > 1) {
