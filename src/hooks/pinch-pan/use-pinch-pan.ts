@@ -54,6 +54,17 @@ function getDistanceViaDistanceFormula(a: Point, b: Point): number {
   return Math.sqrt(dx + dy)
 }
 
+function getDistance(points: Point[]): number {
+  if (points.length <= 1) {
+    return 0
+  } else if (points.length === 2) {
+    return getDistanceViaDistanceFormula(points[0], points[1])
+  } else {
+    // TODO impl convex hull
+    return 0
+  }
+}
+
 function preparePointers(pointers: PointerEvent[], origin: Origin): Point[] {
   const uniquesMap: Record<string, PointerEvent> = {}
 
