@@ -1,41 +1,38 @@
-import { Coords } from '@/types/coords.interface'
+import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
 import { usePointerTracker } from './use-pointer-tracker'
 
 interface Origin {
-  client: Coords
-  target: Coords
+  client: Point
+  target: Point
 }
 
 export type PinchPanEvent = {
-  origin: Coords
-  location: Coords
+  origin: Point
+  location: Point
 
-  panDelta: Coords
+  panDelta: Point
   pinchDelta: number
 
   isFirst: boolean
   isFinal: boolean
 }
 
-function getCoordsRelativeToTarget(
-  { client }: Origin,
-  e: PointerEvent
-): Coords {
+function getCoordsRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
   return {
     x: e.clientX - client.x,
     y: e.clientY - client.y,
   }
 }
 
-function getDelta(prev: Coords, now: Coords): Coords {
+function getDelta(prev: Point, now: Point): Point {
   return {
     x: now.x - prev.x,
     y: now.y - prev.y,
   }
 }
 
-function getCentroid(coords: Coords[]): Coords {
+function getCentroid(coords: Point[]): Point {
   let sumX = 0
   let sumY = 0
 
@@ -50,14 +47,14 @@ function getCentroid(coords: Coords[]): Coords {
   }
 }
 
-function getDistanceViaDistanceFormula(a: Coords, b: Coords): number {
+function getDistanceViaDistanceFormula(a: Point, b: Point): number {
   const dx = Math.pow(b.x - a.x, 2)
   const dy = Math.pow(b.y - a.y, 2)
 
   return Math.sqrt(dx + dy)
 }
 
-function preparePointers(pointers: PointerEvent[], origin: Origin): Coords[] {
+function preparePointers(pointers: PointerEvent[], origin: Origin): Point[] {
   const uniquesMap: Record<string, PointerEvent> = {}
 
   for (const evt of pointers) {
@@ -84,7 +81,7 @@ export function usePinchPan(
     usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
-  const [lastCoords, setLastCoords] = useState<Coords | null>(null)
+  const [lastCoords, setLastCoords] = useState<Point | null>(null)
   const [lastDistance, setLastDistance] = useState(0)
 
   // pointer down
@@ -141,8 +138,8 @@ export function usePinchPan(
            * Logically, this cannot be origin.
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
-          origin: origin?.target as Coords,
-          location: lastCoords as Coords,
+          origin: origin?.target as Point,
+          location: lastCoords as Point,
 
           panDelta: {
             x: 0,
@@ -188,7 +185,7 @@ export function usePinchPan(
           origin: origin.target,
           location: currCoords,
 
-          panDelta: getDelta(lastCoords as Coords, currCoords),
+          panDelta: getDelta(lastCoords as Point, currCoords),
 
           pinchDelta: 0,
         })
@@ -250,10 +247,10 @@ export function usePinchPan(
         isFirst: false,
         isFinal: false,
 
-        origin: origin.target as Coords,
+        origin: origin.target as Point,
         location: currCoords,
 
-        panDelta: getDelta(lastCoords as Coords, currCoords),
+        panDelta: getDelta(lastCoords as Point, currCoords),
 
         pinchDelta: pointerCount === 1 ? 0 : distance / lastDistance,
       })
