@@ -5,8 +5,7 @@ import cnBind from 'classnames/bind'
 import style from './reader.css'
 import { Dimensions } from '@/types/dimensions.interface'
 import { useRef, useState } from 'react'
-import { useMousePan } from '@/hooks/pan/use-mouse-pan'
-import { useTouchPan } from '@/hooks/pan/use-touch-pan'
+import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 
 const cnJoin = cnBind.bind(style)
 
@@ -18,34 +17,32 @@ export default function ReaderContainerV2(props: {
   dims: Dimensions
 }) {
   const [translateX, setTranslateX] = useState(0)
+  const [scale, setScale] = useState(1)
 
   const ref = useRef<null | HTMLDivElement>(null)
-  useMousePan(ref, ({ isFinal, delta }) => {
-    if (isFinal) {
-      setTranslateX(0)
-    } else {
-      setTranslateX((val) => {
-        const newGross = val + delta.x
-        return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
-      })
-    }
-  })
 
-  useTouchPan(ref, ({ isFinal, delta }) => {
+  usePinchPan(ref, ({ isFinal, panDelta, pinchDelta }) => {
     if (isFinal) {
       setTranslateX(0)
+      setScale(1)
     } else {
       setTranslateX((val) => {
-        const newGross = val + delta.x
+        const newGross = val + panDelta.x
         return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
       })
+
+      if (pinchDelta === 0) {
+        return
+      }
+
+      setScale((scale) => scale * pinchDelta)
     }
   })
 
   return (
     <div
       ref={ref}
-      className={cnJoin(props.className, 'relative', {
+      className={cnJoin(props.className, 'relative touch-none', {
         'transition-transform': !translateX,
       })}
       data-test={translateX}
@@ -69,7 +66,14 @@ export default function ReaderContainerV2(props: {
         />
       ) : null}
 
-      <PageContainerV2 src={props.current} dimensions={props.dims} />
+      <div>
+        <div className="absolute">{scale}</div>
+        <PageContainerV2
+          src={props.current}
+          dimensions={props.dims}
+          scale={scale}
+        />
+      </div>
     </div>
   )
 }
