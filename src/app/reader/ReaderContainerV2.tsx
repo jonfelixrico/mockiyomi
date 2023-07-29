@@ -27,13 +27,6 @@ export default function ReaderContainerV2(props: {
   const ref = useRef<null | HTMLDivElement>(null)
 
   usePinchPan(ref, ({ panDelta, pinch }) => {
-    setScroll(({ x, y }) => {
-      return {
-        x: x + panDelta.x,
-        y: y + panDelta.y,
-      }
-    })
-
     if (pinch) {
       if (pinch.isFinal) {
         setTempScale(null)
@@ -43,6 +36,20 @@ export default function ReaderContainerV2(props: {
       } else {
         setTempScale(pinch.delta)
       }
+
+      setScroll(({ x, y }) => {
+        return {
+          x: x + panDelta.x,
+          y: y + panDelta.y,
+        }
+      })
+    } else {
+      setScroll(({ x, y }) => {
+        return {
+          x: x + panDelta.x,
+          y: y + panDelta.y,
+        }
+      })
     }
   })
 
