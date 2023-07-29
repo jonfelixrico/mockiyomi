@@ -2,8 +2,19 @@
 
 import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller, { ScrollPosition } from './PageScroller'
-import { useState } from 'react'
+import { RefObject, useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
+
+function usePinchPanInterface(ref: RefObject<HTMLDivElement>) {
+  const [scroll, setScroll] = useState<ScrollPosition>({
+    left: 0,
+    top: 0,
+  })
+
+  return {
+    scroll,
+  }
+}
 
 export default function PageViewer({
   ...props
@@ -11,13 +22,11 @@ export default function PageViewer({
   dimensions: Dimensions
   src: string
 }) {
-  const [scroll, setScroll] = useState<ScrollPosition>({
-    left: 0,
-    top: 0,
-  })
+  const ref = useRef<HTMLDivElement>(null)
+  const { scroll } = usePinchPanInterface(ref)
 
   return (
-    <div>
+    <div ref={ref}>
       <PageScroller dimensions={props.dimensions} scroll={scroll}>
         <ImgWrapper
           alt="dummy"
