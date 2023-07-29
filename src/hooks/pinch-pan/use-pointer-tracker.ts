@@ -1,49 +1,35 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 export function usePointerTracker() {
-  const [pointerCache, setPointerCache] = useState<PointerEvent[]>([])
+  const [pointerCache, setPointerCache] = useState<
+    Record<string, PointerEvent>
+  >({})
 
   function setPointer(e: PointerEvent) {
     setPointerCache((cache) => {
-      const index = cache.findIndex(
-        (cached) => cached.pointerId === e.pointerId
-      )
-
-      // new pointer, so append
-      if (index === -1) {
-        return [...cache, e]
+      return {
+        ...cache,
+        [e.pointerId]: e,
       }
-
-      // replace the old record of the pointer with the new one
-      const clone = [...cache]
-      clone[index] = e
-      return clone
     })
   }
 
   function removePointer(e: PointerEvent) {
     setPointerCache((cache) => {
-      const index = cache.findIndex(
-        (cached) => cached.pointerId === e.pointerId
-      )
-
-      if (index === -1) {
-        // pointer not found so do nothing
-        return cache
-      }
-
-      // remove pointer from the cache
-      const clone = [...cache]
-      clone.splice(index, 1)
+      const clone = { ...cache }
+      delete clone[e.pointerId]
       return clone
     })
   }
 
+  const asArray = Object.values(pointerCache).sort(
+    (a, b) => a.pointerId - b.pointerId
+  )
+
   return {
-    pointerCount: pointerCache.length,
+    pointerCount: asArray.length,
     setPointer,
     removePointer,
-    originPointer: pointerCache[0] ?? null,
-    pointers: pointerCache,
+    pointers: asArray,
   }
 }
