@@ -89,7 +89,7 @@ export default function PageViewer({
   const { scroll } = usePinchPanInterface(ref, pageDims, props.dimensions)
 
   return (
-    <div ref={ref} className="cursor-grab">
+    <div ref={ref} className="cursor-grab touch-none">
       <PageScroller
         dimensions={props.dimensions}
         contentDimensions={pageDims}
