@@ -90,7 +90,11 @@ export default function PageViewer({
 
   return (
     <div ref={ref} className="cursor-grab">
-      <PageScroller dimensions={props.dimensions} scroll={scroll}>
+      <PageScroller
+        dimensions={props.dimensions}
+        contentDimensions={pageDims}
+        scroll={scroll}
+      >
         <ImgWrapper
           alt="dummy"
           containerDimensions={props.dimensions}

@@ -16,11 +16,13 @@ export interface ScrollPosition {
 
 export default function PageScroller({
   dimensions,
+  contentDimensions,
   scroll,
   ...props
 }: {
   children?: ReactNode
   dimensions: Dimensions
+  contentDimensions: Dimensions
   scroll: ScrollPosition
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -40,11 +42,13 @@ export default function PageScroller({
        * the child if its width/height is smaller than the dimension props'
        * width/height
        */}
+
+      <div className="absolute">{JSON.stringify(scroll)}</div>
       <div
-        className="flex flex-row justify-center"
+        className="flex flex-row justify-center block-inline flex-nowrap"
         style={{
-          minWidth: dimensions.width,
-          minHeight: dimensions.height,
+          width: Math.max(dimensions.width, contentDimensions.width),
+          height: Math.max(dimensions.height, contentDimensions.height),
         }}
       >
         {props.children}
