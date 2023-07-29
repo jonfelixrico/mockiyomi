@@ -79,5 +79,10 @@ export default function ImgWrapper({
       ref={ref}
       style={scaleDimensions(fittingDims, props.scale)}
     />
+
+    /*
+     * max-w-none was necessary to override tailwind's fit-to-page behavior
+     * for image elements
+     */
   )
 }
