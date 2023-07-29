@@ -67,7 +67,7 @@ function getPointsFromPointers(
   )
 }
 
-const LAST_MOVE_HANDLING_DEBOUNCE = 250
+const LAST_MOVE_HANDLING_DEBOUNCE = 200
 
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
