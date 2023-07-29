@@ -18,10 +18,13 @@ export type PinchPanEvent = {
   isFinal: boolean
 }
 
-function getCoordsRelativeToTarget(origin: Origin, e: PointerEvent): Coords {
+function getCoordsRelativeToTarget(
+  { client }: Origin,
+  e: PointerEvent
+): Coords {
   return {
-    x: e.clientX - origin.client.x,
-    y: e.clientY - origin.client.y,
+    x: e.clientX - client.x,
+    y: e.clientY - client.y,
   }
 }
 
@@ -67,7 +70,7 @@ function getDistanceBetweenPointers([a, b]: PointerEvent[]) {
   )
 }
 
-function preparePointers(pointers: PointerEvent[], client: Coords): Coords[] {
+function preparePointers(pointers: PointerEvent[], origin: Origin): Coords[] {
   const uniquesMap: Record<string, PointerEvent> = {}
 
   for (const evt of pointers) {
@@ -80,7 +83,7 @@ function preparePointers(pointers: PointerEvent[], client: Coords): Coords[] {
   }
 
   return Object.values(uniquesMap).map((pointer) =>
-    getCoordsRelativeToTarget(client, pointer)
+    getCoordsRelativeToTarget(origin, pointer)
   )
 }
 
@@ -167,7 +170,7 @@ export function usePinchPan(
 
         const uniquePointers = preparePointers(
           [...pointers, e],
-          origin?.client as Coords
+          origin as Origin
         )
         setLastCoords(getCentroid(uniquePointers))
         setLastDistance(getDistance(uniquePointers[0], uniquePointers[1]))
@@ -222,7 +225,7 @@ export function usePinchPan(
           location: getCentroid(
             preparePointers(
               pointers.filter((p) => p.pointerId !== e.pointerId),
-              origin.client
+              origin
             )
           ),
 
@@ -249,7 +252,7 @@ export function usePinchPan(
         return
       }
 
-      const uniquePointers = preparePointers([...pointers, e], origin.client)
+      const uniquePointers = preparePointers([...pointers, e], origin)
       const currCoords = getCentroid(uniquePointers)
 
       hookListener({
