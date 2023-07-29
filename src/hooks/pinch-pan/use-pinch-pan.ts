@@ -245,7 +245,7 @@ export function usePinchPan(
         panDelta: getDelta(lastPoint as Point, currCoords),
 
         // to avoid divide by zero
-        pinchDelta: lastDistance !== 0 ? distance / lastDistance : 0,
+        pinchDelta: distance - lastDistance,
       })
 
       setLastPoint(currCoords)
