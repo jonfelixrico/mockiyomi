@@ -245,6 +245,11 @@ export function usePinchPan(
       const uniquePointers = preparePointers([...pointers, e], origin)
       const currCoords = getCentroid(uniquePointers)
 
+      const distance =
+        pointerCount === 1
+          ? 0
+          : getDistance(uniquePointers[0], uniquePointers[1])
+
       hookListener({
         isFirst: false,
         isFinal: false,
@@ -254,14 +259,14 @@ export function usePinchPan(
 
         panDelta: getDelta(lastCoords as Coords, currCoords),
 
-        pinchDelta: 0,
+        pinchDelta: pointerCount === 1 ? 0 : distance - lastDistance,
       })
 
       setLastCoords(currCoords)
       setPointer(e)
 
       if (pointerCount > 1) {
-        setLastDistance(getDistance(uniquePointers[0], uniquePointers[1]))
+        setLastDistance(distance)
       }
     }
 
