@@ -31,13 +31,11 @@ export default function ReaderContainerV2(props: {
         return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
       })
 
-      setScale((scale) => {
-        if (pinchDelta === 0) {
-          return scale
-        }
+      if (pinchDelta === 0) {
+        return
+      }
 
-        return scale * pinchDelta
-      })
+      setScale((scale) => scale * pinchDelta)
     }
   })
 
