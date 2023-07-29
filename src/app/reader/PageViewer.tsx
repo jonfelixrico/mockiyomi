@@ -54,14 +54,20 @@ function usePinchPanInterface(
 ) {
   const { scroll, setScroll } = useScrolling(pageDims, containerDims)
 
-  usePinchPan(ref, ({ panDelta }) => {
-    setScroll((val) => {
-      return {
-        top: val.top + panDelta.y,
-        left: val.left + panDelta.x,
-      }
-    })
-  })
+  usePinchPan(
+    ref,
+    ({ panDelta }) => {
+      setScroll((val) => {
+        return {
+          top: val.top + panDelta.y,
+          left: val.left + panDelta.x,
+        }
+      })
+    },
+    {
+      className: 'cursor-grabbing',
+    }
+  )
 
   return {
     scroll,
