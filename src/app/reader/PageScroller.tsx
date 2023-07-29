@@ -35,7 +35,7 @@ export default function PageScroller({
   }, [ref, scroll])
 
   return (
-    <div className="overflow-hidden" style={dimensions}>
+    <div className="overflow-hidden" style={dimensions} ref={ref}>
       {/* This wrapping layer for the child takes care of centering
        * the child if its width/height is smaller than the dimension props'
        * width/height
