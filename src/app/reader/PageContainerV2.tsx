@@ -37,8 +37,8 @@ export default function PageContainerV2({
   scale?: number
   scroll?: Point
 }) {
-  const ref = useRef<HTMLImageElement>(null)
-  const { loaded, ratio } = useImageMetadata(ref)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const { loaded, ratio } = useImageMetadata(imgRef)
 
   const imageDims = useMemo(() => {
     if (dimensions.width >= dimensions.height) {
@@ -64,13 +64,21 @@ export default function PageContainerV2({
     }
   }, [imageDims, props.scale])
 
+  const divRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = divRef.current
+    if (!el || !props.scroll) {
+      return
+    }
+
+    el.scrollTo(props.scroll.x, props.scroll.y)
+  }, [divRef, props.scroll])
+
   return (
     <div
       style={dimensions}
-      className={joinCn(
-        'flex flex-row justify-center overflow-hidden',
-        props.className
-      )}
+      className={joinCn('overflow-hidden', props.className)}
+      ref={divRef}
     >
       {!loaded ? (
         <div className="h-full w-full absolute z-10 flex flex-row justify-center items-center">
@@ -78,17 +86,21 @@ export default function PageContainerV2({
         </div>
       ) : null}
 
-      <img
-        src={src}
-        ref={ref}
+      <div
+        className="flex flex-row justify-center"
         style={{
-          ...scaledImageDims,
-          transform: `translateX(${props.scroll?.x ?? 0}px) translateY(${
-            props.scroll?.y ?? 0
-          }px)`,
+          minWidth: dimensions.width,
+          minHeight: dimensions.height,
         }}
-        className="max-w-none"
-      />
+      >
+        <img
+          src={src}
+          ref={imgRef}
+          style={scaledImageDims}
+          className="max-w-none"
+          alt="dummy"
+        />
+      </div>
     </div>
   )
 }
