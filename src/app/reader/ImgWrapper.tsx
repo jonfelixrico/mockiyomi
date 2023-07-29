@@ -45,7 +45,7 @@ export default function ImgWrapper({
   alt: string
   containerDimensions: Dimensions
   scale: number
-  onDimensionsEmit: (dimensions: Dimensions) => void
+  onDimensionsEmit?: (dimensions: Dimensions) => void
 }) {
   const ref = useRef<HTMLImageElement>(null)
 
