@@ -21,13 +21,24 @@ export default function ReaderContainerV2(props: {
 
   const ref = useRef<null | HTMLDivElement>(null)
 
-  usePinchPan(ref, ({ isFinal, panDelta }) => {
+  usePinchPan(ref, ({ isFinal, panDelta, pinchDelta }) => {
     if (isFinal) {
       setTranslateX(0)
+      setScale(1)
     } else {
       setTranslateX((val) => {
         const newGross = val + panDelta.x
         return Math.min(Math.max(-props.dims.width, newGross), props.dims.width)
+      })
+
+      setScale((scale) => {
+        if (pinchDelta > 0) {
+          return scale + 0.1
+        } else if (pinchDelta < 0) {
+          return scale - 0.1
+        } else {
+          return scale
+        }
       })
     }
   })
@@ -59,11 +70,14 @@ export default function ReaderContainerV2(props: {
         />
       ) : null}
 
-      <PageContainerV2
-        src={props.current}
-        dimensions={props.dims}
-        scale={scale}
-      />
+      <div>
+        <div className="absoluite">{scale}</div>
+        <PageContainerV2
+          src={props.current}
+          dimensions={props.dims}
+          scale={scale}
+        />
+      </div>
     </div>
   )
 }
