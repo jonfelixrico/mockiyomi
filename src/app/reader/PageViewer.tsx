@@ -5,6 +5,7 @@ import PageScroller, { ScrollPosition } from './PageScroller'
 import { RefObject, useMemo, useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
 import { PinchEvent, usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
+import { Point } from '@/types/point.interface'
 
 function clampValue(value: number, limits: { min: number; max: number }) {
   const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
@@ -48,19 +49,47 @@ function useScrolling(pageDims: Dimensions, containerDims: Dimensions) {
 }
 
 function usePinching(
-  setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void
+  scroll: ScrollPosition,
+  setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
+  pageDims: Dimensions
 ) {
   const [scale, setScale] = useState(1)
   const [stagingScale, setStagingScale] = useState(1)
 
-  const boundScale = Math.min(3, Math.max(1, scale * stagingScale))
+  const boundScale = Math.min(10, Math.max(1, scale * stagingScale))
 
-  function handlePinch({ delta, isFinal }: PinchEvent) {
+  function handlePinch({ delta, isFinal }: PinchEvent, location: Point) {
+    const refPoint = {
+      x: location.x + scroll.left,
+      y: location.y + scroll.top,
+    }
+
+    const refPointPercentage = {
+      x: refPoint.x / pageDims.width,
+      y: refPoint.y / pageDims.height,
+    }
+
+    const afterResize = {
+      width: (pageDims.width / boundScale) * scale * delta,
+      height: (pageDims.height / boundScale) * scale * delta,
+    }
+
+    const pointAfterResize = {
+      left: afterResize.width * refPointPercentage.x - location.x,
+      top: afterResize.height * refPointPercentage.y - location.y,
+    }
+
+    if (!pointAfterResize.left || !pointAfterResize.top) {
+      alert('zero')
+    }
+
     if (!isFinal) {
+      setScroll(() => pointAfterResize)
       setStagingScale(delta)
       return
     }
 
+    // setScroll(() => pointAfterResize)
     setScale(boundScale)
     setStagingScale(1)
   }
@@ -77,20 +106,20 @@ function usePinchPanInterface(
   containerDims: Dimensions
 ) {
   const { scroll, setScroll } = useScrolling(pageDims, containerDims)
-  const { handlePinch, scale } = usePinching(setScroll)
+  const { handlePinch, scale } = usePinching(scroll, setScroll, pageDims)
 
   usePinchPan(
     ref,
-    ({ panDelta, pinch }) => {
-      setScroll((val) => {
-        return {
-          top: val.top - panDelta.y,
-          left: val.left - panDelta.x,
-        }
-      })
-
+    ({ panDelta, pinch, location, isFirst, isFinal }) => {
       if (pinch) {
-        handlePinch(pinch)
+        handlePinch(pinch, location)
+      } else if (!isFirst && !isFinal) {
+        setScroll((val) => {
+          return {
+            top: val.top - panDelta.y,
+            left: val.left - panDelta.x,
+          }
+        })
       }
     },
     {
