@@ -130,9 +130,6 @@ export function usePinchPan(
 
         setLastCoords(targetOrigin)
         setLastDistance(0)
-
-        // TODO remove
-        console.log('started dragging')
       } else {
         // added more fingers to the touchscreen
 
@@ -198,9 +195,6 @@ export function usePinchPan(
         setOrigin(null)
         setLastCoords(null)
         document.body.classList.remove('dragging')
-
-        // TODO remove
-        console.log('stopped dragging')
       } else {
         // assume that at this point, we only have 1 pointer left
 
