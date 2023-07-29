@@ -4,7 +4,7 @@ import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller, { ScrollPosition } from './PageScroller'
 import { RefObject, useMemo, useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
-import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
+import { PinchEvent, usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 
 function clampValue(value: number, limits: { min: number; max: number }) {
   const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
@@ -47,22 +47,51 @@ function useScrolling(pageDims: Dimensions, containerDims: Dimensions) {
   }
 }
 
+function usePinching(
+  setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void
+) {
+  const [scale, setScale] = useState(1)
+  const [stagingScale, setStagingScale] = useState(1)
+
+  const boundScale = Math.min(3, Math.max(1, scale * stagingScale))
+
+  function handlePinch({ delta, isFinal }: PinchEvent) {
+    if (!isFinal) {
+      setStagingScale(delta)
+      return
+    }
+
+    setScale(boundScale)
+    setStagingScale(1)
+  }
+
+  return {
+    scale: boundScale,
+    handlePinch,
+  }
+}
+
 function usePinchPanInterface(
   ref: RefObject<HTMLDivElement>,
   pageDims: Dimensions,
   containerDims: Dimensions
 ) {
   const { scroll, setScroll } = useScrolling(pageDims, containerDims)
+  const { handlePinch, scale } = usePinching(setScroll)
 
   usePinchPan(
     ref,
-    ({ panDelta }) => {
+    ({ panDelta, pinch }) => {
       setScroll((val) => {
         return {
           top: val.top - panDelta.y,
           left: val.left - panDelta.x,
         }
       })
+
+      if (pinch) {
+        handlePinch(pinch)
+      }
     },
     {
       className: 'cursor-grabbing',
@@ -71,6 +100,7 @@ function usePinchPanInterface(
 
   return {
     scroll,
+    scale,
   }
 }
 
@@ -86,7 +116,11 @@ export default function PageViewer({
   })
 
   const ref = useRef<HTMLDivElement>(null)
-  const { scroll } = usePinchPanInterface(ref, pageDims, props.dimensions)
+  const { scroll, scale } = usePinchPanInterface(
+    ref,
+    pageDims,
+    props.dimensions
+  )
 
   return (
     <div ref={ref} className="cursor-grab touch-none">
@@ -99,7 +133,7 @@ export default function PageViewer({
         <ImgWrapper
           alt="dummy"
           containerDimensions={props.dimensions}
-          scale={5}
+          scale={scale}
           src={props.src}
           onDimensionsEmit={setPageDims}
         />
