@@ -1,7 +1,11 @@
 import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
 import { usePointerTracker } from './use-pointer-tracker'
-import { getCentroid, getDistanceOfTwoPoints } from './point-utils'
+import {
+  getAreaOfPoints,
+  getCentroid,
+  getDistanceOfTwoPoints,
+} from './point-utils'
 
 interface Origin {
   client: Point
@@ -39,12 +43,14 @@ function getDistance(points: Point[]): number {
   } else if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
   } else {
-    // TODO impl convex hull
-    return 0
+    return getAreaOfPoints(points)
   }
 }
 
-function preparePointers(pointers: PointerEvent[], origin: Origin): Point[] {
+function getPointsFromPointers(
+  pointers: PointerEvent[],
+  origin: Origin
+): Point[] {
   const uniquesMap: Record<string, PointerEvent> = {}
 
   for (const evt of pointers) {
@@ -139,14 +145,12 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
-        const uniquePointers = preparePointers(
+        const extractedPoints = getPointsFromPointers(
           [...pointers, e],
           origin as Origin
         )
-        setLastPoint(getCentroid(uniquePointers))
-        setLastDistance(
-          getDistanceOfTwoPoints(uniquePointers[0], uniquePointers[1])
-        )
+        setLastPoint(getCentroid(extractedPoints))
+        setLastDistance(getDistance(extractedPoints))
       }
 
       setPointer(e)
@@ -183,21 +187,23 @@ export function usePinchPan(
         // cleanup logic
         setOrigin(null)
         setLastPoint(null)
+        setLastDistance(0)
         document.body.classList.remove('dragging')
       } else {
-        // assume that at this point, we only have 1 pointer left
+        // fingers stll remain on the screen
 
-        const remainingPointer = preparePointers(
+        const extractedPoints = getPointsFromPointers(
           pointers.filter((p) => p.pointerId !== e.pointerId),
           origin
-        )[0]
+        )
+        const currCoords = getCentroid(extractedPoints)
 
         hookListener({
           isFirst: false,
           isFinal: false,
 
           origin: origin.target,
-          location: remainingPointer,
+          location: currCoords,
 
           panDelta: {
             x: 0,
@@ -207,8 +213,8 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
-        setLastPoint(remainingPointer)
-        setLastDistance(0)
+        setLastPoint(currCoords)
+        setLastDistance(getDistance(extractedPoints))
       }
 
       removePointer(e)
@@ -225,13 +231,9 @@ export function usePinchPan(
         return
       }
 
-      const uniquePointers = preparePointers([...pointers, e], origin)
-      const currCoords = getCentroid(uniquePointers)
-
-      const distance =
-        pointerCount === 1
-          ? 0
-          : getDistanceOfTwoPoints(uniquePointers[0], uniquePointers[1])
+      const extractedPoints = getPointsFromPointers([...pointers, e], origin)
+      const currCoords = getCentroid(extractedPoints)
+      const distance = getDistance(extractedPoints)
 
       hookListener({
         isFirst: false,
@@ -242,15 +244,13 @@ export function usePinchPan(
 
         panDelta: getDelta(lastPoint as Point, currCoords),
 
-        pinchDelta: pointerCount === 1 ? 0 : distance / lastDistance,
+        pinchDelta: lastDistance === 0 ? 0 : distance / lastDistance,
       })
 
       setLastPoint(currCoords)
       setPointer(e)
 
-      if (pointerCount > 1) {
-        setLastDistance(distance)
-      }
+      setLastDistance(distance)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
