@@ -250,7 +250,6 @@ export function usePinchPan(
 
       setLastPoint(currCoords)
       setPointer(e)
-
       setLastDistance(distance)
     }
 
