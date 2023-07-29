@@ -42,12 +42,7 @@ export function usePinchPan(
     usePointerTracker()
 
   const [origin, setOrigin] = useState<Origin | null>(null)
-
-  const [lastEmitted, setLastEmitted] = useState<PinchPanEvent | null>(null)
-  function emit(e: PinchPanEvent) {
-    hookListener(e)
-    setLastEmitted(e)
-  }
+  const [lastCoords, setLastCoords] = useState<Coords | null>(null)
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -74,7 +69,7 @@ export function usePinchPan(
           },
         })
 
-        emit({
+        hookListener({
           isFirst: true,
           isFinal: false,
 
@@ -94,7 +89,7 @@ export function usePinchPan(
       } else {
         // added more fingers to the touchscreen
 
-        emit({
+        hookListener({
           isFirst: false,
           isFinal: false,
 
@@ -103,7 +98,7 @@ export function usePinchPan(
            * We're pretty much doing a "just trust me bro" to the compiler.
            */
           origin: origin?.target as Coords,
-          location: lastEmitted?.location as Coords,
+          location: lastCoords as Coords,
 
           panDelta: {
             x: 0,
@@ -132,21 +127,21 @@ export function usePinchPan(
 
         const currCoords = getCoordsRelativeToTarget(origin, e)
 
-        emit({
+        hookListener({
           isFirst: false,
           isFinal: true,
 
           origin: origin.target,
           location: currCoords,
 
-          panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
+          panDelta: getDelta(lastCoords as Coords, currCoords),
 
           pinchDelta: 0,
         })
 
         // cleanup logic
         setOrigin(null)
-        setLastEmitted(null)
+        setLastCoords(null)
         document.body.classList.remove('dragging')
 
         // TODO remove
@@ -154,7 +149,7 @@ export function usePinchPan(
       } else {
         // pointer count > 1; can't be 0 at this point
 
-        emit({
+        hookListener({
           isFirst: false,
           isFinal: false,
 
@@ -189,25 +184,25 @@ export function usePinchPan(
         e.pointerId === originPointer.pointerId
       ) {
         const currCoords = getCoordsRelativeToTarget(origin, e)
-        emit({
+        hookListener({
           isFirst: false,
           isFinal: false,
 
           origin: origin.target as Coords,
           location: currCoords,
 
-          panDelta: getDelta(lastEmitted?.location as Coords, currCoords),
+          panDelta: getDelta(lastCoords as Coords, currCoords),
 
           pinchDelta: 0,
         })
       } else {
         // two or more touches, case 2
-        emit({
+        hookListener({
           isFirst: false,
           isFinal: false,
 
           origin: origin.target as Coords,
-          location: lastEmitted?.location as Coords,
+          location: lastCoords as Coords,
 
           panDelta: {
             x: 0,
