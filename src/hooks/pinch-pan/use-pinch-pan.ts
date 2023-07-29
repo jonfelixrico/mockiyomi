@@ -233,6 +233,7 @@ export function usePinchPan(
         pinchDelta: 0,
       })
 
+      setLastCoords(currCoords)
       setPointer(e)
     }
 
