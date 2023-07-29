@@ -78,7 +78,7 @@ export function usePinchPan(
 
   const [origin, setOrigin] = useState<Origin | null>(null)
   const [lastPoint, setLastPoint] = useState<Point | null>(null)
-  const [lastDistance, setLastDistance] = useState(0)
+  const [refDistance, setRefDistance] = useState<number | null>(null)
 
   // pointer down
   useEffect(() => {
@@ -122,7 +122,7 @@ export function usePinchPan(
         })
 
         setLastPoint(targetOrigin)
-        setLastDistance(0)
+        setRefDistance(0)
       } else {
         // added more fingers to the touchscreen
 
@@ -150,7 +150,7 @@ export function usePinchPan(
           origin as Origin
         )
         setLastPoint(getCentroid(extractedPoints))
-        setLastDistance(getDistance(extractedPoints))
+        setRefDistance(getDistance(extractedPoints))
       }
 
       setPointer(e)
@@ -187,7 +187,7 @@ export function usePinchPan(
         // cleanup logic
         setOrigin(null)
         setLastPoint(null)
-        setLastDistance(0)
+        setRefDistance(null)
         document.body.classList.remove('dragging')
       } else {
         // fingers stll remain on the screen
@@ -214,7 +214,9 @@ export function usePinchPan(
         })
 
         setLastPoint(currCoords)
-        setLastDistance(getDistance(extractedPoints))
+        if (pointerCount > 2) {
+          setRefDistance(getDistance(extractedPoints))
+        }
       }
 
       removePointer(e)
@@ -244,12 +246,11 @@ export function usePinchPan(
 
         panDelta: getDelta(lastPoint as Point, currCoords),
 
-        pinchDelta: distance - lastDistance,
+        pinchDelta: distance / (refDistance as number),
       })
 
       setLastPoint(currCoords)
       setPointer(e)
-      setLastDistance(distance)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
