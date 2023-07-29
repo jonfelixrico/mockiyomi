@@ -32,13 +32,11 @@ export default function ReaderContainerV2(props: {
       })
 
       setScale((scale) => {
-        if (pinchDelta > 0) {
-          return scale + 0.1
-        } else if (pinchDelta < 0) {
-          return scale - 0.1
-        } else {
+        if (pinchDelta === 0) {
           return scale
         }
+
+        return scale * pinchDelta
       })
     }
   })

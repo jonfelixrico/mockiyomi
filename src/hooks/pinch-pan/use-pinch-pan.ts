@@ -253,7 +253,7 @@ export function usePinchPan(
 
         panDelta: getDelta(lastCoords as Coords, currCoords),
 
-        pinchDelta: pointerCount === 1 ? 0 : distance - lastDistance,
+        pinchDelta: pointerCount === 1 ? 0 : distance / lastDistance,
       })
 
       setLastCoords(currCoords)
