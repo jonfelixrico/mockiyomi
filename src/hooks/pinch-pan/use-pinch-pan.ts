@@ -57,19 +57,6 @@ function getDistance(a: Coords, b: Coords): number {
   return Math.sqrt(dx + dy)
 }
 
-function getDistanceBetweenPointers([a, b]: PointerEvent[]) {
-  return getDistance(
-    {
-      x: a.clientX,
-      y: a.clientY,
-    },
-    {
-      x: b.clientX,
-      y: b.clientY,
-    }
-  )
-}
-
 function preparePointers(pointers: PointerEvent[], origin: Origin): Coords[] {
   const uniquesMap: Record<string, PointerEvent> = {}
 
@@ -215,19 +202,19 @@ export function usePinchPan(
         // TODO remove
         console.log('stopped dragging')
       } else {
-        // pointer count > 1; can't be 0 at this point
+        // assume that at this point, we only have 1 pointer left
+
+        const remainingPointer = preparePointers(
+          pointers.filter((p) => p.pointerId !== e.pointerId),
+          origin
+        )[0]
 
         hookListener({
           isFirst: false,
           isFinal: false,
 
           origin: origin.target,
-          location: getCentroid(
-            preparePointers(
-              pointers.filter((p) => p.pointerId !== e.pointerId),
-              origin
-            )
-          ),
+          location: remainingPointer,
 
           panDelta: {
             x: 0,
@@ -236,6 +223,9 @@ export function usePinchPan(
 
           pinchDelta: 0,
         })
+
+        setLastCoords(remainingPointer)
+        setLastDistance(0)
       }
 
       removePointer(e)
@@ -269,6 +259,10 @@ export function usePinchPan(
 
       setLastCoords(currCoords)
       setPointer(e)
+
+      if (pointerCount > 1) {
+        setLastDistance(getDistance(uniquePointers[0], uniquePointers[1]))
+      }
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
