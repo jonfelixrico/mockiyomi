@@ -141,7 +141,7 @@ export function usePinchPan(
           pinchDelta: 0,
         })
 
-        setLastCoords(getCentroid(getUniquePointers(pointers)))
+        setLastCoords(getCentroid(getUniquePointers([...pointers, e])))
       }
 
       setPointer(e)
