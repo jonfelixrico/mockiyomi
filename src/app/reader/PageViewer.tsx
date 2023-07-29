@@ -95,10 +95,11 @@ export default function PageViewer({
         contentDimensions={pageDims}
         scroll={scroll}
       >
+        {/* TODO remove scale */}
         <ImgWrapper
           alt="dummy"
           containerDimensions={props.dimensions}
-          scale={3}
+          scale={5}
           src={props.src}
           onDimensionsEmit={setPageDims}
         />
