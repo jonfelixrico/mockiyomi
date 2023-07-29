@@ -19,7 +19,7 @@ export default function PageScroller({
   scroll,
   ...props
 }: {
-  children: ReactNode
+  children?: ReactNode
   dimensions: Dimensions
   scroll: ScrollPosition
 }) {
