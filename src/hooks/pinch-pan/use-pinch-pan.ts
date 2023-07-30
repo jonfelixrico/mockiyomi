@@ -25,6 +25,7 @@ export interface PinchEvent {
   isFinal: boolean
 
   delta: number
+  location: Point
 }
 
 function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
@@ -136,6 +137,12 @@ export function usePinchPan(
       } else {
         // added more fingers to the touchscreen
 
+        const extractedPoints = getPointsFromPointers(
+          [...pointers, e],
+          origin as Origin
+        )
+        const pinchLoc = getCentroid(extractedPoints)
+
         hookListener({
           isFirst: false,
           isFinal: false,
@@ -149,14 +156,11 @@ export function usePinchPan(
             delta: 0,
             isFirst: true,
             isFinal: false,
+            location: pinchLoc,
           },
         })
 
-        const extractedPoints = getPointsFromPointers(
-          [...pointers, e],
-          origin as Origin
-        )
-        setLastPoint(getCentroid(extractedPoints))
+        setLastPoint(pinchLoc)
         setDistanceData(getDistance(extractedPoints))
       }
 
@@ -203,7 +207,7 @@ export function usePinchPan(
           pointers.filter((p) => p.pointerId !== e.pointerId),
           origin
         )
-        const currCoords = getCentroid(extractedPoints)
+        const pinchLoc = getCentroid(extractedPoints)
 
         hookListener({
           isFirst: false,
@@ -218,10 +222,11 @@ export function usePinchPan(
             delta: 0,
             isFinal: true,
             isFirst: false,
+            location: pinchLoc,
           },
         })
 
-        setLastPoint(currCoords)
+        setLastPoint(pinchLoc)
         setDistanceData(null)
       }
 
@@ -263,6 +268,7 @@ export function usePinchPan(
             isFinal: false,
             isFirst: false,
             delta: distance / (distanceData as number),
+            location: currCoords,
           },
         })
       }
