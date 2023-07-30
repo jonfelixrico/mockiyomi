@@ -43,7 +43,6 @@ function getDistance(points: Point[]): number {
   if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
   } else if (points.length > 2) {
-    alert(getAreaOfPoints(points))
     return getAreaOfPoints(points)
   }
 
@@ -333,6 +332,14 @@ export function usePinchPan(
             location: pinchLocation,
           },
         })
+
+        const remainingPointerLoc = getCentroid(
+          getPointsFromPointers(
+            pointers.filter((p) => p.pointerId !== e.pointerId),
+            panSession.origin
+          )
+        )
+        setLastPoint(remainingPointerLoc)
 
         setPinchSession((session) => {
           if (!session) {
