@@ -28,6 +28,11 @@ export interface PinchEvent {
   location: Point
 }
 
+interface PanSession {
+  origin: Origin
+  lastPoint: Point
+}
+
 function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
   return {
     x: e.clientX - client.x,
@@ -87,8 +92,22 @@ export function usePinchPan(
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
-  const [origin, setOrigin] = useState<Origin | null>(null)
-  const [lastPoint, setLastPoint] = useState<Point | null>(null)
+  const [panSession, setPanSession] = useState<PanSession | null>(null)
+  const origin = panSession?.origin
+  const lastPoint = panSession?.lastPoint
+  function setLastPoint(point: Point) {
+    setPanSession((session) => {
+      if (!session) {
+        return null
+      }
+
+      return {
+        ...session,
+        lastPoint: point,
+      }
+    })
+  }
+
   const [distanceData, setDistanceData] = useState<number | null>(null)
 
   // pointer down
@@ -112,12 +131,16 @@ export function usePinchPan(
           x: e.clientX - rect.x,
           y: e.clientY - rect.y,
         }
-        setOrigin({
-          target: targetOrigin,
-          client: {
-            x: rect.x,
-            y: rect.y,
+
+        setPanSession({
+          origin: {
+            target: targetOrigin,
+            client: {
+              x: rect.x,
+              y: rect.y,
+            },
           },
+          lastPoint: targetOrigin,
         })
 
         hookListener({
@@ -132,7 +155,6 @@ export function usePinchPan(
           pinch: null,
         })
 
-        setLastPoint(targetOrigin)
         setDistanceData(null)
       } else {
         // added more fingers to the touchscreen
@@ -193,8 +215,7 @@ export function usePinchPan(
         })
 
         // cleanup logic
-        setOrigin(null)
-        setLastPoint(null)
+        setPanSession(null)
         setDistanceData(null)
         document.body.classList.remove('dragging')
         if (options?.className) {
