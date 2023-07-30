@@ -5,7 +5,6 @@ import PageScroller, { ScrollPosition } from './PageScroller'
 import { RefObject, useMemo, useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
 import { PinchEvent, usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
-import { Point } from '@/types/point.interface'
 
 function clampValue(value: number, limits: { min: number; max: number }) {
   const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
@@ -85,7 +84,6 @@ function usePinching(
     if (!isFinal && !isFirst) {
       setScroll(() => pointAfterResize)
       setStagingScale(delta)
-      return
     } else if (isFinal) {
       setScroll(() => pointAfterResize)
       setScale(boundScale)
