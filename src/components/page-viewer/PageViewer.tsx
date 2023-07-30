@@ -1,5 +1,3 @@
-'use client'
-
 import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller, { ScrollPosition } from './PageScroller'
 import { RefObject, useMemo, useRef, useState } from 'react'

@@ -2,7 +2,7 @@
 
 import { useMeasure } from 'react-use'
 import ReaderContainerV2 from './ReaderContainerV2'
-import PageViewer from './PageViewer'
+import PageViewer from '@/components/page-viewer/PageViewer'
 
 const URLS = [
   '/placeholder/1.jpg',
