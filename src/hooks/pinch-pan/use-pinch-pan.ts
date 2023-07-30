@@ -246,7 +246,6 @@ export function usePinchPan(
 
       const extractedPoints = getPointsFromPointers([...pointers, e], origin)
       const currCoords = getCentroid(extractedPoints)
-      const distance = getDistance(extractedPoints)
 
       if (pointerCount === 1) {
         hookListener({
@@ -258,6 +257,7 @@ export function usePinchPan(
           pinch: null,
         })
       } else {
+        const distance = getDistance(extractedPoints)
         hookListener({
           isFirst: false,
           isFinal: false,
