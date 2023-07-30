@@ -153,7 +153,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 0,
+            delta: 1,
             isFirst: true,
             isFinal: false,
             location: pinchLoc,
@@ -216,7 +216,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 1,
+            delta: 1, // TODO use delta of previous
             isFinal: true,
             isFirst: false,
             location: pinchLoc,
