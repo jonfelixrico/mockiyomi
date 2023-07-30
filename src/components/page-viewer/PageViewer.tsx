@@ -5,13 +5,16 @@ import ImgWrapper from './ImgWrapper'
 import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
+import { useScrollLimits } from './use-scroll-limits'
 
 function usePinchPanInterface(
   ref: RefObject<HTMLDivElement>,
   pageDims: Dimensions,
   containerDims: Dimensions
 ) {
-  const { scroll, setScroll } = useScrollingManager(pageDims, containerDims)
+  const scrollLimits = useScrollLimits(pageDims, containerDims)
+  
+  const { scroll, setScroll } = useScrollingManager(scrollLimits)
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
 
   usePinchPan(
