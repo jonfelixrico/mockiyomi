@@ -1,10 +1,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
+import { ScrollPosition } from '@/types/scroll-location.interface'
 import { useMemo, useState } from 'react'
-
-export interface ScrollPosition {
-  top: number
-  left: number
-}
 
 function getScrollLimits(content: Dimensions, container: Dimensions) {
   return {
