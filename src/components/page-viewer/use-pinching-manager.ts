@@ -17,8 +17,7 @@ export function usePinchingManager(
 ) {
   const [sessionScale, setSessionScale] = useState<null | number>(null)
   const [persistedScale, setPersistedScale] = useState(1)
-
-  const actualScale = useMemo(() => {
+  const scaleToDisplay = useMemo(() => {
     if (sessionScale === null) {
       return persistedScale
     }
@@ -31,7 +30,7 @@ export function usePinchingManager(
     panDelta: Point
   ) {
     if (isFinal) {
-      setPersistedScale(actualScale)
+      setPersistedScale(scaleToDisplay)
       setSessionScale(null)
       return
     }
@@ -50,8 +49,8 @@ export function usePinchingManager(
 
     const boundedScale = getBoundedScale(tempScale)
     const afterResize = {
-      width: (pageDims.width / actualScale) * boundedScale,
-      height: (pageDims.height / actualScale) * boundedScale,
+      width: (pageDims.width / scaleToDisplay) * boundedScale,
+      height: (pageDims.height / scaleToDisplay) * boundedScale,
     }
 
     const pointAfterResize = {
@@ -71,7 +70,7 @@ export function usePinchingManager(
   }
 
   return {
-    scale: actualScale,
+    scale: scaleToDisplay,
     handlePinch,
   }
 }
