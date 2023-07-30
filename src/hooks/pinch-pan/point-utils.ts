@@ -26,15 +26,27 @@ export function getDistanceOfTwoPoints(a: Point, b: Point): number {
 }
 
 export function getAreaOfPoints(points: Point[]): number {
-  // get convex hull points
-  const chPoints = convexHull(points.map(({ x, y }) => [x, y])).map(
-    ([x, y]) => {
-      return { x, y }
-    }
-  )
+  // Part 1: get convex hull points
+
+  const formattedPoints = points.map(({ x, y }) => [x, y] as [number, number])
+
+  const chPoints = convexHull(formattedPoints).map(([segmentStartIndex]) => {
+    /*
+     * A misconception about the convexHull library is that it outputs an array of xy values.
+     * It does not. It outputs an array of segments (e.g. [[pointA, pointB], [pointB, pointC],
+     * [pointC, pointA]]).
+     *
+     * Instead of each segment point being an actual point, it's instead just a number that points
+     * to the index in the input of convexHull. To get the actual point, you simply just need to call
+     * inputArrayForConvexHull[indexOfAPointInTheSegmentArray]
+     *
+     * Reference: https://github.com/mikolalysenko/convex-hull/issues/1#issuecomment-390495950
+     */
+    return points[segmentStartIndex]
+  })
 
   /*
-   * Get area of points.
+   * Part2: get area of points
    * Formula taken from https://www.mathopenref.com/coordpolygonarea.html
    */
   let area = 0
