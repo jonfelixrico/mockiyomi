@@ -1,6 +1,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller from './PageScroller'
-import { RefObject, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
 import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
@@ -8,15 +8,24 @@ import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 import { Point } from '@/types/point.interface'
 
-export type OverscrollHandler = (event: Point) => void
+export type OverscrollHandler = (event: Point | null) => void
 
-function usePinchPanInterface(
-  ref: RefObject<HTMLDivElement>,
-  pageDims: Dimensions,
-  containerDims: Dimensions,
+export default function PageViewer({
+  dimensions,
+  onOverscroll,
+  ...props
+}: {
+  dimensions: Dimensions
+  src: string
   onOverscroll?: OverscrollHandler
-) {
-  const scrollLimits = useScrollLimits(pageDims, containerDims)
+}) {
+  const [pageDims, setPageDims] = useState<Dimensions>({
+    width: 0,
+    height: 0,
+  })
+
+  const ref = useRef<HTMLDivElement>(null)
+  const scrollLimits = useScrollLimits(pageDims, dimensions)
 
   const { scroll, setScroll } = useScrollingManager(scrollLimits)
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
@@ -51,43 +60,17 @@ function usePinchPanInterface(
     }
   )
 
-  return {
-    scroll,
-    scale,
-  }
-}
-
-export default function PageViewer({
-  ...props
-}: {
-  dimensions: Dimensions
-  src: string
-  onOverscroll?: OverscrollHandler
-}) {
-  const [pageDims, setPageDims] = useState<Dimensions>({
-    width: 0,
-    height: 0,
-  })
-
-  const ref = useRef<HTMLDivElement>(null)
-  const { scroll, scale } = usePinchPanInterface(
-    ref,
-    pageDims,
-    props.dimensions,
-    props.onOverscroll
-  )
-
   return (
     <div ref={ref} className="cursor-grab touch-none">
       <PageScroller
-        dimensions={props.dimensions}
+        dimensions={dimensions}
         contentDimensions={pageDims}
         scroll={scroll}
       >
         {/* TODO maybe add a proper alt */}
         <ImgWrapper
           alt={props.src}
-          containerDimensions={props.dimensions}
+          containerDimensions={dimensions}
           scale={scale}
           src={props.src}
           onDimensionsEmit={setPageDims}
