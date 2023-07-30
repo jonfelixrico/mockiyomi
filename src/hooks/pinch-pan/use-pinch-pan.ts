@@ -182,10 +182,12 @@ export function usePinchPan(
       }
 
       if (pointerCount === 1) {
-        // the last finger will be removed
+        /*
+         * One finger was left before the pointer up, so that means no fingers now
+         * remain in the surface.
+         */
 
         const currCoords = getPointRelativeToTarget(panSession.origin, e)
-
         hookListener({
           isFirst: false,
           isFinal: true,
@@ -198,21 +200,25 @@ export function usePinchPan(
         // cleanup logic
         setPanSession(null)
         setPinchSession(null)
+
         document.body.classList.remove('dragging')
         if (options?.className) {
           document.body.classList.remove(options.className)
         }
-      } else if (pointerCount === 2) {
-        // only one finger will remain
 
-        const pinchLoc = getCentroid(
+        removePointer(e)
+      } else if (pointerCount === 2 && pinchSession) {
+        /*
+         * Two fingers remain before the pointer up event.
+         * After the pointer up event, that means only one finger remains in the surface.
+         *
+         * We're expecting that pinchSession will be available at this point since previously there
+         * are two fingers.
+         */
+
+        const pinchLocation = getCentroid(
           getPointsFromPointers([...pointers, e], panSession.origin)
         )
-
-        if (!pinchSession) {
-          // should've been already taken care of by the pointerdown handler. by this time, the session should've existed
-          throw new Error('Pinch session not found -- unexpected')
-        }
 
         hookListener({
           isFirst: false,
@@ -227,7 +233,7 @@ export function usePinchPan(
             delta: pinchSession.lastDistance / pinchSession.referenceDistance,
             isFinal: true,
             isFirst: false,
-            location: pinchLoc,
+            location: pinchLocation,
           },
         })
 
@@ -240,9 +246,11 @@ export function usePinchPan(
         setLastPoint(remainingPointerLoc)
 
         setPinchSession(null)
+
+        removePointer(e)
       }
 
-      removePointer(e)
+      // TODO handle 3 >= fingers before fingerup event
     }
 
     window.addEventListener('pointerup', handler, { passive: true })
@@ -272,6 +280,11 @@ export function usePinchPan(
           pinch: null,
         })
       } else if (pinchSession) {
+        /*
+         * Handling for 2 fingers and up.
+         * If there are 2 or more fingers, pinchSession is expected to be present.
+         */
+
         const distance = getDistance(extractedPoints)
         hookListener({
           isFirst: false,
