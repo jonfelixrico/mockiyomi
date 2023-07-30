@@ -85,7 +85,8 @@ export function usePinchPan(
     usePointerTracker()
 
   const { panSession, setPanSession, setLastPoint } = usePanSession()
-  const { pinchSession, setPinchSession, setLastDistance } = usePinchSession()
+  const { pinchSession, setPinchSession, setLastDistance, getScale } =
+    usePinchSession()
 
   // pointer down
   useEffect(() => {
@@ -133,8 +134,45 @@ export function usePinchPan(
         })
 
         setPinchSession(null)
-      } else if (panSession) {
-        // added more fingers to the touchscreen
+      } else if (panSession && pointerCount === 1) {
+        /*
+         * There will be two pointers at the screen
+         */
+
+        const extractedPoints = getPointsFromPointers(
+          [...pointers, e],
+          panSession.origin
+        )
+        const pinchLoc = getCentroid(extractedPoints)
+
+        hookListener({
+          isFirst: false,
+          isFinal: false,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinch: {
+            delta: 1,
+            isFirst: false,
+            isFinal: false,
+            location: pinchLoc,
+          },
+        })
+
+        setLastPoint(pinchLoc)
+        const distance = getDistance(extractedPoints)
+        setPinchSession({
+          lastDistance: distance,
+          referenceDistance: distance,
+          multiplier: 1,
+        })
+      } else if (panSession && pointerCount >= 2) {
+        /*
+         * There will be more than two pointers at the screen
+         */
 
         const extractedPoints = getPointsFromPointers(
           [...pointers, e],
@@ -164,6 +202,7 @@ export function usePinchPan(
         setPinchSession({
           lastDistance: distance,
           referenceDistance: distance,
+          multiplier: 1,
         })
       }
 
@@ -210,7 +249,8 @@ export function usePinchPan(
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
-         * After the pointer up event, that means only one finger remains in the surface.
+         * After the pointer up event, that means only one finger remains in the
+         * surface which means that we've exited the pinching mode.
          *
          * We're expecting that pinchSession will be available at this point since previously there
          * are two fingers.
@@ -230,7 +270,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: pinchSession.lastDistance / pinchSession.referenceDistance,
+            delta: getScale(pinchSession.lastDistance),
             isFinal: true,
             isFirst: false,
             location: pinchLocation,
@@ -244,6 +284,44 @@ export function usePinchPan(
           )
         )
         setLastPoint(remainingPointerLoc)
+
+        setPinchSession(null)
+
+        removePointer(e)
+      } else if (pointerCount > 2 && pinchSession) {
+        /*
+         * There are three or more fingers before the pointer up event occurred.
+         * We are still in pinch mode after the pointer up event since there will be at least
+         * two fingers remaining on the screen.
+         *
+         *
+         * Check the previous else-if block for the explanation of pinchSession.
+         */
+
+        const pointsFromPointers = getPointsFromPointers(
+          pointers.filter((p) => p.pointerId !== e.pointerId),
+          panSession.origin
+        )
+
+        const pinchLocation = getCentroid(pointsFromPointers)
+        const distance = getDistance(pointers)
+
+        hookListener({
+          isFirst: false,
+          isFinal: false,
+
+          panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          pinch: {
+            delta: getScale(distance),
+            isFinal: true,
+            isFirst: false,
+            location: pinchLocation,
+          },
+        })
 
         setPinchSession(null)
 
@@ -295,7 +373,7 @@ export function usePinchPan(
           pinch: {
             isFinal: false,
             isFirst: false,
-            delta: distance / pinchSession.referenceDistance,
+            delta: getScale(distance),
             location: currCoords,
           },
         })

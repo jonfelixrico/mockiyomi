@@ -3,6 +3,7 @@ import { useState } from 'react'
 export interface PinchSession {
   referenceDistance: number
   lastDistance: number
+  multiplier: number
 }
 
 export function usePinchSession() {
@@ -21,9 +22,18 @@ export function usePinchSession() {
     })
   }
 
+  function getScale(distance: number) {
+    if (!pinchSession) {
+      return -1
+    }
+
+    return (distance / pinchSession.referenceDistance) * pinchSession.multiplier
+  }
+
   return {
     pinchSession,
     setLastDistance,
     setPinchSession,
+    getScale,
   }
 }
