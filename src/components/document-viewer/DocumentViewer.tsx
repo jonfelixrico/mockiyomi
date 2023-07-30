@@ -6,7 +6,7 @@ import './document-viewer.module.css'
 
 type OnChangePage = (direction: 'next' | 'prev') => void
 
-export function DocumentViewer({
+export default function DocumentViewer({
   previousUrl: prevUrl,
   nextUrl,
   dimensions,
