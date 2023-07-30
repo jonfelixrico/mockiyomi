@@ -6,14 +6,18 @@ import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
+import { Point } from '@/types/point.interface'
+
+export type OverscrollHandler = (event: Point) => void
 
 function usePinchPanInterface(
   ref: RefObject<HTMLDivElement>,
   pageDims: Dimensions,
-  containerDims: Dimensions
+  containerDims: Dimensions,
+  onOverscroll?: OverscrollHandler
 ) {
   const scrollLimits = useScrollLimits(pageDims, containerDims)
-  
+
   const { scroll, setScroll } = useScrollingManager(scrollLimits)
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
 
@@ -22,13 +26,24 @@ function usePinchPanInterface(
     ({ panDelta, pinch }) => {
       if (pinch) {
         handlePinch(pinch, panDelta)
+        return
+      }
+
+      const scrollDelta = {
+        top: scroll.top - panDelta.y,
+        left: scroll.left - panDelta.x,
+      }
+
+      if (
+        (scrollDelta.top > scrollLimits.top.max ||
+          scrollDelta.top < scrollLimits.top.min ||
+          scrollDelta.left > scrollLimits.top.max ||
+          scrollDelta.left < scrollLimits.top.min) &&
+        onOverscroll
+      ) {
+        onOverscroll(panDelta)
       } else {
-        setScroll((val) => {
-          return {
-            top: val.top - panDelta.y,
-            left: val.left - panDelta.x,
-          }
-        })
+        setScroll(() => scrollDelta)
       }
     },
     {
@@ -47,6 +62,7 @@ export default function PageViewer({
 }: {
   dimensions: Dimensions
   src: string
+  onOverscroll?: OverscrollHandler
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
@@ -57,7 +73,8 @@ export default function PageViewer({
   const { scroll, scale } = usePinchPanInterface(
     ref,
     pageDims,
-    props.dimensions
+    props.dimensions,
+    props.onOverscroll
   )
 
   return (
