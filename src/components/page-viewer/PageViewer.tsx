@@ -16,10 +16,10 @@ function usePinchPanInterface(
 
   usePinchPan(
     ref,
-    ({ panDelta, pinch, isFirst, isFinal }) => {
+    ({ panDelta, pinch }) => {
       if (pinch) {
         handlePinch(pinch, panDelta)
-      } else if (!isFirst && !isFinal) {
+      } else {
         setScroll((val) => {
           return {
             top: val.top - panDelta.y,
