@@ -85,7 +85,6 @@ function usePinching(
       setScroll(() => pointAfterResize)
       setStagingScale(delta)
     } else if (isFinal) {
-      setScroll(() => pointAfterResize)
       setScale(boundScale)
       setStagingScale(1)
     }
