@@ -312,8 +312,6 @@ export function usePinchPan(
         )
 
         const pinchLocation = getCentroid(pointsFromPointers)
-        const distance = getDistance(pointsFromPointers)
-
         const previousScale = getScale(pinchSession.lastDistance)
 
         hookListener({
