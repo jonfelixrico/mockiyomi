@@ -50,6 +50,12 @@ function useScrolling(pageDims: Dimensions, containerDims: Dimensions) {
   }
 }
 
+const MAX_SCALE = 10
+const MIN_SCALE = 1
+function getBoundedScale(scale: number): number {
+  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale))
+}
+
 function usePinching(
   scroll: ScrollPosition,
   setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
@@ -57,8 +63,7 @@ function usePinching(
 ) {
   const [scale, setScale] = useState(1)
   const [stagingScale, setStagingScale] = useState(1)
-
-  const boundScale = Math.min(10, Math.max(1, scale * stagingScale))
+  const actualScale = useMemo(() => scale * stagingScale, [scale, stagingScale])
 
   function handlePinch({ delta, isFinal, isFirst, location }: PinchEvent) {
     if (isFirst) {
@@ -70,7 +75,7 @@ function usePinching(
     }
 
     if (isFinal) {
-      setScale(boundScale)
+      setScale(actualScale)
       setStagingScale(1)
       return
     }
@@ -85,9 +90,12 @@ function usePinching(
       y: refPoint.y / pageDims.height,
     }
 
+    const tempScale = delta * scale
+
+    const boundedScale = getBoundedScale(tempScale)
     const afterResize = {
-      width: (pageDims.width / boundScale) * scale * delta,
-      height: (pageDims.height / boundScale) * scale * delta,
+      width: (pageDims.width / actualScale) * boundedScale,
+      height: (pageDims.height / actualScale) * boundedScale,
     }
 
     const pointAfterResize = {
@@ -96,11 +104,18 @@ function usePinching(
     }
 
     setScroll(() => pointAfterResize)
-    setStagingScale(delta)
+
+    if (tempScale > MAX_SCALE) {
+      setStagingScale(MAX_SCALE / scale)
+    } else if (tempScale < MIN_SCALE) {
+      setStagingScale(MIN_SCALE / scale)
+    } else {
+      setStagingScale(delta)
+    }
   }
 
   return {
-    scale: boundScale,
+    scale: actualScale,
     handlePinch,
   }
 }
