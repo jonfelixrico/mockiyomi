@@ -216,7 +216,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 0,
+            delta: 1,
             isFinal: true,
             isFirst: false,
             location: pinchLoc,
