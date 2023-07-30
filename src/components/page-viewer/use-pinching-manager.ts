@@ -15,20 +15,24 @@ export function usePinchingManager(
   setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
   pageDims: Dimensions
 ) {
+  const [sessionScale, setSessionScale] = useState<null | number>(null)
   const [persistedScale, setPersistedScale] = useState(1)
-  const [stagingScale, setStagingScale] = useState(1)
-  const actualScale = useMemo(
-    () => persistedScale * stagingScale,
-    [persistedScale, stagingScale]
-  )
+
+  const actualScale = useMemo(() => {
+    if (sessionScale === null) {
+      return persistedScale
+    }
+
+    return persistedScale * sessionScale
+  }, [persistedScale, sessionScale])
 
   function handlePinch(
-    { delta, isFinal, isFirst, location }: PinchEvent,
+    { delta, isFinal, location }: PinchEvent,
     panDelta: Point
   ) {
     if (isFinal) {
       setPersistedScale(actualScale)
-      setStagingScale(1)
+      setSessionScale(null)
       return
     }
 
@@ -58,11 +62,11 @@ export function usePinchingManager(
     setScroll(() => pointAfterResize)
 
     if (tempScale > MAX_SCALE) {
-      setStagingScale(MAX_SCALE / persistedScale)
+      setSessionScale(MAX_SCALE / persistedScale)
     } else if (tempScale < MIN_SCALE) {
-      setStagingScale(MIN_SCALE / persistedScale)
+      setSessionScale(MIN_SCALE / persistedScale)
     } else {
-      setStagingScale(delta)
+      setSessionScale(delta)
     }
   }
 
