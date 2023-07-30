@@ -58,7 +58,7 @@ function usePinching(
 
   const boundScale = Math.min(10, Math.max(1, scale * stagingScale))
 
-  function handlePinch({ delta, isFinal }: PinchEvent, location: Point) {
+  function handlePinch({ delta, isFinal, location }: PinchEvent) {
     const refPoint = {
       x: location.x + scroll.left,
       y: location.y + scroll.top,
@@ -112,7 +112,7 @@ function usePinchPanInterface(
     ref,
     ({ panDelta, pinch, isFirst, isFinal }) => {
       if (pinch) {
-        handlePinch(pinch, { x: 0, y: 0 }) // 2nd arg is temporary TODO fix
+        handlePinch(pinch)
       } else if (!isFirst && !isFinal) {
         setScroll((val) => {
           return {
