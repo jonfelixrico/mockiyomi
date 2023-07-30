@@ -348,8 +348,6 @@ export function usePinchPan(
 
         removePointer(e)
       }
-
-      // TODO handle 3 >= fingers before fingerup event
     }
 
     window.addEventListener('pointerup', handler, { passive: true })
