@@ -111,8 +111,8 @@ export function usePinchPan(
          * There will be two pointers at the screen
          */
 
-        const extractedPoints = extractPoints([...pointers, e])
-        const pinchCenterPoint = getCentroid(extractedPoints)
+        const points = extractPoints([...pointers, e])
+        const pinchCenterPoint = getCentroid(points)
 
         hookListener({
           isFirst: false,
@@ -133,10 +133,10 @@ export function usePinchPan(
 
         setLastPoint(pinchCenterPoint)
 
-        const distance = getPinchArea(extractedPoints)
+        const area = getPinchArea(points)
         setPinchSession({
-          lastDistance: distance,
-          referenceDistance: distance,
+          lastDistance: area,
+          referenceDistance: area,
           multiplier: 1,
         })
       } else if (panSession && pinchSession && pointerCount >= 2) {
@@ -144,8 +144,8 @@ export function usePinchPan(
          * There will be more than two pointers at the screen
          */
 
-        const extractedPoints = extractPoints([...pointers, e])
-        const pinchLoc = getCentroid(extractedPoints)
+        const points = extractPoints([...pointers, e])
+        const pinchCenterPoint = getCentroid(points)
 
         const previousScale = getScale(pinchSession.lastDistance)
 
@@ -162,20 +162,21 @@ export function usePinchPan(
             scale: previousScale,
             isFirst: false,
             isFinal: false,
-            location: pinchLoc,
+            location: pinchCenterPoint,
           },
         })
 
-        setLastPoint(pinchLoc)
-        const distance = getPinchArea(extractedPoints)
+        setLastPoint(pinchCenterPoint)
+
+        const area = getPinchArea(points)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
           }
 
           return {
-            lastDistance: distance,
-            referenceDistance: distance,
+            lastDistance: area,
+            referenceDistance: area,
             multiplier: previousScale,
           }
         })
@@ -201,12 +202,12 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        const currCoords = extractPoint(e)
+        const currentPoint = extractPoint(e)
         hookListener({
           isFirst: false,
           isFinal: true,
 
-          panDelta: getDelta(currCoords),
+          panDelta: getDelta(currentPoint),
 
           pinch: null,
         })
@@ -250,10 +251,10 @@ export function usePinchPan(
           },
         })
 
-        const remainingPointerLoc = getCentroid(
+        const remainingPoint = getCentroid(
           extractPoints(pointers.filter((p) => p.pointerId !== e.pointerId))
         )
-        setLastPoint(remainingPointerLoc)
+        setLastPoint(remainingPoint)
 
         setPinchSession(null)
 
@@ -268,9 +269,9 @@ export function usePinchPan(
          * Check the previous else-if block for the explanation of pinchSession.
          */
 
-        const pointsFromPointers = extractPoints([...pointers, e])
+        const pointsIncludingLifted = extractPoints([...pointers, e])
 
-        const pinchLocation = getCentroid(pointsFromPointers)
+        const pinchCenterPoint = getCentroid(pointsIncludingLifted)
         const previousScale = getScale(pinchSession.lastDistance)
 
         hookListener({
@@ -286,26 +287,26 @@ export function usePinchPan(
             scale: previousScale,
             isFinal: false,
             isFirst: false,
-            location: pinchLocation,
+            location: pinchCenterPoint,
           },
         })
 
-        const fromRemaining = extractPoints(
+        const remainingPoints = extractPoints(
           pointers.filter((p) => p.pointerId !== e.pointerId)
         )
 
-        const remainingPointerLoc = getCentroid(fromRemaining)
-        setLastPoint(remainingPointerLoc)
+        const remainingPinchCenterPoint = getCentroid(remainingPoints)
+        setLastPoint(remainingPinchCenterPoint)
 
-        const newDistance = getPinchArea(fromRemaining)
+        const remainingPinchArea = getPinchArea(remainingPoints)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
           }
 
           return {
-            lastDistance: newDistance,
-            referenceDistance: newDistance,
+            lastDistance: remainingPinchArea,
+            referenceDistance: remainingPinchArea,
             multiplier: previousScale,
           }
         })
@@ -325,15 +326,15 @@ export function usePinchPan(
         return
       }
 
-      const extractedPoints = extractPoints([...pointers, e])
-      const currCoords = getCentroid(extractedPoints)
+      const points = extractPoints([...pointers, e])
+      const centerPoint = getCentroid(points)
 
       if (pointerCount === 1) {
         hookListener({
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(currCoords),
+          panDelta: getDelta(centerPoint),
 
           pinch: null,
         })
@@ -343,24 +344,24 @@ export function usePinchPan(
          * If there are 2 or more fingers, pinchSession is expected to be present.
          */
 
-        const distance = getPinchArea(extractedPoints)
+        const area = getPinchArea(points)
         hookListener({
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(currCoords),
+          panDelta: getDelta(centerPoint),
 
           pinch: {
             isFinal: false,
             isFirst: false,
-            scale: getScale(distance),
-            location: currCoords,
+            scale: getScale(area),
+            location: centerPoint,
           },
         })
-        setLastDistance(distance)
+        setLastDistance(area)
       }
 
-      setLastPoint(currCoords)
+      setLastPoint(centerPoint)
       setPointer(e)
     }
 
