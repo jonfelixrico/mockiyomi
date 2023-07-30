@@ -43,7 +43,7 @@ export function usePinchingManager(
      */
     const pinchAnchor = {
       x: (location.x + scroll.left) / pageDims.width,
-      y: (location.x + scroll.left) / pageDims.height,
+      y: (location.y + scroll.top) / pageDims.height,
     }
 
     const tempScale = delta * persistedScale
