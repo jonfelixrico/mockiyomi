@@ -1,7 +1,7 @@
 'use client'
 
+import DocumentViewer from '@/components/document-viewer/DocumentViewer'
 import { useMeasure } from 'react-use'
-import PageViewer from '@/components/page-viewer/PageViewer'
 
 const URLS = [
   '/placeholder/1.jpg',
@@ -14,7 +14,13 @@ export default function Wrapper() {
   const [ref, dims] = useMeasure<HTMLDivElement>()
   return (
     <div ref={ref} className="h-screen w-screen overflow-hidden">
-      <PageViewer dimensions={dims} src={URLS[0]} />
+      <DocumentViewer
+        dimensions={dims}
+        previousUrl={URLS[0]}
+        nextUrl={URLS[2]}
+        currentUrl={URLS[1]}
+        onChangePage={() => {}}
+      />
     </div>
   )
 }
