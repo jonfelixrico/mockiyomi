@@ -203,12 +203,9 @@ export function usePinchPan(
       } else {
         // only one finger will remain
 
-        const extractedPoints = getPointsFromPointers(
-          pointers.filter((p) => p.pointerId !== e.pointerId),
-          origin
+        const pinchLoc = getCentroid(
+          getPointsFromPointers([...pointers, e], origin)
         )
-        const pinchLoc = getCentroid(extractedPoints)
-
         hookListener({
           isFirst: false,
           isFinal: false,
@@ -226,7 +223,14 @@ export function usePinchPan(
           },
         })
 
-        setLastPoint(pinchLoc)
+        const remainingPointerLoc = getCentroid(
+          getPointsFromPointers(
+            pointers.filter((p) => p.pointerId !== e.pointerId),
+            origin
+          )
+        )
+        setLastPoint(remainingPointerLoc)
+
         setDistanceData(null)
       }
 
