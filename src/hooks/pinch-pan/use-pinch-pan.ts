@@ -68,6 +68,14 @@ export function usePinchPan(
       }
 
       if (pointerCount === 0) {
+        /*
+         * This block means that the user has placed a finger on the screen.
+         * This is the entrypoint for the entire thing.
+         *
+         * At this point, panning is activated but not pinching.
+         * The latter requires at least two fingers on the screen.
+         */
+
         // Needed to prevent causing highlights once the interaction has started
         e.preventDefault()
 
@@ -108,7 +116,8 @@ export function usePinchPan(
         setPinchSession(null)
       } else if (panSession && pointerCount === 1) {
         /*
-         * There will be two pointers at the screen
+         * Here, the user has added a second finger of the screen.
+         * This is the entrypoint of the pinching behavior.
          */
 
         const points = extractPoints([...pointers, e])
@@ -141,7 +150,7 @@ export function usePinchPan(
         })
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
-         * There will be more than two pointers at the screen
+         * This simply continues the pinching behavior by adding more fingers.
          */
 
         const points = extractPoints([...pointers, e])
