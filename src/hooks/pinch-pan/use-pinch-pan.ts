@@ -169,7 +169,7 @@ export function usePinchPan(
           referenceDistance: distance,
           multiplier: 1,
         })
-      } else if (panSession && pointerCount >= 2) {
+      } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * There will be more than two pointers at the screen
          */
@@ -179,6 +179,8 @@ export function usePinchPan(
           panSession.origin
         )
         const pinchLoc = getCentroid(extractedPoints)
+
+        const previousScale = getScale(pinchSession.lastDistance)
 
         hookListener({
           isFirst: false,
@@ -190,8 +192,8 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 1,
-            isFirst: true,
+            delta: previousScale,
+            isFirst: false,
             isFinal: false,
             location: pinchLoc,
           },
@@ -199,10 +201,16 @@ export function usePinchPan(
 
         setLastPoint(pinchLoc)
         const distance = getDistance(extractedPoints)
-        setPinchSession({
-          lastDistance: distance,
-          referenceDistance: distance,
-          multiplier: 1,
+        setPinchSession((session) => {
+          if (!session) {
+            throw new Error('unexpected null session')
+          }
+
+          return {
+            lastDistance: distance,
+            referenceDistance: distance,
+            multiplier: previousScale,
+          }
         })
       }
 
@@ -306,6 +314,8 @@ export function usePinchPan(
         const pinchLocation = getCentroid(pointsFromPointers)
         const distance = getDistance(pointers)
 
+        const previousScale = getScale(pinchSession.lastDistance)
+
         hookListener({
           isFirst: false,
           isFinal: false,
@@ -316,14 +326,24 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: getScale(distance),
-            isFinal: true,
+            delta: getScale(pinchSession.lastDistance),
+            isFinal: false,
             isFirst: false,
             location: pinchLocation,
           },
         })
 
-        setPinchSession(null)
+        setPinchSession((session) => {
+          if (!session) {
+            throw new Error('unexpected null session')
+          }
+
+          return {
+            lastDistance: distance,
+            referenceDistance: distance,
+            multiplier: previousScale,
+          }
+        })
 
         removePointer(e)
       }
