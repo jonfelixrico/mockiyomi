@@ -6,7 +6,7 @@ import {
   getCentroid,
   getDistanceOfTwoPoints,
 } from './point-utils'
-import { Origin, usePanSession } from './use-pan-session'
+import { usePanSession } from './use-pan-session'
 import { usePinchSession } from './use-pinch-session'
 
 export interface PinchPanEvent {
@@ -21,25 +21,11 @@ export interface PinchEvent {
   isFirst: boolean
   isFinal: boolean
 
-  delta: number
+  scale: number
   location: Point
 }
 
-function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
-  return {
-    x: e.clientX - client.x,
-    y: e.clientY - client.y,
-  }
-}
-
-function getDelta(prev: Point, now: Point): Point {
-  return {
-    x: now.x - prev.x,
-    y: now.y - prev.y,
-  }
-}
-
-function getDistance(points: Point[]): number {
+function getPinchArea(points: Point[]): number {
   if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
   } else if (points.length > 2) {
@@ -47,26 +33,6 @@ function getDistance(points: Point[]): number {
   }
 
   return 0
-}
-
-function getPointsFromPointers(
-  pointers: PointerEvent[],
-  origin: Origin
-): Point[] {
-  const uniquesMap: Record<string, PointerEvent> = {}
-
-  for (const evt of pointers) {
-    /*
-     * We're using the concept of maps to do something like a unique-by-latest
-     * operation. Lower-index same-id entries will be overridden by
-     * higher-index ones.
-     */
-    uniquesMap[evt.pointerId] = evt
-  }
-
-  return Object.values(uniquesMap).map((pointer) =>
-    getPointRelativeToTarget(origin, pointer)
-  )
 }
 
 interface Options {
@@ -83,7 +49,14 @@ export function usePinchPan(
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
-  const { panSession, setPanSession, setLastPoint } = usePanSession()
+  const {
+    panSession,
+    setPanSession,
+    setLastPoint,
+    extractPoint,
+    extractPoints,
+    getDelta,
+  } = usePanSession()
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
@@ -95,6 +68,14 @@ export function usePinchPan(
       }
 
       if (pointerCount === 0) {
+        /*
+         * This block means that the user has placed a finger on the screen.
+         * This is the entrypoint for the entire thing.
+         *
+         * At this point, panning is activated but not pinching.
+         * The latter requires at least two fingers on the screen.
+         */
+
         // Needed to prevent causing highlights once the interaction has started
         e.preventDefault()
 
@@ -135,14 +116,12 @@ export function usePinchPan(
         setPinchSession(null)
       } else if (panSession && pointerCount === 1) {
         /*
-         * There will be two pointers at the screen
+         * Here, the user has added a second finger of the screen.
+         * This is the entrypoint of the pinching behavior.
          */
 
-        const extractedPoints = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
-        const pinchCenterPoint = getCentroid(extractedPoints)
+        const points = extractPoints([...pointers, e])
+        const pinchCenterPoint = getCentroid(points)
 
         hookListener({
           isFirst: false,
@@ -154,7 +133,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 1, // we're starting of with a scale of 1 because we've just started
+            scale: 1, // we're starting of with a scale of 1 because we've just started
             isFirst: false,
             isFinal: false,
             location: pinchCenterPoint,
@@ -163,24 +142,21 @@ export function usePinchPan(
 
         setLastPoint(pinchCenterPoint)
 
-        const distance = getDistance(extractedPoints)
+        const area = getPinchArea(points)
         setPinchSession({
-          lastDistance: distance,
-          referenceDistance: distance,
-          multiplier: 1,
+          lastArea: area,
+          referenceArea: area,
+          scaleMultiplier: 1,
         })
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
-         * There will be more than two pointers at the screen
+         * This simply continues the pinching behavior by adding more fingers.
          */
 
-        const extractedPoints = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
-        const pinchLoc = getCentroid(extractedPoints)
+        const points = extractPoints([...pointers, e])
+        const pinchCenterPoint = getCentroid(points)
 
-        const previousScale = getScale(pinchSession.lastDistance)
+        const previousScale = getScale(pinchSession.lastArea)
 
         hookListener({
           isFirst: false,
@@ -192,24 +168,25 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: previousScale,
+            scale: previousScale,
             isFirst: false,
             isFinal: false,
-            location: pinchLoc,
+            location: pinchCenterPoint,
           },
         })
 
-        setLastPoint(pinchLoc)
-        const distance = getDistance(extractedPoints)
+        setLastPoint(pinchCenterPoint)
+
+        const area = getPinchArea(points)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
           }
 
           return {
-            lastDistance: distance,
-            referenceDistance: distance,
-            multiplier: previousScale,
+            lastArea: area,
+            referenceArea: area,
+            scaleMultiplier: previousScale,
           }
         })
       }
@@ -234,12 +211,12 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        const currCoords = getPointRelativeToTarget(panSession.origin, e)
+        const currentPoint = extractPoint(e)
         hookListener({
           isFirst: false,
           isFinal: true,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(currentPoint),
 
           pinch: null,
         })
@@ -264,9 +241,7 @@ export function usePinchPan(
          * are two fingers.
          */
 
-        const pinchLocation = getCentroid(
-          getPointsFromPointers([...pointers, e], panSession.origin)
-        )
+        const pinchLocation = getCentroid(extractPoints([...pointers, e]))
 
         hookListener({
           isFirst: false,
@@ -278,20 +253,17 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: getScale(pinchSession.lastDistance),
+            scale: getScale(pinchSession.lastArea),
             isFinal: true,
             isFirst: false,
             location: pinchLocation,
           },
         })
 
-        const remainingPointerLoc = getCentroid(
-          getPointsFromPointers(
-            pointers.filter((p) => p.pointerId !== e.pointerId),
-            panSession.origin
-          )
+        const remainingPoint = getCentroid(
+          extractPoints(pointers.filter((p) => p.pointerId !== e.pointerId))
         )
-        setLastPoint(remainingPointerLoc)
+        setLastPoint(remainingPoint)
 
         setPinchSession(null)
 
@@ -306,13 +278,10 @@ export function usePinchPan(
          * Check the previous else-if block for the explanation of pinchSession.
          */
 
-        const pointsFromPointers = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
+        const pointsIncludingLifted = extractPoints([...pointers, e])
 
-        const pinchLocation = getCentroid(pointsFromPointers)
-        const previousScale = getScale(pinchSession.lastDistance)
+        const pinchCenterPoint = getCentroid(pointsIncludingLifted)
+        const previousScale = getScale(pinchSession.lastArea)
 
         hookListener({
           isFirst: false,
@@ -324,31 +293,30 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: previousScale,
+            scale: previousScale,
             isFinal: false,
             isFirst: false,
-            location: pinchLocation,
+            location: pinchCenterPoint,
           },
         })
 
-        const fromRemaining = getPointsFromPointers(
-          pointers.filter((p) => p.pointerId !== e.pointerId),
-          panSession.origin
+        const remainingPoints = extractPoints(
+          pointers.filter((p) => p.pointerId !== e.pointerId)
         )
 
-        const remainingPointerLoc = getCentroid(fromRemaining)
-        setLastPoint(remainingPointerLoc)
+        const remainingPinchCenterPoint = getCentroid(remainingPoints)
+        setLastPoint(remainingPinchCenterPoint)
 
-        const newDistance = getDistance(fromRemaining)
+        const remainingPinchArea = getPinchArea(remainingPoints)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
           }
 
           return {
-            lastDistance: newDistance,
-            referenceDistance: newDistance,
-            multiplier: previousScale,
+            lastArea: remainingPinchArea,
+            referenceArea: remainingPinchArea,
+            scaleMultiplier: previousScale,
           }
         })
 
@@ -367,18 +335,15 @@ export function usePinchPan(
         return
       }
 
-      const extractedPoints = getPointsFromPointers(
-        [...pointers, e],
-        panSession.origin
-      )
-      const currCoords = getCentroid(extractedPoints)
+      const points = extractPoints([...pointers, e])
+      const centerPoint = getCentroid(points)
 
       if (pointerCount === 1) {
         hookListener({
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(centerPoint),
 
           pinch: null,
         })
@@ -388,24 +353,24 @@ export function usePinchPan(
          * If there are 2 or more fingers, pinchSession is expected to be present.
          */
 
-        const distance = getDistance(extractedPoints)
+        const area = getPinchArea(points)
         hookListener({
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(centerPoint),
 
           pinch: {
             isFinal: false,
             isFirst: false,
-            delta: getScale(distance),
-            location: currCoords,
+            scale: getScale(area),
+            location: centerPoint,
           },
         })
-        setLastDistance(distance)
+        setLastDistance(area)
       }
 
-      setLastPoint(currCoords)
+      setLastPoint(centerPoint)
       setPointer(e)
     }
 

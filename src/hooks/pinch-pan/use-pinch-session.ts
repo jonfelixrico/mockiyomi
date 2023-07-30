@@ -1,15 +1,15 @@
 import { useState } from 'react'
 
 export interface PinchSession {
-  referenceDistance: number
-  lastDistance: number
-  multiplier: number
+  referenceArea: number
+  lastArea: number
+  scaleMultiplier: number
 }
 
 export function usePinchSession() {
   const [pinchSession, setPinchSession] = useState<PinchSession | null>(null)
 
-  function setLastDistance(distance: number) {
+  function setLastDistance(lastArea: number) {
     setPinchSession((session) => {
       if (!session) {
         return null
@@ -17,17 +17,17 @@ export function usePinchSession() {
 
       return {
         ...session,
-        lastDistance: distance,
+        lastArea,
       }
     })
   }
 
-  function getScale(distance: number) {
+  function getScale(area: number) {
     if (!pinchSession) {
       return -1
     }
 
-    return (distance / pinchSession.referenceDistance) * pinchSession.multiplier
+    return (area / pinchSession.referenceArea) * pinchSession.scaleMultiplier
   }
 
   return {
