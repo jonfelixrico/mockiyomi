@@ -40,13 +40,14 @@ function getDelta(prev: Point, now: Point): Point {
 }
 
 function getDistance(points: Point[]): number {
-  if (points.length <= 1) {
-    return 0
-  } else if (points.length === 2) {
+  if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
-  } else {
+  } else if (points.length > 2) {
+    alert(getAreaOfPoints(points))
     return getAreaOfPoints(points)
   }
+
+  return 0
 }
 
 function getPointsFromPointers(
