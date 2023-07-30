@@ -110,9 +110,9 @@ function usePinchPanInterface(
 
   usePinchPan(
     ref,
-    ({ panDelta, pinch, location, isFirst, isFinal }) => {
+    ({ panDelta, pinch, isFirst, isFinal }) => {
       if (pinch) {
-        handlePinch(pinch, location)
+        handlePinch(pinch, { x: 0, y: 0 }) // 2nd arg is temporary TODO fix
       } else if (!isFirst && !isFinal) {
         setScroll((val) => {
           return {

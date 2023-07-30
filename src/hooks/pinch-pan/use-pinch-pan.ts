@@ -13,9 +13,6 @@ interface Origin {
 }
 
 export interface PinchPanEvent {
-  origin: Point
-  location: Point
-
   panDelta: Point
   pinch: PinchEvent | null
 
@@ -126,9 +123,6 @@ export function usePinchPan(
           isFirst: true,
           isFinal: false,
 
-          origin: targetOrigin,
-          location: targetOrigin,
-
           panDelta: {
             x: 0,
             y: 0,
@@ -145,13 +139,6 @@ export function usePinchPan(
         hookListener({
           isFirst: false,
           isFinal: false,
-
-          /*
-           * Logically, this cannot be origin.
-           * We're pretty much doing a "just trust me bro" to the compiler.
-           */
-          origin: origin?.target as Point,
-          location: lastPoint as Point,
 
           panDelta: {
             x: 0,
@@ -196,9 +183,6 @@ export function usePinchPan(
           isFirst: false,
           isFinal: true,
 
-          origin: origin.target,
-          location: currCoords,
-
           panDelta: getDelta(lastPoint as Point, currCoords),
 
           pinch: null,
@@ -224,9 +208,6 @@ export function usePinchPan(
         hookListener({
           isFirst: false,
           isFinal: false,
-
-          origin: origin.target,
-          location: currCoords,
 
           panDelta: {
             x: 0,
@@ -267,9 +248,6 @@ export function usePinchPan(
           isFirst: false,
           isFinal: false,
 
-          origin: origin.target as Point,
-          location: currCoords,
-
           panDelta: getDelta(lastPoint as Point, currCoords),
 
           pinch: null,
@@ -278,9 +256,6 @@ export function usePinchPan(
         hookListener({
           isFirst: false,
           isFinal: false,
-
-          origin: origin.target as Point,
-          location: currCoords,
 
           panDelta: getDelta(lastPoint as Point, currCoords),
 
