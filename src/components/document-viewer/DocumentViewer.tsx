@@ -1,3 +1,5 @@
+'use client'
+
 import { Dimensions } from '@/types/dimensions.interface'
 import PageViewer from '@/components/page-viewer/PageViewer'
 import './document-viewer.module.css'
