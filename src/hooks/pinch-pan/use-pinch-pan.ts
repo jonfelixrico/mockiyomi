@@ -6,7 +6,7 @@ import {
   getCentroid,
   getDistanceOfTwoPoints,
 } from './point-utils'
-import { Origin, usePanSession } from './use-pan-session'
+import { usePanSession } from './use-pan-session'
 import { usePinchSession } from './use-pinch-session'
 
 export interface PinchPanEvent {
