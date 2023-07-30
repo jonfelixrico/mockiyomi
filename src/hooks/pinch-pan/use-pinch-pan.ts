@@ -33,6 +33,11 @@ interface PanSession {
   lastPoint: Point
 }
 
+interface PinchSession {
+  referenceDistance: number
+  lastDistance: number
+}
+
 function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
   return {
     x: e.clientX - client.x,
@@ -108,7 +113,20 @@ export function usePinchPan(
     })
   }
 
-  const [distanceData, setDistanceData] = useState<number | null>(null)
+  const [pinchSession, setPinchSession] = useState<PinchSession | null>(null)
+  const referenceDistance = pinchSession?.referenceDistance
+  function setLastDistance(distance: number) {
+    setPinchSession((session) => {
+      if (!session) {
+        return null
+      }
+
+      return {
+        ...session,
+        lastDistance: distance,
+      }
+    })
+  }
 
   // pointer down
   useEffect(() => {
@@ -155,7 +173,7 @@ export function usePinchPan(
           pinch: null,
         })
 
-        setDistanceData(null)
+        setPinchSession(null)
       } else {
         // added more fingers to the touchscreen
 
@@ -183,7 +201,11 @@ export function usePinchPan(
         })
 
         setLastPoint(pinchLoc)
-        setDistanceData(getDistance(extractedPoints))
+        const distance = getDistance(extractedPoints)
+        setPinchSession({
+          lastDistance: distance,
+          referenceDistance: distance,
+        })
       }
 
       setPointer(e)
@@ -216,7 +238,7 @@ export function usePinchPan(
 
         // cleanup logic
         setPanSession(null)
-        setDistanceData(null)
+        setPinchSession(null)
         document.body.classList.remove('dragging')
         if (options?.className) {
           document.body.classList.remove(options.className)
@@ -252,7 +274,7 @@ export function usePinchPan(
         )
         setLastPoint(remainingPointerLoc)
 
-        setDistanceData(null)
+        setPinchSession(null)
       }
 
       removePointer(e)
@@ -292,10 +314,11 @@ export function usePinchPan(
           pinch: {
             isFinal: false,
             isFirst: false,
-            delta: distance / (distanceData as number),
+            delta: distance / (referenceDistance as number),
             location: currCoords,
           },
         })
+        setLastDistance(distance)
       }
 
       setLastPoint(currCoords)
