@@ -1,0 +1,7 @@
+.next {
+  transform: translateX(100%);
+}
+
+.prev {
+  transform: translateX(-100%);
+}
