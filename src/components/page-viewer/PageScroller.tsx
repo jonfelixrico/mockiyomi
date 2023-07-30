@@ -1,10 +1,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
+import { ScrollPosition } from '@/types/scroll-location.interface'
 import { ReactNode, useEffect, useRef } from 'react'
-
-export interface ScrollPosition {
-  top: number
-  left: number
-}
 
 /*
  * This component is in charge of *displayling* the scrolling for the page based
