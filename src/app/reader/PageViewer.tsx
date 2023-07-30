@@ -79,10 +79,6 @@ function usePinching(
       top: afterResize.height * refPointPercentage.y - location.y,
     }
 
-    if (!pointAfterResize.left || !pointAfterResize.top) {
-      alert('zero')
-    }
-
     if (!isFinal) {
       setScroll(() => pointAfterResize)
       setStagingScale(delta)
