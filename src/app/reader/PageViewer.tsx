@@ -21,7 +21,7 @@ function getScrollLimits(content: Dimensions, container: Dimensions) {
 
     left: {
       min: 0,
-      max: content.height - container.height,
+      max: content.width - container.width,
     },
   }
 }
@@ -32,7 +32,10 @@ function useScrolling(pageDims: Dimensions, containerDims: Dimensions) {
     top: 0,
   })
 
-  const scrollLimits = getScrollLimits(pageDims, containerDims)
+  const scrollLimits = useMemo(
+    () => getScrollLimits(pageDims, containerDims),
+    [pageDims, containerDims]
+  )
 
   return {
     scroll,
