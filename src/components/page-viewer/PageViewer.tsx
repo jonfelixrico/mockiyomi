@@ -64,9 +64,9 @@ export default function PageViewer({
         contentDimensions={pageDims}
         scroll={scroll}
       >
-        {/* TODO remove scale */}
+        {/* TODO maybe add a proper alt */}
         <ImgWrapper
-          alt="dummy"
+          alt={props.src}
           containerDimensions={props.dimensions}
           scale={scale}
           src={props.src}
