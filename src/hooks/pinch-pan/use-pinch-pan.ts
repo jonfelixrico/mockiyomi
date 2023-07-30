@@ -1,5 +1,5 @@
 import { Point } from '@/types/point.interface'
-import { RefObject, useEffect, useState } from 'react'
+import { RefObject, useEffect } from 'react'
 import { usePointerTracker } from './use-pointer-tracker'
 import {
   getAreaOfPoints,
