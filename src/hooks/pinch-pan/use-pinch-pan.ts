@@ -307,12 +307,12 @@ export function usePinchPan(
          */
 
         const pointsFromPointers = getPointsFromPointers(
-          pointers.filter((p) => p.pointerId !== e.pointerId),
+          [...pointers, e],
           panSession.origin
         )
 
         const pinchLocation = getCentroid(pointsFromPointers)
-        const distance = getDistance(pointers)
+        const distance = getDistance(pointsFromPointers)
 
         const previousScale = getScale(pinchSession.lastDistance)
 
@@ -326,29 +326,30 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: getScale(pinchSession.lastDistance),
+            delta: previousScale,
             isFinal: false,
             isFirst: false,
             location: pinchLocation,
           },
         })
 
-        const remainingPointerLoc = getCentroid(
-          getPointsFromPointers(
-            pointers.filter((p) => p.pointerId !== e.pointerId),
-            panSession.origin
-          )
+        const fromRemaining = getPointsFromPointers(
+          pointers.filter((p) => p.pointerId !== e.pointerId),
+          panSession.origin
         )
+
+        const remainingPointerLoc = getCentroid(fromRemaining)
         setLastPoint(remainingPointerLoc)
 
+        const newDistance = getDistance(fromRemaining)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
           }
 
           return {
-            lastDistance: distance,
-            referenceDistance: distance,
+            lastDistance: newDistance,
+            referenceDistance: newDistance,
             multiplier: previousScale,
           }
         })
