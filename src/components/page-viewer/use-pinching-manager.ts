@@ -1,5 +1,6 @@
 import type { PinchEvent } from '@/hooks/pinch-pan/use-pinch-pan'
 import { Dimensions } from '@/types/dimensions.interface'
+import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 import { useMemo, useState } from 'react'
 
@@ -21,7 +22,10 @@ export function usePinchingManager(
     [persistedScale, stagingScale]
   )
 
-  function handlePinch({ delta, isFinal, isFirst, location }: PinchEvent) {
+  function handlePinch(
+    { delta, isFinal, isFirst, location }: PinchEvent,
+    panDelta: Point
+  ) {
     if (isFirst) {
       /*
        * Using the first is glitchy.
@@ -55,8 +59,8 @@ export function usePinchingManager(
     }
 
     const pointAfterResize = {
-      left: afterResize.width * refPointPercentage.x - location.x,
-      top: afterResize.height * refPointPercentage.y - location.y,
+      left: afterResize.width * refPointPercentage.x - location.x - panDelta.x,
+      top: afterResize.height * refPointPercentage.y - location.y - panDelta.y,
     }
 
     setScroll(() => pointAfterResize)

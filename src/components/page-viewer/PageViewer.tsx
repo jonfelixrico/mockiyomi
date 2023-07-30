@@ -18,7 +18,7 @@ function usePinchPanInterface(
     ref,
     ({ panDelta, pinch, isFirst, isFinal }) => {
       if (pinch) {
-        handlePinch(pinch)
+        handlePinch(pinch, panDelta)
       } else if (!isFirst && !isFinal) {
         setScroll((val) => {
           return {
