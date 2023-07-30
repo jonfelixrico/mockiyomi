@@ -26,14 +26,6 @@ export function usePinchingManager(
     { delta, isFinal, isFirst, location }: PinchEvent,
     panDelta: Point
   ) {
-    if (isFirst) {
-      /*
-       * Using the first is glitchy.
-       * TODO fix the functionality of the first.
-       */
-      return
-    }
-
     if (isFinal) {
       setPersistedScale(actualScale)
       setStagingScale(1)
