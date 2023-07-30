@@ -73,7 +73,6 @@ interface Options {
   className?: string
 }
 
-// TODO handle three or more pointers
 export function usePinchPan(
   ref: RefObject<HTMLElement>,
   hookListener: (event: PinchPanEvent) => void,
