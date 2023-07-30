@@ -1,8 +1,8 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller from './PageScroller'
-import { RefObject, useMemo, useRef, useState } from 'react'
+import { RefObject, useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
-import { PinchEvent, usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
+import { usePinchPan } from '@/hooks/pinch-pan/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 
