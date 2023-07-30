@@ -28,7 +28,7 @@ export function usePinchingManager(
   }, [persistedScale, pinchSessionScale])
 
   function handlePinch(
-    { delta, isFinal, location }: PinchEvent,
+    { scale: delta, isFinal, location }: PinchEvent,
     panDelta: Point
   ) {
     if (isFinal) {

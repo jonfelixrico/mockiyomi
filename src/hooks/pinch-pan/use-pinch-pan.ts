@@ -21,7 +21,7 @@ export interface PinchEvent {
   isFirst: boolean
   isFinal: boolean
 
-  delta: number
+  scale: number
   location: Point
 }
 
@@ -154,7 +154,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 1, // we're starting of with a scale of 1 because we've just started
+            scale: 1, // we're starting of with a scale of 1 because we've just started
             isFirst: false,
             isFinal: false,
             location: pinchCenterPoint,
@@ -192,7 +192,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: previousScale,
+            scale: previousScale,
             isFirst: false,
             isFinal: false,
             location: pinchLoc,
@@ -278,7 +278,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: getScale(pinchSession.lastDistance),
+            scale: getScale(pinchSession.lastDistance),
             isFinal: true,
             isFirst: false,
             location: pinchLocation,
@@ -324,7 +324,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: previousScale,
+            scale: previousScale,
             isFinal: false,
             isFirst: false,
             location: pinchLocation,
@@ -398,7 +398,7 @@ export function usePinchPan(
           pinch: {
             isFinal: false,
             isFirst: false,
-            delta: getScale(distance),
+            scale: getScale(distance),
             location: currCoords,
           },
         })
