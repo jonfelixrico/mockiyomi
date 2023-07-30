@@ -143,7 +143,7 @@ export function usePinchPan(
           [...pointers, e],
           panSession.origin
         )
-        const pinchLoc = getCentroid(extractedPoints)
+        const pinchCenterPoint = getCentroid(extractedPoints)
 
         hookListener({
           isFirst: false,
@@ -155,14 +155,15 @@ export function usePinchPan(
           },
 
           pinch: {
-            delta: 1,
+            delta: 1, // we're starting of with a scale of 1 because we've just started
             isFirst: false,
             isFinal: false,
-            location: pinchLoc,
+            location: pinchCenterPoint,
           },
         })
 
-        setLastPoint(pinchLoc)
+        setLastPoint(pinchCenterPoint)
+
         const distance = getDistance(extractedPoints)
         setPinchSession({
           lastDistance: distance,
