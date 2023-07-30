@@ -25,7 +25,7 @@ export interface PinchEvent {
   location: Point
 }
 
-function getDistance(points: Point[]): number {
+function getPinchArea(points: Point[]): number {
   if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
   } else if (points.length > 2) {
@@ -133,7 +133,7 @@ export function usePinchPan(
 
         setLastPoint(pinchCenterPoint)
 
-        const distance = getDistance(extractedPoints)
+        const distance = getPinchArea(extractedPoints)
         setPinchSession({
           lastDistance: distance,
           referenceDistance: distance,
@@ -167,7 +167,7 @@ export function usePinchPan(
         })
 
         setLastPoint(pinchLoc)
-        const distance = getDistance(extractedPoints)
+        const distance = getPinchArea(extractedPoints)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
@@ -297,7 +297,7 @@ export function usePinchPan(
         const remainingPointerLoc = getCentroid(fromRemaining)
         setLastPoint(remainingPointerLoc)
 
-        const newDistance = getDistance(fromRemaining)
+        const newDistance = getPinchArea(fromRemaining)
         setPinchSession((session) => {
           if (!session) {
             throw new Error('unexpected null session')
@@ -343,7 +343,7 @@ export function usePinchPan(
          * If there are 2 or more fingers, pinchSession is expected to be present.
          */
 
-        const distance = getDistance(extractedPoints)
+        const distance = getPinchArea(extractedPoints)
         hookListener({
           isFirst: false,
           isFinal: false,
