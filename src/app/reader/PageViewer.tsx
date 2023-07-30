@@ -58,7 +58,7 @@ function usePinching(
 
   const boundScale = Math.min(10, Math.max(1, scale * stagingScale))
 
-  function handlePinch({ delta, isFinal, location }: PinchEvent) {
+  function handlePinch({ delta, isFinal, isFirst, location }: PinchEvent) {
     const refPoint = {
       x: location.x + scroll.left,
       y: location.y + scroll.top,
@@ -79,15 +79,15 @@ function usePinching(
       top: afterResize.height * refPointPercentage.y - location.y,
     }
 
-    if (!isFinal) {
+    if (!isFinal && !isFirst) {
       setScroll(() => pointAfterResize)
       setStagingScale(delta)
       return
+    } else if (isFinal) {
+      setScroll(() => pointAfterResize)
+      setScale(boundScale)
+      setStagingScale(1)
     }
-
-    // setScroll(() => pointAfterResize)
-    setScale(boundScale)
-    setStagingScale(1)
   }
 
   return {
