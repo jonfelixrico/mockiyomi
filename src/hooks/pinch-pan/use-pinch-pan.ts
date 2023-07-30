@@ -25,20 +25,6 @@ export interface PinchEvent {
   location: Point
 }
 
-function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
-  return {
-    x: e.clientX - client.x,
-    y: e.clientY - client.y,
-  }
-}
-
-function getDelta(prev: Point, now: Point): Point {
-  return {
-    x: now.x - prev.x,
-    y: now.y - prev.y,
-  }
-}
-
 function getDistance(points: Point[]): number {
   if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
@@ -47,26 +33,6 @@ function getDistance(points: Point[]): number {
   }
 
   return 0
-}
-
-function getPointsFromPointers(
-  pointers: PointerEvent[],
-  origin: Origin
-): Point[] {
-  const uniquesMap: Record<string, PointerEvent> = {}
-
-  for (const evt of pointers) {
-    /*
-     * We're using the concept of maps to do something like a unique-by-latest
-     * operation. Lower-index same-id entries will be overridden by
-     * higher-index ones.
-     */
-    uniquesMap[evt.pointerId] = evt
-  }
-
-  return Object.values(uniquesMap).map((pointer) =>
-    getPointRelativeToTarget(origin, pointer)
-  )
 }
 
 interface Options {
@@ -83,7 +49,14 @@ export function usePinchPan(
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
-  const { panSession, setPanSession, setLastPoint } = usePanSession()
+  const {
+    panSession,
+    setPanSession,
+    setLastPoint,
+    extractPoint,
+    extractPoints,
+    getDelta,
+  } = usePanSession()
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
@@ -138,10 +111,7 @@ export function usePinchPan(
          * There will be two pointers at the screen
          */
 
-        const extractedPoints = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
+        const extractedPoints = extractPoints([...pointers, e])
         const pinchCenterPoint = getCentroid(extractedPoints)
 
         hookListener({
@@ -174,10 +144,7 @@ export function usePinchPan(
          * There will be more than two pointers at the screen
          */
 
-        const extractedPoints = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
+        const extractedPoints = extractPoints([...pointers, e])
         const pinchLoc = getCentroid(extractedPoints)
 
         const previousScale = getScale(pinchSession.lastDistance)
@@ -234,12 +201,12 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        const currCoords = getPointRelativeToTarget(panSession.origin, e)
+        const currCoords = extractPoint(e)
         hookListener({
           isFirst: false,
           isFinal: true,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(currCoords),
 
           pinch: null,
         })
@@ -264,9 +231,7 @@ export function usePinchPan(
          * are two fingers.
          */
 
-        const pinchLocation = getCentroid(
-          getPointsFromPointers([...pointers, e], panSession.origin)
-        )
+        const pinchLocation = getCentroid(extractPoints([...pointers, e]))
 
         hookListener({
           isFirst: false,
@@ -286,10 +251,7 @@ export function usePinchPan(
         })
 
         const remainingPointerLoc = getCentroid(
-          getPointsFromPointers(
-            pointers.filter((p) => p.pointerId !== e.pointerId),
-            panSession.origin
-          )
+          extractPoints(pointers.filter((p) => p.pointerId !== e.pointerId))
         )
         setLastPoint(remainingPointerLoc)
 
@@ -306,10 +268,7 @@ export function usePinchPan(
          * Check the previous else-if block for the explanation of pinchSession.
          */
 
-        const pointsFromPointers = getPointsFromPointers(
-          [...pointers, e],
-          panSession.origin
-        )
+        const pointsFromPointers = extractPoints([...pointers, e])
 
         const pinchLocation = getCentroid(pointsFromPointers)
         const previousScale = getScale(pinchSession.lastDistance)
@@ -331,9 +290,8 @@ export function usePinchPan(
           },
         })
 
-        const fromRemaining = getPointsFromPointers(
-          pointers.filter((p) => p.pointerId !== e.pointerId),
-          panSession.origin
+        const fromRemaining = extractPoints(
+          pointers.filter((p) => p.pointerId !== e.pointerId)
         )
 
         const remainingPointerLoc = getCentroid(fromRemaining)
@@ -367,10 +325,7 @@ export function usePinchPan(
         return
       }
 
-      const extractedPoints = getPointsFromPointers(
-        [...pointers, e],
-        panSession.origin
-      )
+      const extractedPoints = extractPoints([...pointers, e])
       const currCoords = getCentroid(extractedPoints)
 
       if (pointerCount === 1) {
@@ -378,7 +333,7 @@ export function usePinchPan(
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(currCoords),
 
           pinch: null,
         })
@@ -393,7 +348,7 @@ export function usePinchPan(
           isFirst: false,
           isFinal: false,
 
-          panDelta: getDelta(panSession.lastPoint, currCoords),
+          panDelta: getDelta(currCoords),
 
           pinch: {
             isFinal: false,
