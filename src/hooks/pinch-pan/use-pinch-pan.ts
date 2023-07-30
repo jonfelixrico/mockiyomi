@@ -6,11 +6,8 @@ import {
   getCentroid,
   getDistanceOfTwoPoints,
 } from './point-utils'
-
-interface Origin {
-  client: Point
-  target: Point
-}
+import { Origin, usePanSession } from './use-pan-session'
+import { usePinchSession } from './use-pinch-session'
 
 export interface PinchPanEvent {
   panDelta: Point
@@ -26,16 +23,6 @@ export interface PinchEvent {
 
   delta: number
   location: Point
-}
-
-interface PanSession {
-  origin: Origin
-  lastPoint: Point
-}
-
-interface PinchSession {
-  referenceDistance: number
-  lastDistance: number
 }
 
 function getPointRelativeToTarget({ client }: Origin, e: PointerEvent): Point {
@@ -97,33 +84,8 @@ export function usePinchPan(
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
-  const [panSession, setPanSession] = useState<PanSession | null>(null)
-  function setLastPoint(point: Point) {
-    setPanSession((session) => {
-      if (!session) {
-        return null
-      }
-
-      return {
-        ...session,
-        lastPoint: point,
-      }
-    })
-  }
-
-  const [pinchSession, setPinchSession] = useState<PinchSession | null>(null)
-  function setLastDistance(distance: number) {
-    setPinchSession((session) => {
-      if (!session) {
-        return null
-      }
-
-      return {
-        ...session,
-        lastDistance: distance,
-      }
-    })
-  }
+  const { panSession, setPanSession, setLastPoint } = usePanSession()
+  const { pinchSession, setPinchSession, setLastDistance } = usePinchSession()
 
   // pointer down
   useEffect(() => {
