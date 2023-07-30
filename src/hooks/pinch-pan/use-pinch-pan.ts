@@ -135,9 +135,9 @@ export function usePinchPan(
 
         const area = getPinchArea(points)
         setPinchSession({
-          lastDistance: area,
-          referenceDistance: area,
-          multiplier: 1,
+          lastArea: area,
+          referenceArea: area,
+          scaleMultiplier: 1,
         })
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
@@ -147,7 +147,7 @@ export function usePinchPan(
         const points = extractPoints([...pointers, e])
         const pinchCenterPoint = getCentroid(points)
 
-        const previousScale = getScale(pinchSession.lastDistance)
+        const previousScale = getScale(pinchSession.lastArea)
 
         hookListener({
           isFirst: false,
@@ -175,9 +175,9 @@ export function usePinchPan(
           }
 
           return {
-            lastDistance: area,
-            referenceDistance: area,
-            multiplier: previousScale,
+            lastArea: area,
+            referenceArea: area,
+            scaleMultiplier: previousScale,
           }
         })
       }
@@ -244,7 +244,7 @@ export function usePinchPan(
           },
 
           pinch: {
-            scale: getScale(pinchSession.lastDistance),
+            scale: getScale(pinchSession.lastArea),
             isFinal: true,
             isFirst: false,
             location: pinchLocation,
@@ -272,7 +272,7 @@ export function usePinchPan(
         const pointsIncludingLifted = extractPoints([...pointers, e])
 
         const pinchCenterPoint = getCentroid(pointsIncludingLifted)
-        const previousScale = getScale(pinchSession.lastDistance)
+        const previousScale = getScale(pinchSession.lastArea)
 
         hookListener({
           isFirst: false,
@@ -305,9 +305,9 @@ export function usePinchPan(
           }
 
           return {
-            lastDistance: remainingPinchArea,
-            referenceDistance: remainingPinchArea,
-            multiplier: previousScale,
+            lastArea: remainingPinchArea,
+            referenceArea: remainingPinchArea,
+            scaleMultiplier: previousScale,
           }
         })
 
