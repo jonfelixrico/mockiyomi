@@ -7,7 +7,7 @@ import PageViewer, {
 
 import styles from './document-viewer.module.css'
 import classnames from 'classnames'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 
 type OnChangePage = (direction: 'next' | 'prev') => void
@@ -29,7 +29,8 @@ export default function DocumentViewer({
     left: 0,
     top: 0,
   })
-  function handleOverscroll({ isFinal, panDelta: { x, y } }: OverscrollEvent) {
+
+  function handleOverscroll({ isFinal, panDelta: { x } }: OverscrollEvent) {
     if (isFinal) {
       setTranslate({
         top: 0,
@@ -37,10 +38,13 @@ export default function DocumentViewer({
       })
     }
 
-    setTranslate(({ top, left }) => {
+    setTranslate(({ left, top }) => {
       return {
-        top: top + y,
-        left: left + x,
+        // TODO handle y
+        top,
+        // this code assumes that there are always 3 pages
+        // TODO handle different page counts
+        left: Math.min(Math.max(left + x, -dimensions.width), dimensions.width),
       }
     })
   }
