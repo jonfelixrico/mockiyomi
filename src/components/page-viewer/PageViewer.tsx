@@ -2,17 +2,16 @@ import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller from './PageScroller'
 import { useRef, useState } from 'react'
 import ImgWrapper from './ImgWrapper'
-import { usePinchPan } from '@/hooks/use-pinch-pan'
+import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
-import { Point } from '@/types/point.interface'
 
-export type OverscrollHandler = (event: Point | null) => void
+export type OverscrollHandler = (event: Omit<PinchPanEvent, 'pinch'>) => void
 
 export default function PageViewer({
   dimensions,
-  onOverscroll,
+  onOverscroll = () => {},
   ...props
 }: {
   dimensions: Dimensions
@@ -30,29 +29,46 @@ export default function PageViewer({
   const { scroll, setScroll } = useScrollingManager(scrollLimits)
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
 
+  const [isOverscrolling, setIsOverscrolling] = useState(false)
+
+  function processHandling(e: PinchPanEvent) {
+    const { panDelta, pinch, count } = e
+
+    if (isOverscrolling) {
+      onOverscroll(e)
+      return
+    }
+
+    const scrollDelta = {
+      top: scroll.top - panDelta.y,
+      left: scroll.left - panDelta.x,
+    }
+    if (
+      count <= 2 &&
+      !pinch &&
+      ((scrollLimits.left.min && panDelta.x < 0) ||
+        (scrollLimits.left.max && panDelta.x > 0) ||
+        (scrollLimits.top.min && panDelta.y < 0) ||
+        (scrollLimits.top.max && panDelta.y > 0))
+    ) {
+      setIsOverscrolling(true)
+      onOverscroll(e)
+    }
+
+    if (pinch) {
+      handlePinch(pinch, panDelta)
+    } else {
+      setScroll(() => scrollDelta)
+    }
+  }
+
   usePinchPan(
     ref,
-    ({ panDelta, pinch }) => {
-      if (pinch) {
-        handlePinch(pinch, panDelta)
-        return
-      }
+    (e) => {
+      processHandling(e)
 
-      const scrollDelta = {
-        top: scroll.top - panDelta.y,
-        left: scroll.left - panDelta.x,
-      }
-
-      if (
-        (scrollDelta.top > scrollLimits.top.max ||
-          scrollDelta.top < scrollLimits.top.min ||
-          scrollDelta.left > scrollLimits.top.max ||
-          scrollDelta.left < scrollLimits.top.min) &&
-        onOverscroll
-      ) {
-        onOverscroll(panDelta)
-      } else {
-        setScroll(() => scrollDelta)
+      if (e.isFinal) {
+        setIsOverscrolling(false)
       }
     },
     {
