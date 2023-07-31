@@ -39,10 +39,6 @@ export default function PageViewer({
       return
     }
 
-    const scrollDelta = {
-      top: scroll.top - panDelta.y,
-      left: scroll.left - panDelta.x,
-    }
     if (
       count <= 2 &&
       !pinch &&
@@ -58,6 +54,10 @@ export default function PageViewer({
     if (pinch) {
       handlePinch(pinch, panDelta)
     } else {
+      const scrollDelta = {
+        top: scroll.top - panDelta.y,
+        left: scroll.left - panDelta.x,
+      }
       setScroll(() => scrollDelta)
     }
   }
