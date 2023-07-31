@@ -7,7 +7,7 @@ import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 
-export type OverscrollHandler = (event: Omit<PinchPanEvent, 'pinch'>) => void
+export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 
 export default function PageViewer({
   dimensions,
@@ -16,7 +16,7 @@ export default function PageViewer({
 }: {
   dimensions: Dimensions
   src: string
-  onOverscroll?: OverscrollHandler
+  onOverscroll?: (e: OverscrollEvent) => void
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
