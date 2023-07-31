@@ -39,6 +39,12 @@ function getPinchArea(points: Point[]): number {
 
 interface Options {
   className?: string
+  /**
+   * Prevents the behavior from triggering.
+   * This will still attach the event handlers but will prevent the inner logic
+   * from firing.
+   */
+  disabled?: boolean
 }
 
 export function usePinchPan(
@@ -79,7 +85,14 @@ export function usePinchPan(
   // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl) {
+      if (
+        !refEl ||
+        /*
+         * This check is only necessary to be present in pointerdowns because pointerdowns are associated with
+         * starting the entire pinch/pan flow. Having it here is enough to prevent any pinch pans from happening.
+         */
+        options?.disabled
+      ) {
         return
       }
 
