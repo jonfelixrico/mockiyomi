@@ -24,15 +24,21 @@ export default function DocumentViewer({
   return (
     <div className="relative">
       {prevUrl ? (
-        <div className={classnames('absolute', styles.prev)}>
+        <div
+          className={classnames('absolute pointer-events-none', styles.prev)}
+        >
           <PageViewer dimensions={dimensions} src={prevUrl} />
         </div>
       ) : null}
+
       {nextUrl ? (
-        <div className={classnames('absolute', styles.next)}>
+        <div
+          className={classnames('absolute pointer-events-none', styles.next)}
+        >
           <PageViewer dimensions={dimensions} src={nextUrl} />
         </div>
       ) : null}
+
       <PageViewer dimensions={dimensions} src={currentUrl} />
     </div>
   )
