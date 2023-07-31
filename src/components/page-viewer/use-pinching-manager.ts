@@ -1,4 +1,4 @@
-import type { PinchEvent } from '@/hooks/pinch-pan/use-pinch-pan'
+import type { PinchEvent } from '@/hooks/use-pinch-pan'
 import { Dimensions } from '@/types/dimensions.interface'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
