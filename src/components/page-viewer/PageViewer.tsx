@@ -42,10 +42,10 @@ export default function PageViewer({
     if (
       count <= 2 &&
       !pinch &&
-      ((scrollLimits.left.min && panDelta.x < 0) ||
-        (scrollLimits.left.max && panDelta.x > 0) ||
-        (scrollLimits.top.min && panDelta.y < 0) ||
-        (scrollLimits.top.max && panDelta.y > 0))
+      ((scroll.left === scrollLimits.left.min && panDelta.x < 0) ||
+        (scroll.left === scrollLimits.left.max && panDelta.x > 0) ||
+        (scroll.top === scrollLimits.top.min && panDelta.y < 0) ||
+        (scroll.top === scrollLimits.top.max && panDelta.y > 0))
     ) {
       setIsOverscrolling(true)
       onOverscroll(e)
