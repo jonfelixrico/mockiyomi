@@ -49,6 +49,7 @@ export default function PageViewer({
     ) {
       setIsOverscrolling(true)
       onOverscroll(e)
+      return
     }
 
     if (pinch) {
