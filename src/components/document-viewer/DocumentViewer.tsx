@@ -63,7 +63,7 @@ export default function DocumentViewer({
         <div
           className={classnames('absolute pointer-events-none', styles.prev)}
         >
-          <PageViewer dimensions={dimensions} src={prevUrl} />
+          <PageViewer dimensions={dimensions} src={prevUrl} readonly />
         </div>
       ) : null}
 
@@ -71,7 +71,7 @@ export default function DocumentViewer({
         <div
           className={classnames('absolute pointer-events-none', styles.next)}
         >
-          <PageViewer dimensions={dimensions} src={nextUrl} />
+          <PageViewer dimensions={dimensions} src={nextUrl} readonly />
         </div>
       ) : null}
 

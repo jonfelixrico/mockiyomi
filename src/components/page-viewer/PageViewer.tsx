@@ -17,6 +17,7 @@ export default function PageViewer({
   dimensions: Dimensions
   src: string
   onOverscroll?: (e: OverscrollEvent) => void
+  readonly?: boolean
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
@@ -74,6 +75,7 @@ export default function PageViewer({
     },
     {
       className: 'cursor-grabbing',
+      disabled: props.readonly,
     }
   )
 
