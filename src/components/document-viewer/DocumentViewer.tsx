@@ -51,7 +51,8 @@ export default function DocumentViewer({
         'transition-transform': translate.left === 0 && translate.top === 0,
       })}
       style={{
-        transform: `translateX(${translate.left}px) translateY(${translate.top}px)`,
+        // TODO handle y overscroll
+        transform: `translateX(${translate.left}px)`,
       }}
     >
       {prevUrl ? (

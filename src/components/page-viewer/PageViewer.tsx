@@ -39,13 +39,14 @@ export default function PageViewer({
       return
     }
 
+    console.log(scroll.left, scrollLimits.left)
     if (
       count <= 2 &&
       !pinch &&
-      ((scroll.left === scrollLimits.left.min && panDelta.x < 0) ||
-        (scroll.left === scrollLimits.left.max && panDelta.x > 0) ||
-        (scroll.top === scrollLimits.top.min && panDelta.y < 0) ||
-        (scroll.top === scrollLimits.top.max && panDelta.y > 0))
+      // The use of comparators and max/floor is to have proper detection despite having float values
+      ((scroll.left <= Math.max(scrollLimits.left.min) && panDelta.x < 0) ||
+        (scroll.left >= Math.floor(scrollLimits.left.max) && panDelta.x > 0))
+      // TODO handle y overscroll
     ) {
       setIsOverscrolling(true)
       onOverscroll(e)
