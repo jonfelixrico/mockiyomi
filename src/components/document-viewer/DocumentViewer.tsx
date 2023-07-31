@@ -2,7 +2,9 @@
 
 import { Dimensions } from '@/types/dimensions.interface'
 import PageViewer from '@/components/page-viewer/PageViewer'
-import './document-viewer.module.css'
+
+import styles from './document-viewer.module.css'
+import classnames from 'classnames'
 
 type OnChangePage = (direction: 'next' | 'prev') => void
 
@@ -22,12 +24,12 @@ export default function DocumentViewer({
   return (
     <div className="relative">
       {prevUrl ? (
-        <div className="prev absolute">
+        <div className={classnames('absolute', styles.prev)}>
           <PageViewer dimensions={dimensions} src={prevUrl} />
         </div>
       ) : null}
       {nextUrl ? (
-        <div className="next absolute">
+        <div className={classnames('absolute', styles.next)}>
           <PageViewer dimensions={dimensions} src={nextUrl} />
         </div>
       ) : null}
