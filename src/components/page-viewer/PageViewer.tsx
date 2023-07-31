@@ -39,7 +39,6 @@ export default function PageViewer({
       return
     }
 
-    console.log(scroll.left, scrollLimits.left)
     if (
       count <= 2 &&
       !pinch &&
