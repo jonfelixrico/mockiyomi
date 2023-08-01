@@ -8,7 +8,7 @@ import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
-export interface EnabledOverscroll {
+export interface OverscrollOptions {
   top?: boolean
   bottom?: boolean
   left?: boolean
@@ -18,14 +18,14 @@ export interface EnabledOverscroll {
 export default function PageViewer({
   dimensions,
   onOverscroll = () => {},
-  overflow,
+  overscroll: overflow,
   ...props
 }: {
   dimensions: Dimensions
   src: string
   onOverscroll?: (e: OverscrollEvent) => void
   readonly?: boolean
-  overflow?: EnabledOverscroll
+  overscroll?: OverscrollOptions
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
