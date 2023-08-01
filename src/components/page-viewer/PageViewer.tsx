@@ -51,7 +51,7 @@ export default function PageViewer({
     }
 
     if (
-      count <= 2 &&
+      count <= 10 &&
       !pinch &&
       // TODO move this in a separate method or something
       ((overflow?.left &&
