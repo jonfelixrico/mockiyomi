@@ -99,7 +99,7 @@ export default function PageViewer({
     <div ref={ref} className="cursor-grab touch-none relative">
       <div
         className={classnames(
-          'absolute w-full break-all',
+          'absolute w-full break-all text-xs',
           styles['debug-text']
         )}
       >
