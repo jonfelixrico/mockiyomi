@@ -36,6 +36,7 @@ export default function DocumentViewer({
         top: 0,
         left: 0,
       })
+      return
     }
 
     setTranslate(({ left, top }) => {
