@@ -54,7 +54,7 @@ export function usePinchPan(
 ) {
   const refEl = ref.current
 
-  const { pointerCount, removePointer, setPointer, pointers } =
+  const { pointerCount, removePointer, setPointer, pointers, pointerMap } =
     usePointerTracker()
 
   const {
@@ -351,6 +351,18 @@ export function usePinchPan(
   useEffect(() => {
     const handler = (e: PointerEvent) => {
       if (!refEl || !panSession) {
+        return
+      }
+
+      /*
+       * This is done to avoid unnecessary processing for pointers that didn't change
+       * coordinate-wise.
+       */
+      const fromCache = pointerMap[e.pointerId]
+      if (
+        fromCache?.clientX === e.clientX &&
+        fromCache?.clientY === e.clientY
+      ) {
         return
       }
 

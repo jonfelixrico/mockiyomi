@@ -31,5 +31,6 @@ export function usePointerTracker() {
     setPointer,
     removePointer,
     pointers: asArray,
+    pointerMap: pointerCache,
   }
 }
