@@ -6,6 +6,8 @@ import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
+import styles from './page-viewer.module.css'
+import classnames from 'classnames'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -94,7 +96,19 @@ export default function PageViewer({
   )
 
   return (
-    <div ref={ref} className="cursor-grab touch-none">
+    <div ref={ref} className="cursor-grab touch-none relative">
+      <div
+        className={classnames(
+          'absolute w-full break-all',
+          styles['debug-text']
+        )}
+      >
+        <div>{JSON.stringify(pageDims)}</div>
+        <div>{JSON.stringify(dimensions)}</div>
+        <div>{JSON.stringify(scroll)}</div>
+        <div>{JSON.stringify(scrollLimits)}</div>
+        <div>{JSON.stringify(scale)}</div>
+      </div>
       <PageScroller
         dimensions={dimensions}
         contentDimensions={pageDims}
