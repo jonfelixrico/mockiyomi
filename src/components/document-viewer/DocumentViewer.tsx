@@ -79,6 +79,10 @@ export default function DocumentViewer({
         dimensions={dimensions}
         src={currentUrl}
         onOverscroll={handleOverscroll}
+        overscroll={{
+          left: true,
+          right: true,
+        }}
       />
     </div>
   )
