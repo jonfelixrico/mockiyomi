@@ -108,6 +108,7 @@ export default function PageViewer({
         <div>{JSON.stringify(scroll)}</div>
         <div>{JSON.stringify(scrollLimits)}</div>
         <div>{JSON.stringify(scale)}</div>
+        <div>{JSON.stringify(isOverscrolling)}</div>
       </div>
       <PageScroller
         dimensions={dimensions}
