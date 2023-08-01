@@ -33,7 +33,7 @@ export default function PageViewer({
   const [isOverscrolling, setIsOverscrolling] = useState(false)
 
   function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, moveCount: count } = e
+    const { panDelta, pinch, count } = e
 
     if (isOverscrolling) {
       onOverscroll(e)
