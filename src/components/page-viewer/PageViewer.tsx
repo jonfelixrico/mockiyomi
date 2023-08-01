@@ -59,7 +59,8 @@ export default function PageViewer({
         panDelta.x > 0) ||
         (overflow?.right &&
           (pageDims.width <= dimensions.width ||
-            scroll.left === scrollLimits.left.max) &&
+            // The use of comparators and max/floor is to have proper detection despite having float values
+            scroll.left >= Math.min(scrollLimits.left.max)) &&
           panDelta.x < 0))
       // TODO handle y overscroll
     ) {
