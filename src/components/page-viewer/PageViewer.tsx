@@ -56,11 +56,11 @@ export default function PageViewer({
       // TODO move this in a separate method or something
       ((overflow?.left &&
         scroll.left === scrollLimits.left.min &&
-        panDelta.x < 0) ||
+        panDelta.x > 0) ||
         (overflow?.right &&
           (pageDims.width <= dimensions.width ||
             scroll.left === scrollLimits.left.max) &&
-          panDelta.x > 0))
+          panDelta.x < 0))
       // TODO handle y overscroll
     ) {
       setIsOverscrolling(true)
