@@ -54,13 +54,12 @@ export default function PageViewer({
       count <= 2 &&
       !pinch &&
       // TODO move this in a separate method or something
-      // The use of comparators and max/floor is to have proper detection despite having float values
       ((overflow?.left &&
-        scroll.left <= scrollLimits.left.min &&
+        scroll.left === scrollLimits.left.min &&
         panDelta.x < 0) ||
         (overflow?.right &&
           (pageDims.width <= dimensions.width ||
-            scroll.left >= scrollLimits.left.max) &&
+            scroll.left === scrollLimits.left.max) &&
           panDelta.x > 0))
       // TODO handle y overscroll
     ) {
