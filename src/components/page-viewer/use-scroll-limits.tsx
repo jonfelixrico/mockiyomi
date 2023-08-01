@@ -24,13 +24,15 @@ export function useScrollLimits(
          * which among the values are higher and lower to avoid negative values.
          *
          * Using Math.abs is a simpler way to prevent negative values.
+         *
+         * TODO add explanatio about floor
          */
-        max: Math.abs(pageDims.height - containerDims.height),
+        max: Math.floor(Math.abs(pageDims.height - containerDims.height)),
       },
 
       left: {
         min: 0,
-        max: Math.abs(pageDims.width - containerDims.width),
+        max: Math.floor(Math.abs(pageDims.width - containerDims.width)),
       },
     }
   }, [pageDims, containerDims])
