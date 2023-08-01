@@ -8,16 +8,24 @@ import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
+export interface EnabledOverscroll {
+  top?: boolean
+  bottom?: boolean
+  left?: boolean
+  right?: boolean
+}
 
 export default function PageViewer({
   dimensions,
   onOverscroll = () => {},
+  overflow,
   ...props
 }: {
   dimensions: Dimensions
   src: string
   onOverscroll?: (e: OverscrollEvent) => void
   readonly?: boolean
+  overflow?: EnabledOverscroll
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
@@ -44,8 +52,12 @@ export default function PageViewer({
       count <= 2 &&
       !pinch &&
       // The use of comparators and max/floor is to have proper detection despite having float values
-      ((scroll.left <= Math.max(scrollLimits.left.min) && panDelta.x < 0) ||
-        (scroll.left >= Math.floor(scrollLimits.left.max) && panDelta.x > 0))
+      ((overflow?.left &&
+        scroll.left <= Math.max(scrollLimits.left.min) &&
+        panDelta.x < 0) ||
+        (overflow?.right &&
+          scroll.left >= Math.floor(scrollLimits.left.max) &&
+          panDelta.x > 0))
       // TODO handle y overscroll
     ) {
       setIsOverscrolling(true)
