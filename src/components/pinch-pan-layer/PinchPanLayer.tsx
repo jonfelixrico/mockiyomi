@@ -1,5 +1,4 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import PageScroller from './PageScroller'
 import { useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
@@ -8,6 +7,7 @@ import { useScrollLimits } from './use-scroll-limits'
 import styles from './page-viewer.module.css'
 import classnames from 'classnames'
 import { Point } from '@/types/point.interface'
+import { ScrollPosition } from '@/types/scroll-location.interface'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -19,19 +19,28 @@ export interface OverscrollOptions {
 
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
 
-export default function PageViewer({
-  dimensions: containerDims,
+type LikeUseStateSetter<Type> = Type | ((value: Type) => Type)
+
+export default function PinchPanLayer({
+  containerDims,
   onOverscroll = () => {},
-  overscroll: overscroll,
+  overscroll,
   contentDims,
   ...props
 }: {
-  dimensions: Dimensions
-  onOverscroll?: (e: OverscrollEvent) => void
-  readonly?: boolean
-  overscroll?: OverscrollOptions
-  debug?: boolean
+  containerDims: Dimensions
   contentDims: Dimensions
+
+  onOverscroll?: (e: OverscrollEvent) => void
+  overscroll?: OverscrollOptions
+
+  scroll: ScrollPosition
+  setScroll: (position: LikeUseStateSetter<ScrollPosition>) => void
+
+  scale: number
+  setScale: (scale: LikeUseStateSetter<number>) => void
+
+  debug?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const scrollLimits = useScrollLimits(contentDims, containerDims)
@@ -130,7 +139,6 @@ export default function PageViewer({
     },
     {
       className: 'cursor-grabbing',
-      disabled: props.readonly,
     }
   )
 
