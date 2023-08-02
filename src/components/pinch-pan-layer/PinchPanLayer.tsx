@@ -1,5 +1,5 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { useRef, useState } from 'react'
+import { SetStateAction, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
@@ -8,6 +8,7 @@ import styles from './page-viewer.module.css'
 import classnames from 'classnames'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
+import { Limits } from '@/types/limits.interface'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -17,14 +18,21 @@ export interface OverscrollOptions {
   right?: boolean
 }
 
-const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
+function clampValue(value: number, limits: Limits) {
+  const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
+  return Math.min(minBound, limits.max) // prevent value from going past the max limit
+}
 
+const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
 
 export default function PinchPanLayer({
   containerDims,
   onOverscroll = () => {},
   overscroll,
   contentDims,
+
+  scroll,
+  setScroll,
   ...props
 }: {
   containerDims: Dimensions
@@ -42,12 +50,23 @@ export default function PinchPanLayer({
   debug?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const scrollLimits = useScrollLimits(contentDims, containerDims)
 
-  const { scroll, setScroll } = useScrollingManager(scrollLimits)
+  const scrollLimits = useScrollLimits(contentDims, containerDims)
+  function setScrollHelper(
+    callback: (position: ScrollPosition) => ScrollPosition
+  ) {
+    setScroll((value) => {
+      const raw = callback(value)
+      return {
+        top: clampValue(raw.top, scrollLimits.top),
+        left: clampValue(raw.left, scrollLimits.left),
+      }
+    })
+  }
+
   const { handlePinch, scale } = usePinchingManager(
     scroll,
-    setScroll,
+    setScrollHelper,
     contentDims
   )
 
