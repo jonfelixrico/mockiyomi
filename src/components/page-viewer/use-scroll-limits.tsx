@@ -1,10 +1,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
+import { Limits } from '@/types/limits.interface'
 import { useMemo } from 'react'
-
-interface Limits {
-  min: number
-  max: number
-}
 
 export interface ScrollLimits {
   top: Limits
