@@ -1,5 +1,5 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { SetStateAction, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
@@ -41,10 +41,10 @@ export default function PinchPanLayer({
   overscroll?: OverscrollOptions
 
   scroll: ScrollPosition
-  setScroll: (position: SetStateAction<ScrollPosition>) => void
+  setScroll: Dispatch<SetStateAction<ScrollPosition>>
 
   scale: number
-  setScale: (scale: SetStateAction<number>) => void
+  setScale: Dispatch<SetStateAction<number>>
 
   debug?: boolean
 }) {
