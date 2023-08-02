@@ -55,6 +55,7 @@ export default function DocumentViewer({
   }, [dimensions, previousUrl, nextUrl])
 
   const [shouldTransition, setShouldTransition] = useState(true)
+  const [isForPageChange, setIsForPageChange] = useState(false)
 
   async function handleOverscroll({
     isFinal,
@@ -71,6 +72,7 @@ export default function DocumentViewer({
         previousUrl &&
         translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD
       ) {
+        setIsForPageChange(true)
         setTranslate({
           top: 0,
           left: dimensions.width,
@@ -82,6 +84,7 @@ export default function DocumentViewer({
         nextUrl &&
         translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD
       ) {
+        setIsForPageChange(true)
         setTranslate({
           top: 0,
           left: -dimensions.width,
@@ -115,6 +118,7 @@ export default function DocumentViewer({
     <div
       className={classnames('relative origin-top-left', {
         'transition-transform': shouldTransition,
+        'pointer-events-none': isForPageChange,
       })}
       style={{
         // TODO handle y overscroll
