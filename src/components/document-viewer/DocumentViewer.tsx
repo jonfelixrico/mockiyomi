@@ -36,11 +36,11 @@ export default function DocumentViewer({
       min: 0,
     }
 
-    if (previousUrl) {
+    if (nextUrl) {
       limits.min = -dimensions.width
     }
 
-    if (nextUrl) {
+    if (previousUrl) {
       limits.max = dimensions.height
     }
 
@@ -99,8 +99,8 @@ export default function DocumentViewer({
         src={currentUrl}
         onOverscroll={handleOverscroll}
         overscroll={{
-          left: !!nextUrl,
-          right: !!previousUrl,
+          left: !!previousUrl,
+          right: !!nextUrl,
         }}
       />
     </div>
