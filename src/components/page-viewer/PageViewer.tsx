@@ -18,6 +18,8 @@ export interface OverscrollOptions {
   right?: boolean
 }
 
+const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
+
 export default function PageViewer({
   dimensions,
   onOverscroll = () => {},
@@ -44,6 +46,7 @@ export default function PageViewer({
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
 
   const [isOverscrolling, setIsOverscrolling] = useState(false)
+  const [isEligibleForOverscroll, setIsEligibleForOverscroll] = useState(false)
   function checkIfOverscroll(panDelta: Point) {
     if (!overflow) {
       return false
@@ -94,13 +97,19 @@ export default function PageViewer({
       return
     }
 
-    if (count <= 10 && !pinch && checkIfOverscroll(panDelta)) {
+    if (
+      isEligibleForOverscroll &&
+      count <= PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL &&
+      !pinch &&
+      checkIfOverscroll(panDelta)
+    ) {
       setIsOverscrolling(true)
       onOverscroll(e)
       return
     }
 
     if (pinch) {
+      setIsEligibleForOverscroll(false)
       handlePinch(pinch, panDelta)
     } else {
       const scrollDelta = {
@@ -118,6 +127,7 @@ export default function PageViewer({
 
       if (e.isFinal) {
         setIsOverscrolling(false)
+        setIsEligibleForOverscroll(true)
       }
     },
     {
