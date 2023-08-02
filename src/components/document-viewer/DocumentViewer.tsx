@@ -9,15 +9,22 @@ import styles from './document-viewer.module.css'
 import classnames from 'classnames'
 import { useMemo, useState } from 'react'
 import { ScrollPosition } from '@/types/scroll-location.interface'
+import { Limits } from '@/types/limits.interface'
+import { delay } from '@/utils/time-utils'
 
-type OnChangePage = (direction: 'next' | 'prev') => void
+export type OnChangePage = (direction: 'next' | 'previous') => void
+
+const CHANGE_PAGE_THRESHOLD = 2 / 3
+
+// Taken from the transition-transform class' transition time
+const CHANGE_PAGE_ANIMATION_TIME = 150
 
 export default function DocumentViewer({
-  previousUrl: prevUrl,
+  previousUrl,
   nextUrl,
   dimensions,
   currentUrl,
-  ...props
+  onChangePage,
 }: {
   previousUrl?: string
   currentUrl: string
@@ -30,12 +37,68 @@ export default function DocumentViewer({
     top: 0,
   })
 
-  function handleOverscroll({ isFinal, panDelta: { x } }: OverscrollEvent) {
+  const translateLimits = useMemo(() => {
+    const limits: Limits = {
+      max: 0,
+      min: 0,
+    }
+
+    if (nextUrl) {
+      limits.min = -dimensions.width
+    }
+
+    if (previousUrl) {
+      limits.max = dimensions.width
+    }
+
+    return limits
+  }, [dimensions, previousUrl, nextUrl])
+
+  const [shouldTransition, setShouldTransition] = useState(true)
+  const [isForPageChange, setIsForPageChange] = useState(false)
+
+  async function handleOverscroll({
+    isFinal,
+    panDelta: { x },
+  }: OverscrollEvent) {
+    if (shouldTransition) {
+      setShouldTransition(false)
+    }
+
     if (isFinal) {
-      setTranslate({
-        top: 0,
-        left: 0,
-      })
+      setShouldTransition(true)
+
+      if (
+        previousUrl &&
+        translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD
+      ) {
+        setIsForPageChange(true)
+        setTranslate({
+          top: 0,
+          left: dimensions.width,
+        })
+
+        await delay(CHANGE_PAGE_ANIMATION_TIME)
+        onChangePage('previous')
+      } else if (
+        nextUrl &&
+        translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD
+      ) {
+        setIsForPageChange(true)
+        setTranslate({
+          top: 0,
+          left: -dimensions.width,
+        })
+
+        await delay(CHANGE_PAGE_ANIMATION_TIME)
+        onChangePage('next')
+      } else {
+        setTranslate({
+          top: 0,
+          left: 0,
+        })
+      }
+
       return
     }
 
@@ -43,9 +106,10 @@ export default function DocumentViewer({
       return {
         // TODO handle y
         top,
-        // this code assumes that there are always 3 pages
-        // TODO handle different page counts
-        left: Math.min(Math.max(left + x, -dimensions.width), dimensions.width),
+        left: Math.min(
+          Math.max(left + x, translateLimits.min),
+          translateLimits.max
+        ),
       }
     })
   }
@@ -53,18 +117,19 @@ export default function DocumentViewer({
   return (
     <div
       className={classnames('relative origin-top-left', {
-        'transition-transform': translate.left === 0 && translate.top === 0,
+        'transition-transform': shouldTransition,
+        'pointer-events-none': isForPageChange,
       })}
       style={{
         // TODO handle y overscroll
         transform: `translateX(${translate.left}px)`,
       }}
     >
-      {prevUrl ? (
+      {previousUrl ? (
         <div
           className={classnames('absolute pointer-events-none', styles.prev)}
         >
-          <PageViewer dimensions={dimensions} src={prevUrl} readonly />
+          <PageViewer dimensions={dimensions} src={previousUrl} readonly />
         </div>
       ) : null}
 
@@ -81,8 +146,8 @@ export default function DocumentViewer({
         src={currentUrl}
         onOverscroll={handleOverscroll}
         overscroll={{
-          left: true,
-          right: true,
+          left: !!previousUrl,
+          right: !!nextUrl,
         }}
       />
     </div>

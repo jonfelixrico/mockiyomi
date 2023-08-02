@@ -65,13 +65,15 @@ export default function ImgWrapper({
   const ref = useRef<HTMLImageElement>(null)
 
   const [ratio, setRatio] = useState(1)
-  useEffect(() => {
+  function getImageRatio() {
     const img = ref.current
 
     if (img?.complete) {
       setRatio(img.naturalWidth / img.naturalHeight)
     }
-  }, [ref])
+  }
+
+  useEffect(getImageRatio, [ref])
 
   const fittingDims = useMemo(
     () => getDimensionsToFitContainer(containerDimensions, ratio),
@@ -99,6 +101,7 @@ export default function ImgWrapper({
       className="max-w-none"
       ref={ref}
       style={scaledDims}
+      onLoad={getImageRatio}
     />
 
     /*
