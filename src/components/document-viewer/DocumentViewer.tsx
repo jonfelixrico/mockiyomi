@@ -12,6 +12,7 @@ import { ScrollPosition } from '@/types/scroll-location.interface'
 import { Limits } from '@/types/limits.interface'
 
 type OnChangePage = (direction: 'next' | 'prev') => void
+const CHANGE_PAGE_THRESHOLD = 2 / 3
 
 export default function DocumentViewer({
   previousUrl,
@@ -49,7 +50,6 @@ export default function DocumentViewer({
 
   const [isOverscrolling, setIsOverscrolling] = useState(false)
 
-  const CHANGE_PAGE_THRESHOLD = 2 / 3
   function handleOverscroll({ isFinal, panDelta: { x } }: OverscrollEvent) {
     if (!isOverscrolling) {
       setIsOverscrolling(true)
