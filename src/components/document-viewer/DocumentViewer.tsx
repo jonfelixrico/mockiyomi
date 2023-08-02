@@ -18,6 +18,7 @@ const CHANGE_PAGE_THRESHOLD = 2 / 3
 
 // Taken from the transition-transform class' transition time
 const CHANGE_PAGE_ANIMATION_TIME = 150
+const SWIPE_TRESHOLD = 250
 
 export default function DocumentViewer({
   previousUrl,
@@ -60,6 +61,7 @@ export default function DocumentViewer({
   async function handleOverscroll({
     isFinal,
     panDelta: { x },
+    duration,
   }: OverscrollEvent) {
     if (shouldTransition) {
       setShouldTransition(false)
@@ -70,7 +72,8 @@ export default function DocumentViewer({
 
       if (
         previousUrl &&
-        translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD
+        ((duration <= SWIPE_TRESHOLD && translate.left > 0) ||
+          translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD)
       ) {
         setIsForPageChange(true)
         setTranslate({
@@ -82,7 +85,8 @@ export default function DocumentViewer({
         onChangePage('previous')
       } else if (
         nextUrl &&
-        translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD
+        ((duration <= SWIPE_TRESHOLD && translate.left < 0) ||
+          translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD)
       ) {
         setIsForPageChange(true)
         setTranslate({
