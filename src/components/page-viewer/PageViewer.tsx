@@ -21,7 +21,7 @@ export interface OverscrollOptions {
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
 
 export default function PageViewer({
-  dimensions,
+  dimensions: containerDims,
   onOverscroll = () => {},
   overscroll: overflow,
   src,
@@ -40,7 +40,7 @@ export default function PageViewer({
   })
 
   const ref = useRef<HTMLDivElement>(null)
-  const scrollLimits = useScrollLimits(pageDims, dimensions)
+  const scrollLimits = useScrollLimits(pageDims, containerDims)
 
   const { scroll, setScroll } = useScrollingManager(scrollLimits)
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
@@ -76,7 +76,7 @@ export default function PageViewer({
        * The reason there is that scroll.left will always be zero if the content is smaller
        * than the container.
        */
-      (pageDims.width <= dimensions.width ||
+      (pageDims.width <= containerDims.width ||
         // The use of comparators and max/floor is to have proper detection despite having float values
         scroll.left >= Math.min(scrollLimits.left.max)) &&
       panDelta.x < 0
@@ -146,7 +146,7 @@ export default function PageViewer({
           )}
         >
           <div>{JSON.stringify(pageDims)}</div>
-          <div>{JSON.stringify(dimensions)}</div>
+          <div>{JSON.stringify(containerDims)}</div>
           <div>{JSON.stringify(scroll)}</div>
           <div>{JSON.stringify(scrollLimits)}</div>
           <div>{JSON.stringify(scale)}</div>
@@ -155,14 +155,14 @@ export default function PageViewer({
       ) : null}
 
       <PageScroller
-        dimensions={dimensions}
+        dimensions={containerDims}
         contentDimensions={pageDims}
         scroll={scroll}
       >
         {/* TODO maybe add a proper alt */}
         <ImgWrapper
           alt={src}
-          containerDimensions={dimensions}
+          containerDimensions={containerDims}
           scale={scale}
           src={src}
           onDimensionsEmit={setPageDims}
