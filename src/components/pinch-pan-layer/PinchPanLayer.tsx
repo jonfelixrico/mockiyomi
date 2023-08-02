@@ -52,8 +52,6 @@ export default function PinchPanLayer({
 
   debug?: boolean
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-
   const scaledContentDims = useMemo(() => {
     return {
       width: contentDims.width * scale,
@@ -159,6 +157,7 @@ export default function PinchPanLayer({
     }
   }
 
+  const ref = useRef<HTMLDivElement>(null)
   usePinchPan(
     ref,
     (e) => {
