@@ -1,5 +1,5 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
@@ -32,6 +32,10 @@ export default function PinchPanLayer({
 
   scroll,
   setScroll,
+
+  scale,
+  setScale,
+
   ...props
 }: {
   containerDims: Dimensions
@@ -50,7 +54,14 @@ export default function PinchPanLayer({
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  const scrollLimits = useScrollLimits(contentDims, containerDims)
+  const scaledContentDims = useMemo(() => {
+    return {
+      width: contentDims.width * scale,
+      height: contentDims.height * scale,
+    }
+  }, [scale, contentDims])
+
+  const scrollLimits = useScrollLimits(scaledContentDims, containerDims)
   function setScrollHelper(
     callback: (position: ScrollPosition) => ScrollPosition
   ) {
@@ -63,7 +74,7 @@ export default function PinchPanLayer({
     })
   }
 
-  const { handlePinch, scale } = usePinchingManager(
+  const { handlePinch } = usePinchingManager(
     scroll,
     setScrollHelper,
     contentDims
