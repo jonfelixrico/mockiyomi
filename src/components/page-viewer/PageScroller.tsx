@@ -38,7 +38,7 @@ export default function PageScroller({
        * width/height
        */}
       <div
-        className="flex flex-row justify-center block-inline flex-nowrap"
+        className="flex flex-row justify-center items-center block-inline flex-nowrap"
         style={{
           width: Math.max(dimensions.width, contentDimensions.width),
           height: Math.max(dimensions.height, contentDimensions.height),

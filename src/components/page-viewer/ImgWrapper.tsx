@@ -3,20 +3,34 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 function getDimensionsToFitContainer(
   containerDims: Dimensions,
-  ratio: number
+  imageRatio: number
 ): Dimensions {
-  if (containerDims.width >= containerDims.height) {
-    // landscape or square
+  const containerRatio = containerDims.width / containerDims.height
+
+  if (imageRatio <= containerRatio) {
+    /*
+     * Scenarios:
+     * Landscape container, portrait image
+     * Landscape container, landscape image, but image has smaller height
+     */
+
+    // Fit height
     return {
       height: containerDims.height,
-      width: containerDims.height * ratio,
+      width: containerDims.height * imageRatio,
     }
-  }
+  } else {
+    /*
+     * Scenarios:
+     * Portrait container, landscape image
+     * Portrait container, portrait image, but image has narrower width
+     */
 
-  // portrait
-  return {
-    width: containerDims.width,
-    height: containerDims.width / ratio,
+    // Fit width
+    return {
+      width: containerDims.width,
+      height: containerDims.width / imageRatio,
+    }
   }
 }
 
@@ -51,13 +65,15 @@ export default function ImgWrapper({
   const ref = useRef<HTMLImageElement>(null)
 
   const [ratio, setRatio] = useState(1)
-  useEffect(() => {
+  function getImageRatio() {
     const img = ref.current
 
     if (img?.complete) {
       setRatio(img.naturalWidth / img.naturalHeight)
     }
-  }, [ref])
+  }
+
+  useEffect(getImageRatio, [ref])
 
   const fittingDims = useMemo(
     () => getDimensionsToFitContainer(containerDimensions, ratio),
@@ -85,6 +101,7 @@ export default function ImgWrapper({
       className="max-w-none"
       ref={ref}
       style={scaledDims}
+      onLoad={getImageRatio}
     />
 
     /*

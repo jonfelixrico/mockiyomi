@@ -5,3 +5,12 @@
 body.dragging * {
   pointer-events: none;
 }
+
+.h-screen {
+  /*
+   * Tailwind's h-screen class doesn't work properly for mobile devices since it's using
+   * `vh` which is the outer window height, including the toolbar and such.
+   * `dvh` fixes this issue since it only considers the inner content, minus the toolbar.
+   */
+  height: 100dvh;
+}
