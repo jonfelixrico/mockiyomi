@@ -10,8 +10,8 @@ interface SetRatioPayload {
   ratio: number
 }
 
-export const imageSlice = createSlice({
-  name: 'image',
+const pageMetadataSlice = createSlice({
+  name: 'pageMetadata',
 
   initialState: {
     ratios: {},
@@ -24,6 +24,5 @@ export const imageSlice = createSlice({
   },
 })
 
-export const { setRatio } = imageSlice.actions
-
-export default imageSlice.reducer
+export const pageMetadataActions = pageMetadataSlice.actions
+export default pageMetadataSlice.reducer

@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import image from './image-slice'
+import pageMetadata from './page-metadata-slice'
 
 export default configureStore({
   reducer: {
-    image,
+    pageMetadata,
   },
 })
