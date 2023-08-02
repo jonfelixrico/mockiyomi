@@ -6,7 +6,7 @@ import DocumentViewer, {
 import { useCallback, useState } from 'react'
 import { useMeasure } from 'react-use'
 
-const URLS = new Array(9)
+const URLS = new Array(8)
   .fill(null)
   .map((_, index) => `/placeholder/${index + 1}.jpg`)
 
