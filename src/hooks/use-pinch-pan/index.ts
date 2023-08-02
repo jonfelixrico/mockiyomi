@@ -18,7 +18,7 @@ export interface PinchPanEvent {
 
   count: number
 
-  duration: number
+  elapsedTime: number
 }
 
 export interface PinchEvent {
@@ -73,7 +73,7 @@ export function usePinchPan(
   const [startTimestamp, setStartTimestamp] = useState(Date.now())
   const [count, setCount] = useState(1)
   function emit(
-    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'duration'>,
+    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
     order?: 'first' | 'final'
   ) {
     hookListener({
@@ -82,7 +82,7 @@ export function usePinchPan(
       isFirst: order === 'first',
       isFinal: order === 'final',
       count,
-      duration: Date.now() - startTimestamp,
+      elapsedTime: Date.now() - startTimestamp,
     })
   }
 

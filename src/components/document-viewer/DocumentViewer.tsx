@@ -61,7 +61,7 @@ export default function DocumentViewer({
   async function handleOverscroll({
     isFinal,
     panDelta: { x },
-    duration,
+    elapsedTime,
   }: OverscrollEvent) {
     if (shouldTransition) {
       setShouldTransition(false)
@@ -72,7 +72,7 @@ export default function DocumentViewer({
 
       if (
         previousUrl &&
-        ((duration <= SWIPE_TRESHOLD && translate.left > 0) ||
+        ((elapsedTime <= SWIPE_TRESHOLD && translate.left > 0) ||
           translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD)
       ) {
         setIsForPageChange(true)
@@ -85,7 +85,7 @@ export default function DocumentViewer({
         onChangePage('previous')
       } else if (
         nextUrl &&
-        ((duration <= SWIPE_TRESHOLD && translate.left < 0) ||
+        ((elapsedTime <= SWIPE_TRESHOLD && translate.left < 0) ||
           translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD)
       ) {
         setIsForPageChange(true)
