@@ -21,6 +21,7 @@ export default function PageViewer({
   dimensions,
   onOverscroll = () => {},
   overscroll: overflow,
+  src,
   ...props
 }: {
   dimensions: Dimensions
@@ -121,10 +122,10 @@ export default function PageViewer({
       >
         {/* TODO maybe add a proper alt */}
         <ImgWrapper
-          alt={props.src}
+          alt={src}
           containerDimensions={dimensions}
           scale={scale}
-          src={props.src}
+          src={src}
           onDimensionsEmit={setPageDims}
         />
       </PageScroller>
