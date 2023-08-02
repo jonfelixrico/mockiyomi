@@ -1,7 +1,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import { SetStateAction, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
-import { useScrollingManager } from './use-scrolling-manager'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 import styles from './page-viewer.module.css'
