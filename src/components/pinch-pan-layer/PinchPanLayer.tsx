@@ -155,7 +155,7 @@ export default function PinchPanLayer({
         top: scroll.top - panDelta.y,
         left: scroll.left - panDelta.x,
       }
-      setScroll(() => scrollDelta)
+      setScrollHelper(() => scrollDelta)
     }
   }
 
