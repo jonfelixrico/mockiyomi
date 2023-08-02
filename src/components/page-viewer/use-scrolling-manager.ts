@@ -1,9 +1,9 @@
-import { Dimensions } from '@/types/dimensions.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ScrollLimits } from './use-scroll-limits'
+import { Limits } from '@/types/limits.interface'
 
-function clampValue(value: number, limits: { min: number; max: number }) {
+function clampValue(value: number, limits: Limits) {
   const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
   return Math.min(minBound, limits.max) // prevent value from going past the max limit
 }
