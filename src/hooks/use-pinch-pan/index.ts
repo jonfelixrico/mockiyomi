@@ -165,7 +165,7 @@ export function usePinchPan(
 
           pinch: {
             scale: 1, // we're starting of with a scale of 1 because we've just started
-            isFirst: false,
+            isFirst: true,
             isFinal: false,
             location: pinchCenterPoint,
           },
