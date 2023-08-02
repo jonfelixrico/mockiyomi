@@ -48,7 +48,7 @@ export default function DocumentViewer({
     }
 
     if (previousUrl) {
-      limits.max = dimensions.height
+      limits.max = dimensions.width
     }
 
     return limits
