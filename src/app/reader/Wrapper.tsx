@@ -6,12 +6,9 @@ import DocumentViewer, {
 import { useCallback, useState } from 'react'
 import { useMeasure } from 'react-use'
 
-const URLS = [
-  '/placeholder/1.jpg',
-  '/placeholder/2.jpg',
-  '/placeholder/3.jpg',
-  '/placeholder/4.jpg',
-]
+const URLS = new Array(9)
+  .fill(null)
+  .map((_, index) => `/placeholder/${index + 1}.jpg`)
 
 export default function Wrapper() {
   const [ref, dims] = useMeasure<HTMLDivElement>()
