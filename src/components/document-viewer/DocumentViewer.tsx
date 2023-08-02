@@ -9,6 +9,7 @@ import styles from './document-viewer.module.css'
 import classnames from 'classnames'
 import { useMemo, useState } from 'react'
 import { ScrollPosition } from '@/types/scroll-location.interface'
+import { Limits } from '@/types/limits.interface'
 
 type OnChangePage = (direction: 'next' | 'prev') => void
 
@@ -29,6 +30,23 @@ export default function DocumentViewer({
     top: 0,
   })
 
+  const translateLimits = useMemo(() => {
+    const limits: Limits = {
+      max: 0,
+      min: 0,
+    }
+
+    if (previousUrl) {
+      limits.min = -dimensions.width
+    }
+
+    if (nextUrl) {
+      limits.max = dimensions.height
+    }
+
+    return limits
+  }, [dimensions, previousUrl, nextUrl])
+
   function handleOverscroll({ isFinal, panDelta: { x } }: OverscrollEvent) {
     if (isFinal) {
       setTranslate({
@@ -42,9 +60,10 @@ export default function DocumentViewer({
       return {
         // TODO handle y
         top,
-        // this code assumes that there are always 3 pages
-        // TODO handle different page counts
-        left: Math.min(Math.max(left + x, -dimensions.width), dimensions.width),
+        left: Math.min(
+          Math.max(left + x, translateLimits.min),
+          translateLimits.max
+        ),
       }
     })
   }
@@ -80,8 +99,8 @@ export default function DocumentViewer({
         src={currentUrl}
         onOverscroll={handleOverscroll}
         overscroll={{
-          left: true,
-          right: true,
+          left: !!nextUrl,
+          right: !!previousUrl,
         }}
       />
     </div>
