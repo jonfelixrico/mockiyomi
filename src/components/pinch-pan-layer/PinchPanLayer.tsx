@@ -179,7 +179,7 @@ export default function PinchPanLayer({
       {props.debug ? (
         <div
           className={classnames(
-            'w-full break-all text-xs',
+            'w-full break-all text-xs pointer-events-none',
             styles['debug-text']
           )}
         >
