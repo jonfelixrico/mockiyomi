@@ -22,7 +22,7 @@ const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
 export default function PageViewer({
   dimensions: containerDims,
   onOverscroll = () => {},
-  overscroll: overflow,
+  overscroll: overscroll,
   contentDims,
   ...props
 }: {
@@ -46,7 +46,7 @@ export default function PageViewer({
   const [isOverscrolling, setIsOverscrolling] = useState(false)
   const [isEligibleForOverscroll, setIsEligibleForOverscroll] = useState(false)
   function checkIfOverscroll(panDelta: Point) {
-    if (!overflow) {
+    if (!overscroll) {
       return false
     }
 
@@ -57,7 +57,7 @@ export default function PageViewer({
      */
 
     if (
-      overflow.left &&
+      overscroll.left &&
       // The leftmost edge of the content is flush against the leftmost side of the container...
       scroll.left === scrollLimits.left.min &&
       // ...and they swiped left
@@ -65,7 +65,7 @@ export default function PageViewer({
     ) {
       return true
     } else if (
-      overflow.right &&
+      overscroll.right &&
       /*
        * Same pattern as above.
        * The catch here is the first part of the condition above is ignored if the content is smaller
