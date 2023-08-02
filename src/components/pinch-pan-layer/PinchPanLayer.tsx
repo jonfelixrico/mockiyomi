@@ -1,13 +1,13 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
-import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 import styles from './page-viewer.module.css'
 import classnames from 'classnames'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 import { Limits } from '@/types/limits.interface'
+import { usePinchingManagerV2 } from './use-pinching-manager-v2'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -74,9 +74,13 @@ export default function PinchPanLayer({
     })
   }
 
-  const { handlePinch } = usePinchingManager(
+  const { handlePinch } = usePinchingManagerV2(
     scroll,
     setScrollHelper,
+
+    scale,
+    setScale,
+
     contentDims
   )
 
@@ -111,7 +115,7 @@ export default function PinchPanLayer({
        * The reason there is that scroll.left will always be zero if the content is smaller
        * than the container.
        */
-      (contentDims.width <= containerDims.width ||
+      (scaledContentDims.width <= containerDims.width ||
         // The use of comparators and max/floor is to have proper detection despite having float values
         scroll.left >= Math.min(scrollLimits.left.max)) &&
       panDelta.x < 0
@@ -180,6 +184,7 @@ export default function PinchPanLayer({
           )}
         >
           <div>{JSON.stringify(contentDims)}</div>
+          <div>{JSON.stringify(scaledContentDims)}</div>
           <div>{JSON.stringify(containerDims)}</div>
           <div>{JSON.stringify(scroll)}</div>
           <div>{JSON.stringify(scrollLimits)}</div>
