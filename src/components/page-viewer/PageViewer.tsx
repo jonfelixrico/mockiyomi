@@ -96,6 +96,22 @@ export default function PageViewer({
 
   return (
     <div className="relative">
+      {!props.readonly ? (
+        <div className="absolute">
+          <PinchPanLayer
+            scroll={scroll}
+            setScroll={setScroll}
+            scale={scale}
+            setScale={setScale}
+            overscroll={overscroll}
+            onOverscroll={onOverscroll}
+            contentDims={contentDims}
+            containerDims={containerDims}
+            debug
+          />
+        </div>
+      ) : null}
+
       <PageScroller
         scroll={scroll}
         contentDimensions={scaledContentDims}
@@ -108,18 +124,6 @@ export default function PageViewer({
           onRatioEmit={setRatio}
         />
       </PageScroller>
-      <div className="absolute">
-        <PinchPanLayer
-          scroll={scroll}
-          setScroll={setScroll}
-          scale={scale}
-          setScale={setScale}
-          overscroll={overscroll}
-          onOverscroll={onOverscroll}
-          contentDims={contentDims}
-          containerDims={containerDims}
-        />
-      </div>
     </div>
   )
 }
