@@ -47,12 +47,39 @@ export default function DocumentViewer({
     return limits
   }, [dimensions, previousUrl, nextUrl])
 
+  const [isOverscrolling, setIsOverscrolling] = useState(false)
+
+  const CHANGE_PAGE_THRESHOLD = 2 / 3
   function handleOverscroll({ isFinal, panDelta: { x } }: OverscrollEvent) {
+    if (!isOverscrolling) {
+      setIsOverscrolling(true)
+    }
+
     if (isFinal) {
-      setTranslate({
-        top: 0,
-        left: 0,
-      })
+      if (
+        previousUrl &&
+        translate.left > dimensions.width * CHANGE_PAGE_THRESHOLD
+      ) {
+        setTranslate({
+          top: 0,
+          left: dimensions.width,
+        })
+      } else if (
+        nextUrl &&
+        translate.left < -dimensions.width * CHANGE_PAGE_THRESHOLD
+      ) {
+        setTranslate({
+          top: 0,
+          left: -dimensions.width,
+        })
+      } else {
+        setTranslate({
+          top: 0,
+          left: 0,
+        })
+      }
+
+      setIsOverscrolling(false)
       return
     }
 
@@ -71,7 +98,7 @@ export default function DocumentViewer({
   return (
     <div
       className={classnames('relative origin-top-left', {
-        'transition-transform': translate.left === 0 && translate.top === 0,
+        'transition-transform': !isOverscrolling,
       })}
       style={{
         // TODO handle y overscroll
