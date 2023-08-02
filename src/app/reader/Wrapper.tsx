@@ -26,7 +26,10 @@ export default function Wrapper() {
   )
 
   return (
-    <div ref={ref} className="h-screen w-screen overflow-hidden">
+    <div
+      ref={ref}
+      className="h-screen w-screen overflow-hidden touch-none overscroll-contain"
+    >
       <DocumentViewer
         dimensions={dims}
         previousUrl={URLS[pageIdx - 1]}
