@@ -12,7 +12,7 @@ import { ScrollPosition } from '@/types/scroll-location.interface'
 import { Limits } from '@/types/limits.interface'
 import { delay } from '@/utils/time-utils'
 
-type OnChangePage = (direction: 'next' | 'previous') => void
+export type OnChangePage = (direction: 'next' | 'previous') => void
 
 const CHANGE_PAGE_THRESHOLD = 2 / 3
 
