@@ -28,6 +28,7 @@ export default function PageViewer({
   onOverscroll?: (e: OverscrollEvent) => void
   readonly?: boolean
   overscroll?: OverscrollOptions
+  debug?: boolean
 }) {
   const [pageDims, setPageDims] = useState<Dimensions>({
     width: 0,
@@ -97,19 +98,22 @@ export default function PageViewer({
 
   return (
     <div ref={ref} className="cursor-grab touch-none relative">
-      <div
-        className={classnames(
-          'absolute w-full break-all text-xs',
-          styles['debug-text']
-        )}
-      >
-        <div>{JSON.stringify(pageDims)}</div>
-        <div>{JSON.stringify(dimensions)}</div>
-        <div>{JSON.stringify(scroll)}</div>
-        <div>{JSON.stringify(scrollLimits)}</div>
-        <div>{JSON.stringify(scale)}</div>
-        <div>{JSON.stringify(isOverscrolling)}</div>
-      </div>
+      {props.debug ? (
+        <div
+          className={classnames(
+            'absolute w-full break-all text-xs',
+            styles['debug-text']
+          )}
+        >
+          <div>{JSON.stringify(pageDims)}</div>
+          <div>{JSON.stringify(dimensions)}</div>
+          <div>{JSON.stringify(scroll)}</div>
+          <div>{JSON.stringify(scrollLimits)}</div>
+          <div>{JSON.stringify(scale)}</div>
+          <div>{JSON.stringify(isOverscrolling)}</div>
+        </div>
+      ) : null}
+
       <PageScroller
         dimensions={dimensions}
         contentDimensions={pageDims}
