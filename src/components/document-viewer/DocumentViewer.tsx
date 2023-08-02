@@ -13,7 +13,7 @@ import { ScrollPosition } from '@/types/scroll-location.interface'
 type OnChangePage = (direction: 'next' | 'prev') => void
 
 export default function DocumentViewer({
-  previousUrl: prevUrl,
+  previousUrl,
   nextUrl,
   dimensions,
   currentUrl,
@@ -60,11 +60,11 @@ export default function DocumentViewer({
         transform: `translateX(${translate.left}px)`,
       }}
     >
-      {prevUrl ? (
+      {previousUrl ? (
         <div
           className={classnames('absolute pointer-events-none', styles.prev)}
         >
-          <PageViewer dimensions={dimensions} src={prevUrl} readonly />
+          <PageViewer dimensions={dimensions} src={previousUrl} readonly />
         </div>
       ) : null}
 
