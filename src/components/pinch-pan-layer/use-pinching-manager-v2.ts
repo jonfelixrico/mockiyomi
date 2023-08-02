@@ -10,7 +10,7 @@ function getBoundedScale(scale: number): number {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale))
 }
 
-export function usePinchingManager(
+export function usePinchingManagerV2(
   scroll: ScrollPosition,
   setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
 
