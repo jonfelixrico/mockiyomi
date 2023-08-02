@@ -137,7 +137,7 @@ export default function PageViewer({
   )
 
   return (
-    <div ref={ref} className="cursor-grab touch-none relative">
+    <div ref={ref} className="cursor-grab relative">
       {props.debug ? (
         <div
           className={classnames(

@@ -17,6 +17,8 @@ export interface PinchPanEvent {
   isFinal: boolean
 
   count: number
+
+  elapsedTime: number
 }
 
 export interface PinchEvent {
@@ -68,9 +70,10 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
+  const [startTimestamp, setStartTimestamp] = useState(Date.now())
   const [count, setCount] = useState(1)
   function emit(
-    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal'>,
+    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
     order?: 'first' | 'final'
   ) {
     hookListener({
@@ -79,6 +82,7 @@ export function usePinchPan(
       isFirst: order === 'first',
       isFinal: order === 'final',
       count,
+      elapsedTime: Date.now() - startTimestamp,
     })
   }
 
@@ -143,6 +147,7 @@ export function usePinchPan(
         )
 
         setPinchSession(null)
+        setStartTimestamp(Date.now())
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
