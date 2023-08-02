@@ -8,7 +8,7 @@ export interface ScrollLimits {
 }
 
 export function useScrollLimits(
-  pageDims: Dimensions,
+  contentDims: Dimensions,
   containerDims: Dimensions
 ) {
   return useMemo(() => {
@@ -21,13 +21,13 @@ export function useScrollLimits(
          *
          * Using Math.abs is a simpler way to prevent negative values.
          */
-        max: Math.abs(pageDims.height - containerDims.height),
+        max: Math.abs(contentDims.height - containerDims.height),
       },
 
       left: {
         min: 0,
-        max: Math.abs(pageDims.width - containerDims.width),
+        max: Math.abs(contentDims.width - containerDims.width),
       },
     }
-  }, [pageDims, containerDims])
+  }, [contentDims, containerDims])
 }
