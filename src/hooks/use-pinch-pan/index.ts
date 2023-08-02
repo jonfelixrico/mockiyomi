@@ -1,5 +1,5 @@
 import { Point } from '@/types/point.interface'
-import { RefObject, useEffect } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import { usePointerTracker } from './use-pointer-tracker'
 import {
   getAreaOfPoints,
@@ -15,6 +15,8 @@ export interface PinchPanEvent {
 
   isFirst: boolean
   isFinal: boolean
+
+  count: number
 }
 
 export interface PinchEvent {
@@ -37,6 +39,12 @@ function getPinchArea(points: Point[]): number {
 
 interface Options {
   className?: string
+  /**
+   * Prevents the behavior from triggering.
+   * This will still attach the event handlers but will prevent the inner logic
+   * from firing.
+   */
+  disabled?: boolean
 }
 
 export function usePinchPan(
@@ -60,10 +68,31 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
+  const [count, setCount] = useState(1)
+  function emit(
+    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal'>,
+    order?: 'first' | 'final'
+  ) {
+    hookListener({
+      ...event,
+
+      isFirst: order === 'first',
+      isFinal: order === 'final',
+      count,
+    })
+  }
+
   // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl) {
+      if (
+        !refEl ||
+        /*
+         * This check is only necessary to be present in pointerdowns because pointerdowns are associated with
+         * starting the entire pinch/pan flow. Having it here is enough to prevent any pinch pans from happening.
+         */
+        options?.disabled
+      ) {
         return
       }
 
@@ -101,17 +130,17 @@ export function usePinchPan(
           lastPoint: targetOrigin,
         })
 
-        hookListener({
-          isFirst: true,
-          isFinal: false,
+        emit(
+          {
+            panDelta: {
+              x: 0,
+              y: 0,
+            },
 
-          panDelta: {
-            x: 0,
-            y: 0,
+            pinch: null,
           },
-
-          pinch: null,
-        })
+          'first'
+        )
 
         setPinchSession(null)
       } else if (panSession && pointerCount === 1) {
@@ -123,10 +152,7 @@ export function usePinchPan(
         const points = extractPoints([...pointers, e])
         const pinchCenterPoint = getCentroid(points)
 
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: {
             x: 0,
             y: 0,
@@ -158,10 +184,7 @@ export function usePinchPan(
 
         const previousScale = getScale(pinchSession.lastArea)
 
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: {
             x: 0,
             y: 0,
@@ -192,6 +215,7 @@ export function usePinchPan(
       }
 
       setPointer(e)
+      setCount((count) => count + 1)
     }
 
     window.addEventListener('pointerdown', handler)
@@ -212,14 +236,14 @@ export function usePinchPan(
          */
 
         const currentPoint = extractPoint(e)
-        hookListener({
-          isFirst: false,
-          isFinal: true,
+        emit(
+          {
+            panDelta: getDelta(currentPoint),
 
-          panDelta: getDelta(currentPoint),
-
-          pinch: null,
-        })
+            pinch: null,
+          },
+          'final'
+        )
 
         // cleanup logic
         setPanSession(null)
@@ -230,7 +254,7 @@ export function usePinchPan(
           document.body.classList.remove(options.className)
         }
 
-        removePointer(e)
+        setCount(1) // reset for the next session
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
@@ -243,10 +267,7 @@ export function usePinchPan(
 
         const pinchLocation = getCentroid(extractPoints([...pointers, e]))
 
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: {
             x: 0,
             y: 0,
@@ -266,8 +287,7 @@ export function usePinchPan(
         setLastPoint(remainingPoint)
 
         setPinchSession(null)
-
-        removePointer(e)
+        setCount((count) => count + 1)
       } else if (pointerCount > 2 && pinchSession) {
         /*
          * There are three or more fingers before the pointer up event occurred.
@@ -283,10 +303,7 @@ export function usePinchPan(
         const pinchCenterPoint = getCentroid(pointsIncludingLifted)
         const previousScale = getScale(pinchSession.lastArea)
 
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: {
             x: 0,
             y: 0,
@@ -320,8 +337,10 @@ export function usePinchPan(
           }
         })
 
-        removePointer(e)
+        setCount((count) => count + 1)
       }
+
+      removePointer(e)
     }
 
     window.addEventListener('pointerup', handler, { passive: true })
@@ -339,10 +358,7 @@ export function usePinchPan(
       const centerPoint = getCentroid(points)
 
       if (pointerCount === 1) {
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: getDelta(centerPoint),
 
           pinch: null,
@@ -354,10 +370,7 @@ export function usePinchPan(
          */
 
         const area = getPinchArea(points)
-        hookListener({
-          isFirst: false,
-          isFinal: false,
-
+        emit({
           panDelta: getDelta(centerPoint),
 
           pinch: {
@@ -372,6 +385,7 @@ export function usePinchPan(
 
       setLastPoint(centerPoint)
       setPointer(e)
+      setCount((count) => count + 1)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })

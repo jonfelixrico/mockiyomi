@@ -3,20 +3,34 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 function getDimensionsToFitContainer(
   containerDims: Dimensions,
-  ratio: number
+  imageRatio: number
 ): Dimensions {
-  if (containerDims.width >= containerDims.height) {
-    // landscape or square
+  const containerRatio = containerDims.width / containerDims.height
+
+  if (imageRatio <= containerRatio) {
+    /*
+     * Scenarios:
+     * Landscape container, portrait image
+     * Landscape container, landscape image, but image has smaller height
+     */
+
+    // Fit height
     return {
       height: containerDims.height,
-      width: containerDims.height * ratio,
+      width: containerDims.height * imageRatio,
     }
-  }
+  } else {
+    /*
+     * Scenarios:
+     * Portrait container, landscape image
+     * Portrait container, portrait image, but image has narrower width
+     */
 
-  // portrait
-  return {
-    width: containerDims.width,
-    height: containerDims.width / ratio,
+    // Fit width
+    return {
+      width: containerDims.width,
+      height: containerDims.width / imageRatio,
+    }
   }
 }
 
