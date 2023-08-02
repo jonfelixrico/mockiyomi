@@ -17,7 +17,6 @@ export default function DocumentViewer({
   nextUrl,
   dimensions,
   currentUrl,
-  ...props
 }: {
   previousUrl?: string
   currentUrl: string
