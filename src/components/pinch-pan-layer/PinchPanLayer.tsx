@@ -19,7 +19,6 @@ export interface OverscrollOptions {
 
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
 
-type LikeUseStateSetter<Type> = Type | ((value: Type) => Type)
 
 export default function PinchPanLayer({
   containerDims,
@@ -35,10 +34,10 @@ export default function PinchPanLayer({
   overscroll?: OverscrollOptions
 
   scroll: ScrollPosition
-  setScroll: (position: LikeUseStateSetter<ScrollPosition>) => void
+  setScroll: (position: SetStateAction<ScrollPosition>) => void
 
   scale: number
-  setScale: (scale: LikeUseStateSetter<number>) => void
+  setScale: (scale: SetStateAction<number>) => void
 
   debug?: boolean
 }) {
