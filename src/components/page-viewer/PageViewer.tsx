@@ -8,6 +8,7 @@ import { usePinchingManager } from './use-pinching-manager'
 import { useScrollLimits } from './use-scroll-limits'
 import styles from './page-viewer.module.css'
 import classnames from 'classnames'
+import { Point } from '@/types/point.interface'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -43,6 +44,47 @@ export default function PageViewer({
   const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
 
   const [isOverscrolling, setIsOverscrolling] = useState(false)
+  function checkIfOverscroll(panDelta: Point) {
+    if (!overflow) {
+      return false
+    }
+
+    /*
+     * The way we wrote the code below is a conscious decision. We prefer doing if-elses that return boolean
+     * literals than directly returning the boolean expression equivalent of the statements below for readability
+     * purposes.
+     */
+
+    if (
+      overflow.left &&
+      // The leftmost edge of the content is flush against the leftmost side of the container...
+      scroll.left === scrollLimits.left.min &&
+      // ...and they swiped left
+      panDelta.x > 0
+    ) {
+      return true
+    } else if (
+      overflow.right &&
+      /*
+       * Same pattern as above.
+       * The catch here is the first part of the condition above is ignored if the content is smaller
+       * than the container.
+       *
+       * The reason there is that scroll.left will always be zero if the content is smaller
+       * than the container.
+       */
+      (pageDims.width <= dimensions.width ||
+        // The use of comparators and max/floor is to have proper detection despite having float values
+        scroll.left >= Math.min(scrollLimits.left.max)) &&
+      panDelta.x < 0
+    ) {
+      return true
+    }
+
+    // TODO handle y overscroll
+
+    return false
+  }
 
   function processHandling(e: PinchPanEvent) {
     const { panDelta, pinch, count } = e
@@ -52,20 +94,7 @@ export default function PageViewer({
       return
     }
 
-    if (
-      count <= 10 &&
-      !pinch &&
-      // TODO move this in a separate method or something
-      ((overflow?.left &&
-        scroll.left === scrollLimits.left.min &&
-        panDelta.x > 0) ||
-        (overflow?.right &&
-          (pageDims.width <= dimensions.width ||
-            // The use of comparators and max/floor is to have proper detection despite having float values
-            scroll.left >= Math.min(scrollLimits.left.max)) &&
-          panDelta.x < 0))
-      // TODO handle y overscroll
-    ) {
+    if (count <= 10 && !pinch && checkIfOverscroll(panDelta)) {
       setIsOverscrolling(true)
       onOverscroll(e)
       return
