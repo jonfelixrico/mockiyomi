@@ -110,6 +110,7 @@ export function usePinchingManagerV2(
       newScaleValue = delta
     }
 
+    setPreviousTempScale(newScaleValue)
     setScale(scaleSnapshot * newScaleValue)
   }
 
