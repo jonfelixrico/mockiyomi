@@ -61,7 +61,6 @@ export default function PageViewer({
   onOverscroll?: (e: OverscrollEvent) => void
   readonly?: boolean
   overscroll?: OverscrollOptions
-  debug?: boolean
 }) {
   const ratio = useAppSelector((state) => state.pageMetadata.ratios[src] ?? 1)
 
@@ -107,7 +106,6 @@ export default function PageViewer({
             onOverscroll={onOverscroll}
             contentDims={contentDims}
             containerDims={containerDims}
-            debug
           />
         </div>
       ) : null}
