@@ -77,7 +77,6 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
-  const [startTimestamp, setStartTimestamp] = useState(Date.now())
   const [count, setCount] = useState(1)
   function emit(
     event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
@@ -89,7 +88,7 @@ export function usePinchPan(
       isFirst: order === 'first',
       isFinal: order === 'final',
       count,
-      elapsedTime: Date.now() - startTimestamp,
+      elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
   }
 
@@ -132,6 +131,7 @@ export function usePinchPan(
           y: e.clientY - rect.y,
         }
 
+        const now = Date.now()
         setPanSession({
           origin: {
             target: targetOrigin,
@@ -141,7 +141,8 @@ export function usePinchPan(
             },
           },
           lastPoint: targetOrigin,
-          lastTimestamp: Date.now(),
+          startTimestamp: now,
+          lastTimestamp: now,
         })
 
         emit(
@@ -163,7 +164,6 @@ export function usePinchPan(
         )
 
         setPinchSession(null)
-        setStartTimestamp(Date.now())
 
         setPointer(e)
         setCount((count) => count + 1)
