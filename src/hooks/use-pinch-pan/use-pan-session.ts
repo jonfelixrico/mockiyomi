@@ -9,6 +9,7 @@ export interface Origin {
 export interface PanSession {
   origin: Origin
   lastPoint: Point
+  lastTimestamp: number
 }
 
 export function usePanSession() {
@@ -23,6 +24,7 @@ export function usePanSession() {
       return {
         ...session,
         lastPoint: point,
+        lastTimestamp: Date.now(),
       }
     })
   }

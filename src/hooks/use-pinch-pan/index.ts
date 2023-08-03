@@ -139,6 +139,7 @@ export function usePinchPan(
             },
           },
           lastPoint: targetOrigin,
+          lastTimestamp: Date.now(),
         })
 
         emit(
