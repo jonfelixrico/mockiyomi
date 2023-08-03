@@ -22,6 +22,23 @@ function computeDelta(current: Point, previous: Point) {
     y: current.y - previous.y,
   }
 }
+
+function computeVelocityWithMovingAverage(
+  delta: Point,
+  elapsed: number,
+  oldVelocity: Point
+) {
+  const instVelocity = {
+    x: (1000 * delta.x) / (1 + elapsed),
+    y: (1000 * delta.y) / (1 + elapsed),
+  }
+
+  return {
+    x: 0.8 * instVelocity.x + 0.2 * oldVelocity.x,
+    y: 0.8 * instVelocity.y + 0.2 * oldVelocity.y,
+  }
+}
+
 export function usePanSession() {
   const [panSession, setPanSession] = useState<PanSession | null>(null)
 
@@ -31,10 +48,16 @@ export function usePanSession() {
         return null
       }
 
+      const now = Date.now()
       return {
         ...session,
         lastPoint: point,
-        lastTimestamp: Date.now(),
+        lastTimestamp: now,
+        lastVelocity: computeVelocityWithMovingAverage(
+          computeDelta(point, session.lastPoint),
+          session.startTimestamp - now,
+          session.lastVelocity
+        ),
       }
     })
   }
@@ -79,15 +102,16 @@ export function usePanSession() {
       throw new Error('no pan session')
     }
 
-    const intervalSeconds = (Date.now() - panSession.lastTimestamp) / 1000
+    const elapsed = Date.now() - panSession.lastTimestamp
     const delta = getDelta(point)
 
     return {
       panDelta: delta,
-      velocity: {
-        x: delta.x / intervalSeconds,
-        y: delta.y / intervalSeconds,
-      },
+      velocity: computeVelocityWithMovingAverage(
+        delta,
+        elapsed,
+        panSession.lastVelocity
+      ),
     }
   }
 
