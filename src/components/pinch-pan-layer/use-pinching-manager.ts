@@ -12,7 +12,7 @@ function getBoundedScale(scale: number): number {
 
 export function usePinchingManager(
   scroll: ScrollPosition,
-  setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
+  setScroll: Dispatch<SetStateAction<ScrollPosition>>,
 
   scale: number,
   setScale: Dispatch<SetStateAction<number>>,
