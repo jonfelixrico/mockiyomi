@@ -79,8 +79,8 @@ export function usePanSession() {
     return {
       panDelta: delta,
       velocity: {
-        x: Math.abs(delta.x) / intervalSeconds,
-        y: Math.abs(delta.y) / intervalSeconds,
+        x: delta.x / intervalSeconds,
+        y: delta.y / intervalSeconds,
       },
     }
   }
