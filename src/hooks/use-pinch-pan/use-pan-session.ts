@@ -73,14 +73,14 @@ export function usePanSession() {
       throw new Error('no pan session')
     }
 
-    const timeInterval = Date.now() - panSession.lastTimestamp
+    const intervalSeconds = (Date.now() - panSession.lastTimestamp) / 1000
     const delta = getDelta(point)
 
     return {
       panDelta: delta,
       velocity: {
-        x: Math.abs(delta.x) / timeInterval,
-        y: Math.abs(delta.y) / timeInterval,
+        x: Math.abs(delta.x) / intervalSeconds,
+        y: Math.abs(delta.y) / intervalSeconds,
       },
     }
   }
