@@ -62,8 +62,8 @@ export function useKineticScrollRelease({
       }
       setScroll((scroll) => {
         return {
-          left: scroll.left + relativeDelta.x,
-          top: scroll.top + relativeDelta.y,
+          left: scroll.left - relativeDelta.x,
+          top: scroll.top - relativeDelta.y,
         }
       })
 
@@ -78,7 +78,7 @@ export function useKineticScrollRelease({
         }
       })
     },
-    params ? 100 : null
+    params ? 10 : null
   )
 
   return {
