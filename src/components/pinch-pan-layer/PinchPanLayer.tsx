@@ -1,13 +1,12 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
-import { useScrollLimits } from './use-scroll-limits'
 import styles from './pinch-pan-layer.module.css'
 import classnames from 'classnames'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
-import { Limits } from '@/types/limits.interface'
 import { usePinchingManager } from './use-pinching-manager'
+import { useScrollManager } from './use-scroll-manager'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -15,11 +14,6 @@ export interface OverscrollOptions {
   bottom?: boolean
   left?: boolean
   right?: boolean
-}
-
-function clampValue(value: number, limits: Limits) {
-  const minBound = Math.max(limits.min, value) // prevent value from dipping below the min limit
-  return Math.min(minBound, limits.max) // prevent value from going past the max limit
 }
 
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
@@ -59,22 +53,15 @@ export default function PinchPanLayer({
     }
   }, [scale, contentDims])
 
-  const scrollLimits = useScrollLimits(scaledContentDims, containerDims)
-  function setScrollHelper(
-    callback: (position: ScrollPosition) => ScrollPosition
-  ) {
-    setScroll((value) => {
-      const raw = callback(value)
-      return {
-        top: clampValue(raw.top, scrollLimits.top),
-        left: clampValue(raw.left, scrollLimits.left),
-      }
-    })
-  }
+  const { limitedSetScroll, scrollLimits } = useScrollManager({
+    contentDims: scaledContentDims,
+    containerDims,
+    setScroll,
+  })
 
   const { handlePinch } = usePinchingManager(
     scroll,
-    setScrollHelper,
+    limitedSetScroll,
 
     scale,
     setScale,
@@ -147,7 +134,7 @@ export default function PinchPanLayer({
         top: scroll.top - panDelta.y,
         left: scroll.left - panDelta.x,
       }
-      setScrollHelper(() => scrollDelta)
+      limitedSetScroll(() => scrollDelta)
     }
   }
 
