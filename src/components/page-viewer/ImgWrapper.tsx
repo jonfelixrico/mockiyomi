@@ -1,6 +1,6 @@
 import { CSSProperties, useCallback, useEffect, useRef } from 'react'
 
-export default function ImgWrapperV2({
+export default function ImgWrapper({
   onRatioEmit,
   ...props
 }: {

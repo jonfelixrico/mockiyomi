@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { PinchPanEvent } from '@/hooks/use-pinch-pan'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ScrollPosition } from '@/types/scroll-location.interface'
-import ImgWrapperV2 from './ImgWrapperV2'
+import ImgWrapper from './ImgWrapper'
 import PinchPanLayer from '../pinch-pan-layer/PinchPanLayer'
 import { pageMetadataActions } from '@/store/page-metadata-slice'
 
@@ -115,7 +115,7 @@ export default function PageViewer({
         contentDimensions={scaledContentDims}
         dimensions={containerDims}
       >
-        <ImgWrapperV2
+        <ImgWrapper
           alt={src}
           style={scaledContentDims}
           src={src}
