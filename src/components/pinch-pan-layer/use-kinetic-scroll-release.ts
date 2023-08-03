@@ -17,10 +17,13 @@ export function useKineticScrollRelease({
 }) {
   const [params, setParams] = useState<KineticParameters>()
 
-  function start(amplitude: Point, startTimestamp: number) {
+  function start({ x, y }: Point) {
     setParams({
-      amplitude,
-      startTimestamp,
+      amplitude: {
+        x: 0.8 * x,
+        y: 0.8 * y,
+      },
+      startTimestamp: Date.now(),
       lastDelta: {
         x: 0,
         y: 0,
@@ -63,7 +66,7 @@ export function useKineticScrollRelease({
           top: scroll.top + relativeDelta.y,
         }
       })
-      
+
       setParams((params) => {
         if (!params) {
           throw new Error('params is undefined')
