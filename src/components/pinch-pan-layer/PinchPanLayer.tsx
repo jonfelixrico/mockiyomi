@@ -113,7 +113,7 @@ export default function PinchPanLayer({
   })
 
   function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, count, isFirst } = e
+    const { panDelta, pinch, count, isFirst, isFinal } = e
 
     if (isFirst) {
       // stop any ongoing kinetic scroll
@@ -146,9 +146,11 @@ export default function PinchPanLayer({
       }
       limitedSetScroll(() => scrollDelta)
 
-      const { x, y } = e.velocity
-      if (Math.abs(x) > 10 || Math.abs(y) > 10) {
-        startKineticScroll(e.velocity)
+      if (isFinal) {
+        const { x, y } = e.velocity
+        if (Math.abs(x) > 10 || Math.abs(y) > 10) {
+          startKineticScroll(e.velocity)
+        }
       }
     }
   }
