@@ -39,6 +39,13 @@ function getPinchArea(points: Point[]): number {
   return 0
 }
 
+function isTargetWithinElement(event: PointerEvent, element: HTMLElement) {
+  return (
+    event.target &&
+    (event.target === element || element.contains(event.target as HTMLElement))
+  )
+}
+
 interface Options {
   className?: string
   /**
@@ -54,8 +61,6 @@ export function usePinchPan(
   hookListener: (event: PinchPanEvent) => void,
   options?: Options
 ) {
-  const refEl = ref.current
-
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
@@ -89,6 +94,7 @@ export function usePinchPan(
   // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
+      const refEl = ref.current
       if (
         !refEl ||
         /*
@@ -100,7 +106,8 @@ export function usePinchPan(
         return
       }
 
-      if (pointerCount === 0) {
+      // TODO add comment regarding why we only check isTargetWithinElement for the first pointer
+      if (isTargetWithinElement(e, refEl) && pointerCount === 0) {
         /*
          * This block means that the user has placed a finger on the screen.
          * This is the entrypoint for the entire thing.
@@ -148,6 +155,9 @@ export function usePinchPan(
 
         setPinchSession(null)
         setStartTimestamp(Date.now())
+
+        setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -165,7 +175,7 @@ export function usePinchPan(
 
           pinch: {
             scale: 1, // we're starting of with a scale of 1 because we've just started
-            isFirst: false,
+            isFirst: true,
             isFinal: false,
             location: pinchCenterPoint,
           },
@@ -179,6 +189,9 @@ export function usePinchPan(
           referenceArea: area,
           scaleMultiplier: 1,
         })
+
+        setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * This simply continues the pinching behavior by adding more fingers.
@@ -217,10 +230,10 @@ export function usePinchPan(
             scaleMultiplier: previousScale,
           }
         })
-      }
 
-      setPointer(e)
-      setCount((count) => count + 1)
+        setPointer(e)
+        setCount((count) => count + 1)
+      }
     }
 
     window.addEventListener('pointerdown', handler)
@@ -230,7 +243,7 @@ export function usePinchPan(
   // pointer up
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl || !panSession) {
+      if (!ref.current || !panSession) {
         return
       }
 
@@ -355,7 +368,7 @@ export function usePinchPan(
   // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl || !panSession) {
+      if (!ref.current || !panSession) {
         return
       }
 

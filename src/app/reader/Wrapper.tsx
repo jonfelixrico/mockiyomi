@@ -11,7 +11,7 @@ const URLS = new Array(8)
   .map((_, index) => `/placeholder/${index + 1}.jpg`)
 
 export default function Wrapper() {
-  const [ref, dims] = useMeasure<HTMLDivElement>()
+  const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   const [pageIdx, setPageIdx] = useState(0)
   const changePageIdx: OnChangePage = useCallback(
@@ -31,7 +31,7 @@ export default function Wrapper() {
       className="h-screen w-screen overflow-hidden touch-none overscroll-contain"
     >
       <DocumentViewer
-        dimensions={dims}
+        dimensions={{ width, height }}
         previousUrl={URLS[pageIdx - 1]}
         nextUrl={URLS[pageIdx + 1]}
         currentUrl={URLS[pageIdx]}
