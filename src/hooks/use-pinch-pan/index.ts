@@ -11,6 +11,8 @@ import { usePinchSession } from './use-pinch-session'
 
 export interface PinchPanEvent {
   panDelta: Point
+  velocity: Point
+  
   pinch: PinchEvent | null
 
   isFirst: boolean
@@ -70,7 +72,7 @@ export function usePinchPan(
     setLastPoint,
     extractPoint,
     extractPoints,
-    getDelta,
+    getDeltaAndVelocity,
   } = usePanSession()
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
@@ -257,7 +259,7 @@ export function usePinchPan(
         const currentPoint = extractPoint(e)
         emit(
           {
-            panDelta: getDelta(currentPoint),
+            ...getDeltaAndVelocity(currentPoint),
 
             pinch: null,
           },
@@ -378,7 +380,7 @@ export function usePinchPan(
 
       if (pointerCount === 1) {
         emit({
-          panDelta: getDelta(centerPoint),
+          ...getDeltaAndVelocity(centerPoint),
 
           pinch: null,
         })
@@ -390,7 +392,7 @@ export function usePinchPan(
 
         const area = getPinchArea(points)
         emit({
-          panDelta: getDelta(centerPoint),
+          ...getDeltaAndVelocity(centerPoint),
 
           pinch: {
             isFinal: false,
