@@ -24,7 +24,7 @@ export function useScrollLimits(
       left: {
         min: 0,
         max:
-          contentDims.width >= containerDims.height
+          contentDims.width >= containerDims.width
             ? contentDims.width - containerDims.width
             : 0,
       },
