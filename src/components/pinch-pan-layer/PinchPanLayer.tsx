@@ -7,7 +7,7 @@ import classnames from 'classnames'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 import { Limits } from '@/types/limits.interface'
-import { usePinchingManagerV2 } from './use-pinching-manager-v2'
+import { usePinchingManager } from './use-pinching-manager'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -72,7 +72,7 @@ export default function PinchPanLayer({
     })
   }
 
-  const { handlePinch } = usePinchingManagerV2(
+  const { handlePinch } = usePinchingManager(
     scroll,
     setScrollHelper,
 
