@@ -7,6 +7,7 @@ import { ScrollPosition } from '@/types/scroll-location.interface'
 import ImgWrapper from './ImgWrapper'
 import PinchPanLayer from '../pinch-pan-layer/PinchPanLayer'
 import { pageMetadataActions } from '@/store/page-metadata-slice'
+import useRatioStore from './use-ratio-store'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -62,17 +63,7 @@ export default function PageViewer({
   readonly?: boolean
   overscroll?: OverscrollOptions
 }) {
-  const ratio = useAppSelector((state) => state.pageMetadata.ratios[src] ?? 1)
-
-  const dispatch = useAppDispatch()
-  const setRatio = (ratio: number) => {
-    dispatch(
-      pageMetadataActions.setRatio({
-        ratio,
-        id: src,
-      })
-    )
-  }
+  const { ratio, setRatio } = useRatioStore(src)
 
   const contentDims = useMemo(
     () => getDimensionsToFitContainer(containerDims, ratio),
