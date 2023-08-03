@@ -140,9 +140,15 @@ export function usePinchPan(
               y: rect.y,
             },
           },
-          lastPoint: targetOrigin,
+
           startTimestamp: now,
+
+          lastPoint: targetOrigin,
           lastTimestamp: now,
+          lastVelocity: {
+            x: 0,
+            y: 0,
+          },
         })
 
         emit(

@@ -13,6 +13,7 @@ export interface PanSession {
 
   lastPoint: Point
   lastTimestamp: number
+  lastVelocity: Point
 }
 
 export function usePanSession() {
