@@ -8,7 +8,9 @@ export interface Origin {
 
 export interface PanSession {
   origin: Origin
+
   startTimestamp: number
+
   lastPoint: Point
   lastTimestamp: number
 }
