@@ -39,6 +39,13 @@ function getPinchArea(points: Point[]): number {
   return 0
 }
 
+function isTargetWithinElement(event: PointerEvent, element: HTMLElement) {
+  return (
+    event.target &&
+    (event.target === element || element.contains(event.target as HTMLElement))
+  )
+}
+
 interface Options {
   className?: string
   /**
@@ -54,8 +61,6 @@ export function usePinchPan(
   hookListener: (event: PinchPanEvent) => void,
   options?: Options
 ) {
-  const refEl = ref.current
-
   const { pointerCount, removePointer, setPointer, pointers } =
     usePointerTracker()
 
@@ -89,8 +94,10 @@ export function usePinchPan(
   // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
+      const refEl = ref.current
       if (
         !refEl ||
+        !isTargetWithinElement(e, refEl) ||
         /*
          * This check is only necessary to be present in pointerdowns because pointerdowns are associated with
          * starting the entire pinch/pan flow. Having it here is enough to prevent any pinch pans from happening.
@@ -230,7 +237,7 @@ export function usePinchPan(
   // pointer up
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl || !panSession) {
+      if (!ref.current || !panSession) {
         return
       }
 
@@ -355,7 +362,7 @@ export function usePinchPan(
   // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!refEl || !panSession) {
+      if (!ref.current || !panSession) {
         return
       }
 
