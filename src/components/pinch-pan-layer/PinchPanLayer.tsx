@@ -7,6 +7,7 @@ import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollManager } from './use-scroll-manager'
+import { useKineticScrollRelease } from './use-kinetic-scroll-release'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -107,8 +108,17 @@ export default function PinchPanLayer({
     return false
   }
 
+  const { startKineticScroll, stopKineticScroll } = useKineticScrollRelease({
+    setScroll: limitedSetScroll,
+  })
+
   function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, count } = e
+    const { panDelta, pinch, count, isFirst } = e
+
+    if (isFirst) {
+      // stop any ongoing kinetic scroll
+      stopKineticScroll()
+    }
 
     if (isOverscrolling) {
       onOverscroll(e)
@@ -135,6 +145,11 @@ export default function PinchPanLayer({
         left: scroll.left - panDelta.x,
       }
       limitedSetScroll(() => scrollDelta)
+
+      const { x, y } = e.velocity
+      if (Math.abs(x) > 10 || Math.abs(y) > 10) {
+        startKineticScroll(e.velocity)
+      }
     }
   }
 
