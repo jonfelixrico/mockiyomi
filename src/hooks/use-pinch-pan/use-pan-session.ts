@@ -16,6 +16,12 @@ export interface PanSession {
   lastVelocity: Point
 }
 
+function computeDelta(current: Point, previous: Point) {
+  return {
+    x: current.x - previous.x,
+    y: current.y - previous.y,
+  }
+}
 export function usePanSession() {
   const [panSession, setPanSession] = useState<PanSession | null>(null)
 
@@ -65,11 +71,7 @@ export function usePanSession() {
       throw new Error('no pan session')
     }
 
-    const { lastPoint } = panSession
-    return {
-      x: point.x - lastPoint.x,
-      y: point.y - lastPoint.y,
-    }
+    return computeDelta(point, panSession.lastPoint)
   }
 
   function getDeltaAndVelocity(point: Point) {
