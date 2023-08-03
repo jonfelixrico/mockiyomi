@@ -17,7 +17,6 @@ export function useScrollManager({
   contentDims: Dimensions
   containerDims: Dimensions
 
-  scroll: ScrollPosition
   setScroll: Dispatch<SetStateAction<ScrollPosition>>
 }) {
   const scrollLimits = useScrollLimits(contentDims, containerDims)
