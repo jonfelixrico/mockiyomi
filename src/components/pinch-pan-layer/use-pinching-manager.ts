@@ -2,7 +2,7 @@ import type { PinchEvent } from '@/hooks/use-pinch-pan'
 import { Dimensions } from '@/types/dimensions.interface'
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
-import { useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 
 const MAX_SCALE = 10
 const MIN_SCALE = 1
@@ -12,28 +12,37 @@ function getBoundedScale(scale: number): number {
 
 export function usePinchingManager(
   scroll: ScrollPosition,
-  setScroll: (callback: (position: ScrollPosition) => ScrollPosition) => void,
-  pageDims: Dimensions
-) {
-  const [pinchSessionScale, setPinchSessionScale] = useState<null | number>(
-    null
-  )
-  const [persistedScale, setPersistedScale] = useState(1)
-  const scaleToDisplay = useMemo(() => {
-    if (pinchSessionScale === null) {
-      return persistedScale
-    }
+  setScroll: Dispatch<SetStateAction<ScrollPosition>>,
 
-    return persistedScale * pinchSessionScale
-  }, [persistedScale, pinchSessionScale])
+  scale: number,
+  setScale: Dispatch<SetStateAction<number>>,
+
+  // Original dims
+  contentDims: Dimensions
+) {
+  // TODO improve documentation here
+
+  const scaledDims: Dimensions = {
+    width: contentDims.width * scale,
+    height: contentDims.height * scale,
+  }
+
+  const [scaleSnapshot, setScaleSnapshot] = useState(1)
+  const [previousTempScale, setPreviousTempScale] = useState(1)
 
   function handlePinch(
-    { scale: delta, isFinal, location }: PinchEvent,
+    { scale: delta, isFinal, isFirst, location }: PinchEvent,
     panDelta: Point
   ) {
     if (isFinal) {
-      setPersistedScale(scaleToDisplay)
-      setPinchSessionScale(null)
+      setScale(scaleSnapshot * previousTempScale)
+      setPreviousTempScale(1)
+      return
+    }
+
+    if (isFirst) {
+      setScaleSnapshot(scale)
+      setPreviousTempScale(1)
       return
     }
 
@@ -42,11 +51,11 @@ export function usePinchingManager(
      * This will act as sort of an anchor.
      */
     const pinchAnchor = {
-      x: (location.x + scroll.left) / pageDims.width,
-      y: (location.y + scroll.top) / pageDims.height,
+      x: (location.x + scroll.left) / scaledDims.width,
+      y: (location.y + scroll.top) / scaledDims.height,
     }
 
-    const tempScale = delta * persistedScale
+    const tempScale = delta * scaleSnapshot
 
     /*
      * This just computes the resulting dimensions of the page after the pinch
@@ -58,8 +67,8 @@ export function usePinchingManager(
      */
     const boundedScale = getBoundedScale(tempScale)
     const dimsAfterResize = {
-      width: (pageDims.width / scaleToDisplay) * boundedScale,
-      height: (pageDims.height / scaleToDisplay) * boundedScale,
+      width: contentDims.width * boundedScale,
+      height: contentDims.height * boundedScale,
     }
 
     /*
@@ -94,17 +103,20 @@ export function usePinchingManager(
      * Viola, you will make it appear like the point didn't move in between scales.
      */
 
+    let newScaleValue: number
     if (tempScale > MAX_SCALE) {
-      setPinchSessionScale(MAX_SCALE / persistedScale)
+      newScaleValue = MAX_SCALE / scaleSnapshot
     } else if (tempScale < MIN_SCALE) {
-      setPinchSessionScale(MIN_SCALE / persistedScale)
+      newScaleValue = MIN_SCALE / scaleSnapshot
     } else {
-      setPinchSessionScale(delta)
+      newScaleValue = delta
     }
+
+    setPreviousTempScale(newScaleValue)
+    setScale(scaleSnapshot * newScaleValue)
   }
 
   return {
-    scale: scaleToDisplay,
     handlePinch,
   }
 }

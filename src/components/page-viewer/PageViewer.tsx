@@ -1,14 +1,13 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import PageScroller from './PageScroller'
-import { useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { PinchPanEvent } from '@/hooks/use-pinch-pan'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { ScrollPosition } from '@/types/scroll-location.interface'
 import ImgWrapper from './ImgWrapper'
-import { PinchPanEvent, usePinchPan } from '@/hooks/use-pinch-pan'
-import { useScrollingManager } from './use-scrolling-manager'
-import { usePinchingManager } from './use-pinching-manager'
-import { useScrollLimits } from './use-scroll-limits'
-import styles from './page-viewer.module.css'
-import classnames from 'classnames'
-import { Point } from '@/types/point.interface'
+import PinchPanLayer from '../pinch-pan-layer/PinchPanLayer'
+import { pageMetadataActions } from '@/store/page-metadata-slice'
+import useRatioStore from './use-ratio-store'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -18,12 +17,43 @@ export interface OverscrollOptions {
   right?: boolean
 }
 
-const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
+function getDimensionsToFitContainer(
+  containerDims: Dimensions,
+  imageRatio: number
+): Dimensions {
+  const containerRatio = containerDims.width / containerDims.height
+
+  if (imageRatio <= containerRatio) {
+    /*
+     * Scenarios:
+     * Landscape container, portrait image
+     * Landscape container, landscape image, but image has smaller height
+     */
+
+    // Fit height
+    return {
+      height: containerDims.height,
+      width: containerDims.height * imageRatio,
+    }
+  } else {
+    /*
+     * Scenarios:
+     * Portrait container, landscape image
+     * Portrait container, portrait image, but image has narrower width
+     */
+
+    // Fit width
+    return {
+      width: containerDims.width,
+      height: containerDims.width / imageRatio,
+    }
+  }
+}
 
 export default function PageViewer({
-  dimensions,
+  dimensions: containerDims,
   onOverscroll = () => {},
-  overscroll: overflow,
+  overscroll,
   src,
   ...props
 }: {
@@ -32,140 +62,55 @@ export default function PageViewer({
   onOverscroll?: (e: OverscrollEvent) => void
   readonly?: boolean
   overscroll?: OverscrollOptions
-  debug?: boolean
 }) {
-  const [pageDims, setPageDims] = useState<Dimensions>({
-    width: 0,
-    height: 0,
-  })
+  const { ratio, setRatio } = useRatioStore(src)
 
-  const ref = useRef<HTMLDivElement>(null)
-  const scrollLimits = useScrollLimits(pageDims, dimensions)
-
-  const { scroll, setScroll } = useScrollingManager(scrollLimits)
-  const { handlePinch, scale } = usePinchingManager(scroll, setScroll, pageDims)
-
-  const [isOverscrolling, setIsOverscrolling] = useState(false)
-  const [isEligibleForOverscroll, setIsEligibleForOverscroll] = useState(false)
-  function checkIfOverscroll(panDelta: Point) {
-    if (!overflow) {
-      return false
-    }
-
-    /*
-     * The way we wrote the code below is a conscious decision. We prefer doing if-elses that return boolean
-     * literals than directly returning the boolean expression equivalent of the statements below for readability
-     * purposes.
-     */
-
-    if (
-      overflow.left &&
-      // The leftmost edge of the content is flush against the leftmost side of the container...
-      scroll.left === scrollLimits.left.min &&
-      // ...and they swiped left
-      panDelta.x > 0
-    ) {
-      return true
-    } else if (
-      overflow.right &&
-      /*
-       * Same pattern as above.
-       * The catch here is the first part of the condition above is ignored if the content is smaller
-       * than the container.
-       *
-       * The reason there is that scroll.left will always be zero if the content is smaller
-       * than the container.
-       */
-      (pageDims.width <= dimensions.width ||
-        // The use of comparators and max/floor is to have proper detection despite having float values
-        scroll.left >= Math.min(scrollLimits.left.max)) &&
-      panDelta.x < 0
-    ) {
-      return true
-    }
-
-    // TODO handle y overscroll
-
-    return false
-  }
-
-  function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, count } = e
-
-    if (isOverscrolling) {
-      onOverscroll(e)
-      return
-    }
-
-    if (
-      isEligibleForOverscroll &&
-      count <= PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL &&
-      !pinch &&
-      checkIfOverscroll(panDelta)
-    ) {
-      setIsOverscrolling(true)
-      onOverscroll(e)
-      return
-    }
-
-    if (pinch) {
-      setIsEligibleForOverscroll(false)
-      handlePinch(pinch, panDelta)
-    } else {
-      const scrollDelta = {
-        top: scroll.top - panDelta.y,
-        left: scroll.left - panDelta.x,
-      }
-      setScroll(() => scrollDelta)
-    }
-  }
-
-  usePinchPan(
-    ref,
-    (e) => {
-      processHandling(e)
-
-      if (e.isFinal) {
-        setIsOverscrolling(false)
-        setIsEligibleForOverscroll(true)
-      }
-    },
-    {
-      className: 'cursor-grabbing',
-      disabled: props.readonly,
-    }
+  const contentDims = useMemo(
+    () => getDimensionsToFitContainer(containerDims, ratio),
+    [ratio, containerDims]
   )
 
+  const [scroll, setScroll] = useState<ScrollPosition>({
+    top: 0,
+    left: 0,
+  })
+
+  const [scale, setScale] = useState<number>(1)
+
+  const scaledContentDims = useMemo(() => {
+    return {
+      width: contentDims.width * scale,
+      height: contentDims.height * scale,
+    }
+  }, [contentDims, scale])
+
   return (
-    <div ref={ref} className="cursor-grab relative">
-      {props.debug ? (
-        <div
-          className={classnames(
-            'absolute w-full break-all text-xs',
-            styles['debug-text']
-          )}
-        >
-          <div>{JSON.stringify(pageDims)}</div>
-          <div>{JSON.stringify(dimensions)}</div>
-          <div>{JSON.stringify(scroll)}</div>
-          <div>{JSON.stringify(scrollLimits)}</div>
-          <div>{JSON.stringify(scale)}</div>
-          <div>{JSON.stringify(isOverscrolling)}</div>
+    <div className="relative">
+      {!props.readonly ? (
+        <div className="absolute">
+          <PinchPanLayer
+            scroll={scroll}
+            setScroll={setScroll}
+            scale={scale}
+            setScale={setScale}
+            overscroll={overscroll}
+            onOverscroll={onOverscroll}
+            contentDims={contentDims}
+            containerDims={containerDims}
+          />
         </div>
       ) : null}
 
       <PageScroller
-        dimensions={dimensions}
-        contentDimensions={pageDims}
         scroll={scroll}
+        contentDimensions={scaledContentDims}
+        dimensions={containerDims}
       >
-        {/* TODO maybe add a proper alt */}
         <ImgWrapper
           alt={src}
-          containerDimensions={dimensions}
-          scale={scale}
+          style={scaledContentDims}
           src={src}
-          onDimensionsEmit={setPageDims}
+          onRatioEmit={setRatio}
         />
       </PageScroller>
     </div>
