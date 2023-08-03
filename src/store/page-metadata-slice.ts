@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { ReducerActionHelper } from './store-utils'
 
-interface ImageSlice {
+interface PageMetadataSlice {
   ratios: Record<string, number>
 }
 
@@ -15,7 +15,7 @@ const pageMetadataSlice = createSlice({
 
   initialState: {
     ratios: {},
-  } as ImageSlice,
+  } as PageMetadataSlice,
 
   reducers: {
     setRatio: (state, { payload }: ReducerActionHelper<SetRatioPayload>) => {
