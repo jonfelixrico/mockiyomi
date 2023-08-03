@@ -107,15 +107,9 @@ export default function PinchPanLayer({
       overscroll.right &&
       /*
        * Same pattern as above.
-       * The catch here is the first part of the condition above is ignored if the content is smaller
-       * than the container.
-       *
-       * The reason there is that scroll.left will always be zero if the content is smaller
-       * than the container.
+       * The use of comparators and max/floor is to have proper detection despite having float values
        */
-      (scaledContentDims.width <= containerDims.width ||
-        // The use of comparators and max/floor is to have proper detection despite having float values
-        scroll.left >= Math.min(scrollLimits.left.max)) &&
+      scroll.left >= Math.min(scrollLimits.left.max) &&
       panDelta.x < 0
     ) {
       return true
