@@ -78,7 +78,7 @@ export function useKineticScrollRelease({
         }
       })
     },
-    params ? 10 : null
+    params ? 1 : null
   )
 
   return {
