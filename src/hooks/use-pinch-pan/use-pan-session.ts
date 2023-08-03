@@ -68,6 +68,23 @@ export function usePanSession() {
     }
   }
 
+  function getDeltaAndVelocity(point: Point) {
+    if (!panSession) {
+      throw new Error('no pan session')
+    }
+
+    const timeInterval = Date.now() - panSession.lastTimestamp
+    const delta = getDelta(point)
+
+    return {
+      panDelta: delta,
+      velocity: {
+        x: Math.abs(delta.x) / timeInterval,
+        y: Math.abs(delta.y) / timeInterval,
+      },
+    }
+  }
+
   return {
     panSession,
     setPanSession,
@@ -75,5 +92,6 @@ export function usePanSession() {
     extractPoint,
     extractPoints,
     getDelta,
+    getDeltaAndVelocity,
   }
 }
