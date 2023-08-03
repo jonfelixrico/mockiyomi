@@ -97,7 +97,6 @@ export function usePinchPan(
       const refEl = ref.current
       if (
         !refEl ||
-        !isTargetWithinElement(e, refEl) ||
         /*
          * This check is only necessary to be present in pointerdowns because pointerdowns are associated with
          * starting the entire pinch/pan flow. Having it here is enough to prevent any pinch pans from happening.
@@ -107,7 +106,8 @@ export function usePinchPan(
         return
       }
 
-      if (pointerCount === 0) {
+      // TODO add comment regarding why we only check isTargetWithinElement for the first pointer
+      if (isTargetWithinElement(e, refEl) && pointerCount === 0) {
         /*
          * This block means that the user has placed a finger on the screen.
          * This is the entrypoint for the entire thing.
@@ -155,6 +155,9 @@ export function usePinchPan(
 
         setPinchSession(null)
         setStartTimestamp(Date.now())
+
+        setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -186,6 +189,9 @@ export function usePinchPan(
           referenceArea: area,
           scaleMultiplier: 1,
         })
+
+        setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * This simply continues the pinching behavior by adding more fingers.
@@ -224,10 +230,10 @@ export function usePinchPan(
             scaleMultiplier: previousScale,
           }
         })
-      }
 
-      setPointer(e)
-      setCount((count) => count + 1)
+        setPointer(e)
+        setCount((count) => count + 1)
+      }
     }
 
     window.addEventListener('pointerdown', handler)
