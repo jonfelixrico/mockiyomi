@@ -20,6 +20,8 @@ export function usePinchingManager(
   // Original dims
   contentDims: Dimensions
 ) {
+  // TODO improve documentation here
+
   const scaledDims: Dimensions = {
     width: contentDims.width * scale,
     height: contentDims.height * scale,
