@@ -138,6 +138,8 @@ export default function PinchPanLayer({
     }
   }
 
+  const [lastEvent, setLastEvent] = useState<PinchPanEvent>()
+
   const ref = useRef<HTMLDivElement>(null)
   usePinchPan(
     ref,
@@ -147,6 +149,10 @@ export default function PinchPanLayer({
       if (e.isFinal) {
         setIsOverscrolling(false)
         setIsEligibleForOverscroll(true)
+      }
+
+      if (props.debug) {
+        setLastEvent(e)
       }
     },
     {
@@ -170,6 +176,7 @@ export default function PinchPanLayer({
           <div>{JSON.stringify(scrollLimits)}</div>
           <div>{JSON.stringify(scale)}</div>
           <div>{JSON.stringify(isOverscrolling)}</div>
+          <div>{JSON.stringify(lastEvent)}</div>
         </div>
       ) : null}
     </div>
