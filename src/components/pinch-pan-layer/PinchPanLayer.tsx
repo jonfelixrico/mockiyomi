@@ -99,7 +99,7 @@ export default function PinchPanLayer({
       overscroll.left &&
       // The leftmost edge of the content is flush against the leftmost side of the container...
       scroll.left === scrollLimits.left.min &&
-      // ...and they swiped left
+      // ...and they swiped right
       panDelta.x > 0
     ) {
       return true
