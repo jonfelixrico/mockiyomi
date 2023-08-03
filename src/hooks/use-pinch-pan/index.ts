@@ -12,7 +12,7 @@ import { usePinchSession } from './use-pinch-session'
 export interface PinchPanEvent {
   panDelta: Point
   velocity: Point
-  
+
   pinch: PinchEvent | null
 
   isFirst: boolean
@@ -151,6 +151,12 @@ export function usePinchPan(
               y: 0,
             },
 
+            // TODO verify if this will cause any weird behavior
+            velocity: {
+              x: 0,
+              y: 0,
+            },
+
             pinch: null,
           },
           'first'
@@ -172,6 +178,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -207,6 +219,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -294,6 +312,12 @@ export function usePinchPan(
             y: 0,
           },
 
+          // TODO verify if this will cause any weird behavior
+          velocity: {
+            x: 0,
+            y: 0,
+          },
+
           pinch: {
             scale: getScale(pinchSession.lastArea),
             isFinal: true,
@@ -326,6 +350,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
