@@ -143,11 +143,14 @@ export default function PinchPanLayer({
       handlePinch(pinch, panDelta)
     } else if (
       isFinal &&
+      // Scroll has enough velocity to do an inertia effect
       (Math.abs(velocity.x) >= VELOCITY_THRESHOLD ||
         Math.abs(velocity.y) >= VELOCITY_THRESHOLD)
     ) {
       startKineticScroll(e.velocity)
     } else {
+      // for non-final scrolls, or for final scrolls that didn't make the cut
+
       const scrollDelta = {
         top: scroll.top - panDelta.y,
         left: scroll.left - panDelta.x,
