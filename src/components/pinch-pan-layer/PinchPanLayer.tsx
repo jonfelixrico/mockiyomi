@@ -72,7 +72,7 @@ export default function PinchPanLayer({
   )
 
   const [isOverscrolling, setIsOverscrolling] = useState(false)
-  const [isEligibleForOverscroll, setIsEligibleForOverscroll] = useState(false)
+  const [isEligibleForOverscroll, setIsEligibleForOverscroll] = useState(true)
   function checkIfOverscroll(panDelta: Point) {
     if (!overscroll) {
       return false
