@@ -110,6 +110,7 @@ export default function PinchPanLayer({
 
   const { startKineticScroll, stopKineticScroll } = useKineticScrollRelease({
     setScroll: limitedSetScroll,
+    scroll,
   })
 
   function processHandling(e: PinchPanEvent) {

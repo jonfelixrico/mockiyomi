@@ -1,35 +1,35 @@
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
-import { clamp } from 'lodash'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useInterval } from 'react-use'
 
 interface KineticParameters {
   amplitude: Point
   startTimestamp: number
-
-  lastDelta: Point
+  target: ScrollPosition
 }
 
-const AMPLITUDE_LIMIT = 10
-
 export function useKineticScrollRelease({
+  scroll,
   setScroll,
 }: {
+  scroll: ScrollPosition
   setScroll: Dispatch<SetStateAction<ScrollPosition>>
 }) {
   const [params, setParams] = useState<KineticParameters>()
 
   function start({ x, y }: Point) {
+    const amplitude = {
+      x: 0.8 * x,
+      y: 0.8 * y,
+    }
+
     setParams({
-      amplitude: {
-        x: clamp(0.8 * x, -AMPLITUDE_LIMIT, AMPLITUDE_LIMIT),
-        y: clamp(0.8 * y, -AMPLITUDE_LIMIT, AMPLITUDE_LIMIT),
-      },
+      amplitude,
       startTimestamp: Date.now(),
-      lastDelta: {
-        x: 0,
-        y: 0,
+      target: {
+        left: Math.round(scroll.left + amplitude.x),
+        top: Math.round(scroll.top + amplitude.y),
       },
     })
   }
@@ -44,43 +44,25 @@ export function useKineticScrollRelease({
         return
       }
 
-      const { startTimestamp, amplitude, lastDelta } = params
+      const { startTimestamp, amplitude, target } = params
 
       const elapsed = Date.now() - startTimestamp
 
       const factor = Math.exp(-elapsed / 325)
-      const absoluteDelta = {
+      const delta = {
         x: -amplitude.x * factor,
         y: -amplitude.y * factor,
       }
 
-      const relativeDelta = {
-        x: absoluteDelta.x - lastDelta.x,
-        y: absoluteDelta.y - lastDelta.y,
-      }
-
-      if (Math.abs(relativeDelta.x) < 0.2 && Math.abs(relativeDelta.y) < 0.2) {
+      if (Math.abs(delta.x) > 0.5 || Math.abs(delta.y) > 0.5) {
+        setScroll({
+          left: target.left + delta.x,
+          top: target.top + delta.y,
+        })
+      } else {
         stop()
-        return
+        setScroll(target)
       }
-
-      setScroll((scroll) => {
-        return {
-          left: scroll.left - relativeDelta.x,
-          top: scroll.top - relativeDelta.y,
-        }
-      })
-
-      setParams((params) => {
-        if (!params) {
-          throw new Error('params is undefined')
-        }
-
-        return {
-          ...params,
-          lastdelta: absoluteDelta,
-        }
-      })
     },
     params ? 1 : null
   )
