@@ -97,8 +97,6 @@ export default function PageViewer({
             onOverscroll={onOverscroll}
             contentDims={contentDims}
             containerDims={containerDims}
-            // TODO remove this
-            debug
           />
         </div>
       ) : null}
