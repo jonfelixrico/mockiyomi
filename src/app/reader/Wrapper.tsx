@@ -1,8 +1,8 @@
 'use client'
 
-import DocumentViewer, {
+import PageNavigator, {
   OnChangePage,
-} from '@/components/document-viewer/DocumentViewer'
+} from '@/components/page-navigator/PageNavigator'
 import { useCallback, useState } from 'react'
 import { useMeasure } from 'react-use'
 
@@ -30,7 +30,7 @@ export default function Wrapper() {
       ref={ref}
       className="h-screen w-screen overflow-hidden touch-none overscroll-contain"
     >
-      <DocumentViewer
+      <PageNavigator
         dimensions={{ width, height }}
         previousUrl={URLS[pageIdx - 1]}
         nextUrl={URLS[pageIdx + 1]}

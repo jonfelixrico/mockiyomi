@@ -5,7 +5,7 @@ import PageViewer, {
   OverscrollEvent,
 } from '@/components/page-viewer/PageViewer'
 
-import styles from './document-viewer.module.css'
+import styles from './page-navigator.module.css'
 import classnames from 'classnames'
 import { useMemo, useState } from 'react'
 import { ScrollPosition } from '@/types/scroll-location.interface'
@@ -20,7 +20,7 @@ const CHANGE_PAGE_THRESHOLD = 2 / 3
 const CHANGE_PAGE_ANIMATION_TIME = 150
 const SWIPE_TRESHOLD = 250
 
-export default function DocumentViewer({
+export default function PageNavigator({
   previousUrl,
   nextUrl,
   dimensions,
