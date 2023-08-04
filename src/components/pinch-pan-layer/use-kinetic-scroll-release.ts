@@ -54,15 +54,16 @@ export function useKineticScrollRelease({
         y: -amplitude.y * factor,
       }
 
-      if (Math.abs(absoluteDelta.x) < 0.5 && Math.abs(absoluteDelta.y) < 0.5) {
-        stop()
-        return
-      }
-
       const relativeDelta = {
         x: absoluteDelta.x - lastDelta.x,
         y: absoluteDelta.y - lastDelta.y,
       }
+
+      if (Math.abs(relativeDelta.x) < 0.2 && Math.abs(relativeDelta.y) < 0.2) {
+        stop()
+        return
+      }
+
       setScroll((scroll) => {
         return {
           left: scroll.left - relativeDelta.x,
