@@ -1,5 +1,6 @@
 import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
+import { clamp } from 'lodash'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useInterval } from 'react-use'
 
@@ -9,6 +10,8 @@ interface KineticParameters {
 
   lastDelta: Point
 }
+
+const AMPLITUDE_LIMIT = 10
 
 export function useKineticScrollRelease({
   setScroll,
@@ -20,8 +23,8 @@ export function useKineticScrollRelease({
   function start({ x, y }: Point) {
     setParams({
       amplitude: {
-        x: 0.8 * x,
-        y: 0.8 * y,
+        x: clamp(0.8 * x, -AMPLITUDE_LIMIT, AMPLITUDE_LIMIT),
+        y: clamp(0.8 * y, -AMPLITUDE_LIMIT, AMPLITUDE_LIMIT),
       },
       startTimestamp: Date.now(),
       lastDelta: {
