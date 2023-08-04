@@ -148,7 +148,7 @@ export default function PinchPanLayer({
 
       if (isFinal) {
         const { x, y } = e.velocity
-        if (Math.abs(x) >= 10 || Math.abs(y) >= 10) {
+        if (Math.abs(x) >= 25 || Math.abs(y) >= 25) {
           startKineticScroll(e.velocity)
         }
       }
