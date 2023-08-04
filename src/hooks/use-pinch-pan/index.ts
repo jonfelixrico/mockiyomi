@@ -73,6 +73,7 @@ export function usePinchPan(
     extractPoint,
     extractPoints,
     getDeltaAndVelocity,
+    getDelta,
   } = usePanSession()
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
@@ -283,7 +284,8 @@ export function usePinchPan(
         const currentPoint = extractPoint(e)
         emit(
           {
-            ...getDeltaAndVelocity(currentPoint),
+            panDelta: getDelta(currentPoint),
+            velocity: panSession.lastVelocity,
 
             pinch: null,
           },
