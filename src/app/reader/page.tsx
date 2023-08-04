@@ -1,4 +1,4 @@
-import Wrapper from './Wrapper'
+import Wrapper from './ReaderPageWrapper'
 
 export default function Reader() {
   return (
