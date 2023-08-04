@@ -9,6 +9,12 @@ interface KineticParameters {
   target: ScrollPosition
 }
 
+/*
+ * This kinetic scrolling approach was adopted from
+ * https://ariya.io/2013/11/javascript-kinetic-scrolling-part-2,
+ * https://github.com/ariya/kinetic.
+ */
+
 export function useKineticScrolling({
   scroll,
   setScroll,
