@@ -9,7 +9,7 @@ interface KineticParameters {
   target: ScrollPosition
 }
 
-export function useKineticScrollRelease({
+export function useKineticScrolling({
   scroll,
   setScroll,
 }: {
