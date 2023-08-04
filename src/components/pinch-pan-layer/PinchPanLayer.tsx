@@ -18,6 +18,7 @@ export interface OverscrollOptions {
 }
 
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
+const VELOCITY_THRESHOLD = 25
 
 export default function PinchPanLayer({
   containerDims,
@@ -114,7 +115,7 @@ export default function PinchPanLayer({
   })
 
   function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, count, isFirst, isFinal } = e
+    const { panDelta, pinch, count, isFirst, isFinal, velocity } = e
 
     if (isFirst) {
       // stop any ongoing kinetic scroll
@@ -140,19 +141,18 @@ export default function PinchPanLayer({
     if (pinch) {
       setIsEligibleForOverscroll(false)
       handlePinch(pinch, panDelta)
+    } else if (
+      isFinal &&
+      (Math.abs(velocity.x) >= VELOCITY_THRESHOLD ||
+        Math.abs(velocity.y) >= VELOCITY_THRESHOLD)
+    ) {
+      startKineticScroll(e.velocity)
     } else {
       const scrollDelta = {
         top: scroll.top - panDelta.y,
         left: scroll.left - panDelta.x,
       }
       limitedSetScroll(() => scrollDelta)
-
-      if (isFinal) {
-        const { x, y } = e.velocity
-        if (Math.abs(x) >= 25 || Math.abs(y) >= 25) {
-          startKineticScroll(e.velocity)
-        }
-      }
     }
   }
 
