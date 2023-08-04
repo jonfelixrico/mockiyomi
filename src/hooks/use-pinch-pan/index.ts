@@ -11,6 +11,8 @@ import { usePinchSession } from './use-pinch-session'
 
 export interface PinchPanEvent {
   panDelta: Point
+  velocity: Point
+
   pinch: PinchEvent | null
 
   isFirst: boolean
@@ -70,12 +72,12 @@ export function usePinchPan(
     setLastPoint,
     extractPoint,
     extractPoints,
+    getDeltaAndVelocity,
     getDelta,
   } = usePanSession()
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
-  const [startTimestamp, setStartTimestamp] = useState(Date.now())
   const [count, setCount] = useState(1)
   function emit(
     event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
@@ -87,7 +89,7 @@ export function usePinchPan(
       isFirst: order === 'first',
       isFinal: order === 'final',
       count,
-      elapsedTime: Date.now() - startTimestamp,
+      elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
   }
 
@@ -130,6 +132,7 @@ export function usePinchPan(
           y: e.clientY - rect.y,
         }
 
+        const now = Date.now()
         setPanSession({
           origin: {
             target: targetOrigin,
@@ -138,12 +141,26 @@ export function usePinchPan(
               y: rect.y,
             },
           },
+
+          startTimestamp: now,
+
           lastPoint: targetOrigin,
+          lastTimestamp: now,
+          lastVelocity: {
+            x: 0,
+            y: 0,
+          },
         })
 
         emit(
           {
             panDelta: {
+              x: 0,
+              y: 0,
+            },
+
+            // TODO verify if this will cause any weird behavior
+            velocity: {
               x: 0,
               y: 0,
             },
@@ -154,7 +171,6 @@ export function usePinchPan(
         )
 
         setPinchSession(null)
-        setStartTimestamp(Date.now())
 
         setPointer(e)
         setCount((count) => count + 1)
@@ -169,6 +185,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -204,6 +226,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -257,6 +285,7 @@ export function usePinchPan(
         emit(
           {
             panDelta: getDelta(currentPoint),
+            velocity: panSession.lastVelocity,
 
             pinch: null,
           },
@@ -287,6 +316,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -323,6 +358,12 @@ export function usePinchPan(
 
         emit({
           panDelta: {
+            x: 0,
+            y: 0,
+          },
+
+          // TODO verify if this will cause any weird behavior
+          velocity: {
             x: 0,
             y: 0,
           },
@@ -377,7 +418,7 @@ export function usePinchPan(
 
       if (pointerCount === 1) {
         emit({
-          panDelta: getDelta(centerPoint),
+          ...getDeltaAndVelocity(centerPoint),
 
           pinch: null,
         })
@@ -389,7 +430,7 @@ export function usePinchPan(
 
         const area = getPinchArea(points)
         emit({
-          panDelta: getDelta(centerPoint),
+          ...getDeltaAndVelocity(centerPoint),
 
           pinch: {
             isFinal: false,

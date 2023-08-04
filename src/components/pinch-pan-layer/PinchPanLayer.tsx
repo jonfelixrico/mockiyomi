@@ -7,6 +7,7 @@ import { Point } from '@/types/point.interface'
 import { ScrollPosition } from '@/types/scroll-location.interface'
 import { usePinchingManager } from './use-pinching-manager'
 import { useScrollManager } from './use-scroll-manager'
+import { useKineticScrolling } from './use-kinetic-scrolling'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -17,6 +18,7 @@ export interface OverscrollOptions {
 }
 
 const PINCHPAN_COUNT_LIMIT_FOR_OVERSCROLL = 10
+const VELOCITY_THRESHOLD = 25
 
 export default function PinchPanLayer({
   containerDims,
@@ -107,8 +109,18 @@ export default function PinchPanLayer({
     return false
   }
 
+  const { startKineticScroll, stopKineticScroll } = useKineticScrolling({
+    setScroll: limitedSetScroll,
+    scroll,
+  })
+
   function processHandling(e: PinchPanEvent) {
-    const { panDelta, pinch, count } = e
+    const { panDelta, pinch, count, isFirst, isFinal, velocity } = e
+
+    if (isFirst) {
+      // stop any ongoing kinetic scroll
+      stopKineticScroll()
+    }
 
     if (isOverscrolling) {
       onOverscroll(e)
@@ -129,7 +141,16 @@ export default function PinchPanLayer({
     if (pinch) {
       setIsEligibleForOverscroll(false)
       handlePinch(pinch, panDelta)
+    } else if (
+      isFinal &&
+      // Scroll has enough velocity to do an inertia effect
+      (Math.abs(velocity.x) >= VELOCITY_THRESHOLD ||
+        Math.abs(velocity.y) >= VELOCITY_THRESHOLD)
+    ) {
+      startKineticScroll(e.velocity)
     } else {
+      // for non-final scrolls, or for final scrolls that didn't make the cut
+
       const scrollDelta = {
         top: scroll.top - panDelta.y,
         left: scroll.left - panDelta.x,
@@ -137,6 +158,8 @@ export default function PinchPanLayer({
       limitedSetScroll(() => scrollDelta)
     }
   }
+
+  const [lastEvent, setLastEvent] = useState<PinchPanEvent>()
 
   const ref = useRef<HTMLDivElement>(null)
   usePinchPan(
@@ -147,6 +170,10 @@ export default function PinchPanLayer({
       if (e.isFinal) {
         setIsOverscrolling(false)
         setIsEligibleForOverscroll(true)
+      }
+
+      if (props.debug) {
+        setLastEvent(e)
       }
     },
     {
@@ -170,6 +197,7 @@ export default function PinchPanLayer({
           <div>{JSON.stringify(scrollLimits)}</div>
           <div>{JSON.stringify(scale)}</div>
           <div>{JSON.stringify(isOverscrolling)}</div>
+          <div>{JSON.stringify(lastEvent)}</div>
         </div>
       ) : null}
     </div>
