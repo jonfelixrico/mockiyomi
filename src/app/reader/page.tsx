@@ -1,9 +1,5 @@
-import Wrapper from './Wrapper'
+import ReaderPageWrapper from './ReaderPageWrapper'
 
 export default function Reader() {
-  return (
-    <div>
-      <Wrapper />
-    </div>
-  )
+  return <ReaderPageWrapper />
 }
