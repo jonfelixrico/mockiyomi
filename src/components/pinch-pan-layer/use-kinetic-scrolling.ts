@@ -53,11 +53,11 @@ export function useKineticScrolling({
       const { startTimestamp, amplitude, target } = params
 
       const elapsed = Date.now() - startTimestamp
+      const decay = Math.exp(-elapsed / 325)
 
-      const factor = Math.exp(-elapsed / 325)
       const delta = {
-        x: -amplitude.x * factor,
-        y: -amplitude.y * factor,
+        x: -amplitude.x * decay,
+        y: -amplitude.y * decay,
       }
 
       if (Math.abs(delta.x) > 0.5 || Math.abs(delta.y) > 0.5) {
