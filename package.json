@@ -23,7 +23,6 @@
     "convex-hull": "^1.0.3",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",
-    "lodash": "^4.17.21",
     "next": "13.4.10",
     "postcss": "8.4.26",
     "react": "18.2.0",
@@ -34,7 +33,6 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.196",
     "cypress": "^12.17.1",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^3.0.0",
