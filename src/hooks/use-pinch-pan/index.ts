@@ -75,6 +75,7 @@ export function usePinchPan(
     getDeltaAndVelocity,
     getDelta,
   } = usePanSession()
+
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
