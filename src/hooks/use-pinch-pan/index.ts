@@ -82,13 +82,15 @@ export function usePinchPan(
   const [count, setCount] = useState(1)
   function emit(
     event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
-    order?: 'first' | 'final'
+    options?: {
+      isFinal?: boolean
+    }
   ) {
     hookListener({
       ...event,
 
-      isFirst: order === 'first',
-      isFinal: order === 'final',
+      isFirst: count === 2,
+      isFinal: !!options?.isFinal,
       count,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
@@ -152,24 +154,6 @@ export function usePinchPan(
             y: 0,
           },
         })
-
-        emit(
-          {
-            panDelta: {
-              x: 0,
-              y: 0,
-            },
-
-            // TODO verify if this will cause any weird behavior
-            velocity: {
-              x: 0,
-              y: 0,
-            },
-
-            pinch: null,
-          },
-          'first'
-        )
 
         setPinchSession(null)
 
@@ -290,7 +274,9 @@ export function usePinchPan(
 
             pinch: null,
           },
-          'final'
+          {
+            isFinal: true,
+          }
         )
 
         // cleanup logic
