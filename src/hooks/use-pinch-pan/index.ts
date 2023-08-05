@@ -31,6 +31,14 @@ export interface PinchEvent {
   location: Point
 }
 
+type ToEmit = Omit<
+  PinchPanEvent,
+  'count' | 'isFirst' | 'isFinal' | 'elapsedTime'
+> & {
+  isFirst?: boolean
+  isFinal?: boolean
+}
+
 function getPinchArea(points: Point[]): number {
   if (points.length === 2) {
     return getDistanceOfTwoPoints(points[0], points[1])
@@ -80,17 +88,12 @@ export function usePinchPan(
     usePinchSession()
 
   const [count, setCount] = useState(1)
-  function emit(
-    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
-    options?: {
-      isFinal?: boolean
-    }
-  ) {
+  function emit(event: ToEmit) {
     hookListener({
       ...event,
 
-      isFirst: count === 2,
-      isFinal: !!options?.isFinal,
+      isFirst: !!event?.isFirst,
+      isFinal: !!event?.isFinal,
       count,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
@@ -267,17 +270,14 @@ export function usePinchPan(
          */
 
         const currentPoint = extractPoint(e)
-        emit(
-          {
-            panDelta: getDelta(currentPoint),
-            velocity: panSession.lastVelocity,
+        emit({
+          panDelta: getDelta(currentPoint),
+          velocity: panSession.lastVelocity,
 
-            pinch: null,
-          },
-          {
-            isFinal: true,
-          }
-        )
+          pinch: null,
+
+          isFinal: true,
+        })
 
         // cleanup logic
         setPanSession(null)
