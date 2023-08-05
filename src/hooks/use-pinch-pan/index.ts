@@ -79,6 +79,7 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
+  const [count, setCount] = useState(1)
   function emit(
     event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
     order?: 'first' | 'final'
@@ -88,7 +89,7 @@ export function usePinchPan(
 
       isFirst: order === 'first',
       isFinal: order === 'final',
-      count: 0,
+      count,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
   }
@@ -173,6 +174,7 @@ export function usePinchPan(
         setPinchSession(null)
 
         setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -212,6 +214,7 @@ export function usePinchPan(
         })
 
         setPointer(e)
+        setCount((count) => count + 1)
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * This simply continues the pinching behavior by adding more fingers.
@@ -258,6 +261,7 @@ export function usePinchPan(
         })
 
         setPointer(e)
+        setCount((count) => count + 1)
       }
     }
 
@@ -297,6 +301,8 @@ export function usePinchPan(
         if (options?.className) {
           document.body.classList.remove(options.className)
         }
+
+        setCount(1) // reset for the next session
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
@@ -335,6 +341,7 @@ export function usePinchPan(
         setLastPoint(remainingPoint)
 
         setPinchSession(null)
+        setCount((count) => count + 1)
       } else if (pointerCount > 2 && pinchSession) {
         /*
          * There are three or more fingers before the pointer up event occurred.
@@ -389,6 +396,8 @@ export function usePinchPan(
             scaleMultiplier: previousScale,
           }
         })
+
+        setCount((count) => count + 1)
       }
 
       removePointer(e)
@@ -436,6 +445,7 @@ export function usePinchPan(
 
       setLastPoint(centerPoint)
       setPointer(e)
+      setCount((count) => count + 1)
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
