@@ -7,7 +7,7 @@ export default function NavigationOverlay(props: {
   dimensions: Dimensions
   children: ReactNode
 
-  pageUrls: string[]
+  pageCount: number
   pageIndex: number
   setPageIndex: Dispatch<number>
 }) {
@@ -22,7 +22,7 @@ export default function NavigationOverlay(props: {
         <div className="absoltue h-full w-full flex flex-column justify-end">
           <NavigationControls
             pageIndex={props.pageIndex}
-            pageUrls={props.pageUrls}
+            pageCount={props.pageCount}
             setPageIndex={props.setPageIndex}
           />
         </div>
