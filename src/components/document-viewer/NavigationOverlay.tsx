@@ -28,11 +28,11 @@ function Controls({
     setPageIndex(Math.max(0, pageIndex - 1))
   }, [setPageIndex, pageIndex])
 
-  const setSliderValue = useCallback(
+  const setPageNo = useCallback(
     (value: number) => setPageIndex(value - 1),
     [setPageIndex]
   )
-  const sliderValue = useMemo(() => pageIndex + 1, [pageIndex])
+  const pageNo = useMemo(() => pageIndex + 1, [pageIndex])
 
   return (
     <div className="flex flex-row items-center">
@@ -43,13 +43,8 @@ function Controls({
         icon={<VerticalRightOutlined />}
       />
 
-      <div className="grow">
-        <Slider
-          value={sliderValue}
-          onChange={setSliderValue}
-          max={pageCount}
-          min={1}
-        />
+      <div className="grow mx-5">
+        <Slider value={pageNo} onChange={setPageNo} max={pageCount} min={1} />
       </div>
 
       <Button
