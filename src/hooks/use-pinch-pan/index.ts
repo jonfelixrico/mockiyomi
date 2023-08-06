@@ -87,10 +87,7 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
-  const [count, setCount] = useState(0)
-  function incrementCount() {
-    setCount((count) => count + 1)
-  }
+  const [count, setCount] = useState(1)
 
   function emit(event: ToEmit) {
     hookListener({
@@ -111,7 +108,7 @@ export function usePinchPan(
       }
     }
 
-    incrementCount()
+    setCount((count) => count + 1)
   }
 
   // pointer down
@@ -176,7 +173,7 @@ export function usePinchPan(
         setPinchSession(null)
 
         setPointer(e)
-        incrementCount()
+        setCount(1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -302,8 +299,6 @@ export function usePinchPan(
         if (options?.className) {
           document.body.classList.remove(options.className)
         }
-
-        setCount(0) // reset for the next session
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
