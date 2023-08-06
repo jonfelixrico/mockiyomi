@@ -138,11 +138,6 @@ export function usePinchPan(
         // Needed to prevent causing highlights once the interaction has started
         e.preventDefault()
 
-        document.body.classList.add('dragging')
-        if (options?.className) {
-          document.body.classList.add(options.className)
-        }
-
         const rect = refEl.getBoundingClientRect()
         const targetOrigin = {
           x: e.clientX - rect.x,
