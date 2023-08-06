@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 export function usePointerTracker() {
   const [pointerCache, setPointerCache] = useState<
@@ -27,9 +27,10 @@ export function usePointerTracker() {
   )
 
   return {
-    pointerCount: asArray.length,
     setPointer,
     removePointer,
     pointers: asArray,
+    pointerCount: asArray.length,
+    pointerMap: pointerCache,
   }
 }
