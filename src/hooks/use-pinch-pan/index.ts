@@ -8,6 +8,7 @@ import {
 } from './point-utils'
 import { usePanSession } from './use-pan-session'
 import { usePinchSession } from './use-pinch-session'
+import { useClasses } from './use-classes'
 
 export interface PinchPanEvent {
   panDelta: Point
@@ -29,6 +30,13 @@ export interface PinchEvent {
 
   scale: number
   location: Point
+}
+
+type ToEmit = Omit<
+  PinchPanEvent,
+  'count' | 'isFirst' | 'isFinal' | 'elapsedTime'
+> & {
+  isFinal?: boolean
 }
 
 function getPinchArea(points: Point[]): number {
@@ -63,8 +71,13 @@ export function usePinchPan(
   hookListener: (event: PinchPanEvent) => void,
   options?: Options
 ) {
-  const { pointerCount, removePointer, setPointer, pointers } =
-    usePointerTracker()
+  const {
+    pointerCount,
+    removePointer,
+    setPointer,
+    pointers,
+    shouldIgnorePointer,
+  } = usePointerTracker()
 
   const {
     panSession,
@@ -75,22 +88,31 @@ export function usePinchPan(
     getDeltaAndVelocity,
     getDelta,
   } = usePanSession()
+
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
-  const [count, setCount] = useState(1)
-  function emit(
-    event: Omit<PinchPanEvent, 'count' | 'isFirst' | 'isFinal' | 'elapsedTime'>,
-    order?: 'first' | 'final'
-  ) {
+  const [eventCount, setEventCount] = useState(1)
+
+  const { applyClasses, removeClasses } = useClasses(options?.className)
+
+  function emit(event: ToEmit) {
     hookListener({
       ...event,
 
-      isFirst: order === 'first',
-      isFinal: order === 'final',
-      count,
+      isFirst: eventCount === 1 && !event.isFinal,
+      isFinal: !!event?.isFinal,
+      count: eventCount,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
+  }
+
+  function doAfterProcess() {
+    if (eventCount >= 1) {
+      applyClasses()
+    }
+
+    setEventCount((count) => count + 1)
   }
 
   // pointer down
@@ -121,11 +143,6 @@ export function usePinchPan(
         // Needed to prevent causing highlights once the interaction has started
         e.preventDefault()
 
-        document.body.classList.add('dragging')
-        if (options?.className) {
-          document.body.classList.add(options.className)
-        }
-
         const rect = refEl.getBoundingClientRect()
         const targetOrigin = {
           x: e.clientX - rect.x,
@@ -152,28 +169,10 @@ export function usePinchPan(
           },
         })
 
-        emit(
-          {
-            panDelta: {
-              x: 0,
-              y: 0,
-            },
-
-            // TODO verify if this will cause any weird behavior
-            velocity: {
-              x: 0,
-              y: 0,
-            },
-
-            pinch: null,
-          },
-          'first'
-        )
-
         setPinchSession(null)
 
         setPointer(e)
-        setCount((count) => count + 1)
+        setEventCount(1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -213,7 +212,7 @@ export function usePinchPan(
         })
 
         setPointer(e)
-        setCount((count) => count + 1)
+        doAfterProcess()
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * This simply continues the pinching behavior by adding more fingers.
@@ -260,7 +259,7 @@ export function usePinchPan(
         })
 
         setPointer(e)
-        setCount((count) => count + 1)
+        doAfterProcess()
       }
     }
 
@@ -281,27 +280,23 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        const currentPoint = extractPoint(e)
-        emit(
-          {
+        if (eventCount > 1) {
+          const currentPoint = extractPoint(e)
+          emit({
             panDelta: getDelta(currentPoint),
             velocity: panSession.lastVelocity,
 
             pinch: null,
-          },
-          'final'
-        )
+
+            isFinal: true,
+          })
+        }
 
         // cleanup logic
         setPanSession(null)
         setPinchSession(null)
 
-        document.body.classList.remove('dragging')
-        if (options?.className) {
-          document.body.classList.remove(options.className)
-        }
-
-        setCount(1) // reset for the next session
+        removeClasses()
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
@@ -340,7 +335,7 @@ export function usePinchPan(
         setLastPoint(remainingPoint)
 
         setPinchSession(null)
-        setCount((count) => count + 1)
+        doAfterProcess()
       } else if (pointerCount > 2 && pinchSession) {
         /*
          * There are three or more fingers before the pointer up event occurred.
@@ -396,7 +391,7 @@ export function usePinchPan(
           }
         })
 
-        setCount((count) => count + 1)
+        doAfterProcess()
       }
 
       removePointer(e)
@@ -409,7 +404,7 @@ export function usePinchPan(
   // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!ref.current || !panSession) {
+      if (!ref.current || !panSession || shouldIgnorePointer(e)) {
         return
       }
 
@@ -444,7 +439,7 @@ export function usePinchPan(
 
       setLastPoint(centerPoint)
       setPointer(e)
-      setCount((count) => count + 1)
+      doAfterProcess()
     }
 
     window.addEventListener('pointermove', handler, { passive: true })

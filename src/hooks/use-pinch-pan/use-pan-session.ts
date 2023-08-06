@@ -1,5 +1,6 @@
 import { Point } from '@/types/point.interface'
 import { useState } from 'react'
+import { getDeltaOfPoints } from './point-utils'
 
 export interface Origin {
   client: Point
@@ -14,13 +15,6 @@ export interface PanSession {
   lastPoint: Point
   lastTimestamp: number
   lastVelocity: Point
-}
-
-function computeDelta(current: Point, previous: Point) {
-  return {
-    x: current.x - previous.x,
-    y: current.y - previous.y,
-  }
 }
 
 function computeVelocityWithMovingAverage(
@@ -54,7 +48,7 @@ export function usePanSession() {
         lastPoint: point,
         lastTimestamp: now,
         lastVelocity: computeVelocityWithMovingAverage(
-          computeDelta(point, session.lastPoint),
+          getDeltaOfPoints(point, session.lastPoint),
           session.startTimestamp - now,
           session.lastVelocity
         ),
@@ -94,7 +88,7 @@ export function usePanSession() {
       throw new Error('no pan session')
     }
 
-    return computeDelta(point, panSession.lastPoint)
+    return getDeltaOfPoints(point, panSession.lastPoint)
   }
 
   function getDeltaAndVelocity(point: Point) {
