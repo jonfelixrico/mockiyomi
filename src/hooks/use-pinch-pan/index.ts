@@ -8,7 +8,7 @@ import {
 } from './point-utils'
 import { usePanSession } from './use-pan-session'
 import { usePinchSession } from './use-pinch-session'
-import { usePinchPanClasses } from './use-pinch-pan-classes'
+import { useClasses } from './use-classes'
 
 export interface PinchPanEvent {
   panDelta: Point
@@ -89,7 +89,7 @@ export function usePinchPan(
 
   const [eventCount, setEventCount] = useState(1)
 
-  const { applyClasses, removeClasses } = usePinchPanClasses(options?.className)
+  const { applyClasses, removeClasses } = useClasses(options?.className)
 
   function emit(event: ToEmit) {
     hookListener({

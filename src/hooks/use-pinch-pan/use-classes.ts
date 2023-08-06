@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-export function usePinchPanClasses(className?: string) {
+export function useClasses(className?: string) {
   const applyClasses = useCallback(() => {
     document.body.classList.add('dragging')
     if (className) {
