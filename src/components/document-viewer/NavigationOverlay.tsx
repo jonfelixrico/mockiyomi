@@ -1,9 +1,15 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { Dispatch, ReactNode, useRef, useState } from 'react'
+import { Dispatch, ReactNode, useRef, useState, useCallback } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
-import NavigationControls from './NavigationControls'
+import { Button } from 'antd'
+import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
 
-export default function NavigationOverlay(props: {
+export default function NavigationOverlay({
+  setPageIndex,
+  pageCount,
+  pageIndex,
+  ...props
+}: {
   dimensions: Dimensions
   children: ReactNode
 
@@ -14,15 +20,29 @@ export default function NavigationOverlay(props: {
   const [showOverlay, setShowOverlay] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
 
+  const goNext = useCallback(() => {
+    setPageIndex(Math.min(pageCount - 1, pageIndex + 1))
+  }, [setPageIndex, pageIndex, pageCount])
+
+  const goPrev = useCallback(() => {
+    setPageIndex(Math.max(0, pageIndex - 1))
+  }, [setPageIndex, pageIndex])
+
   return (
     <div ref={ref} className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
         <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
-          <NavigationControls
-            pageIndex={props.pageIndex}
-            pageCount={props.pageCount}
-            setPageIndex={props.setPageIndex}
-          />
+          <div className="flex flex-row items-center">
+            <Button type="primary" shape="circle" onClick={goNext}>
+              <VerticalRightOutlined />
+            </Button>
+
+            <div className="grow">testing</div>
+
+            <Button type="primary" shape="circle" onClick={goPrev}>
+              <VerticalLeftOutlined />
+            </Button>
+          </div>
         </div>
       </ConditionallyRender>
 
