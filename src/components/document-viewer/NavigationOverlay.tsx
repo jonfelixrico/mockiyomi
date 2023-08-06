@@ -17,7 +17,7 @@ export default function NavigationOverlay(props: {
   return (
     <div ref={ref} className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
-        <div className="absolute h-full w-full flex flex-col justify-end items-stretch">
+        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
           <NavigationControls
             pageIndex={props.pageIndex}
             pageCount={props.pageCount}
