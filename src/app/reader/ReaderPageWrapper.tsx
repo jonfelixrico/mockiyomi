@@ -10,7 +10,7 @@ const URLS = new Array(8)
   .fill(null)
   .map((_, index) => `/placeholder/${index + 1}.jpg`)
 
-export default function Wrapper() {
+export default function ReaderPageWrapper() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   const [pageIdx, setPageIdx] = useState(0)
