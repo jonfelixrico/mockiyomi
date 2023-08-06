@@ -1,5 +1,12 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { Dispatch, ReactNode, useRef, useState, useCallback } from 'react'
+import {
+  Dispatch,
+  ReactNode,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
@@ -21,6 +28,12 @@ function Controls({
     setPageIndex(Math.max(0, pageIndex - 1))
   }, [setPageIndex, pageIndex])
 
+  const setSliderValue = useCallback(
+    (value: number) => setPageIndex(value - 1),
+    [setPageIndex]
+  )
+  const sliderValue = useMemo(() => pageIndex + 1, [pageIndex])
+
   return (
     <div className="flex flex-row items-center">
       <Button
@@ -32,8 +45,8 @@ function Controls({
 
       <div className="grow">
         <Slider
-          value={pageIndex + 1}
-          onChange={(value) => setPageIndex(value - 1)}
+          value={sliderValue}
+          onChange={setSliderValue}
           max={pageCount}
           min={1}
         />
