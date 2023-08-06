@@ -8,6 +8,7 @@ import {
 } from './point-utils'
 import { usePanSession } from './use-pan-session'
 import { usePinchSession } from './use-pinch-session'
+import { usePinchPanClasses } from './use-pinch-pan-classes'
 
 export interface PinchPanEvent {
   panDelta: Point
@@ -88,6 +89,8 @@ export function usePinchPan(
 
   const [eventCount, setEventCount] = useState(1)
 
+  const { applyClasses, removeClasses } = usePinchPanClasses(options?.className)
+
   function emit(event: ToEmit) {
     hookListener({
       ...event,
@@ -101,10 +104,7 @@ export function usePinchPan(
 
   function doAfterProcess() {
     if (eventCount >= 1) {
-      document.body.classList.add('dragging')
-      if (options?.className) {
-        document.body.classList.add(options.className)
-      }
+      applyClasses()
     }
 
     setEventCount((count) => count + 1)
@@ -291,10 +291,7 @@ export function usePinchPan(
         setPanSession(null)
         setPinchSession(null)
 
-        document.body.classList.remove('dragging')
-        if (options?.className) {
-          document.body.classList.remove(options.className)
-        }
+        removeClasses()
       } else if (pointerCount === 2 && pinchSession) {
         /*
          * Two fingers remain before the pointer up event.
