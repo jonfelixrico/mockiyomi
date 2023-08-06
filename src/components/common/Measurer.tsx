@@ -1,3 +1,5 @@
+'use client'
+
 import { Dimensions } from '@/types/dimensions.interface'
 import { CSSProperties, ReactNode } from 'react'
 import { useMeasure } from 'react-use'
