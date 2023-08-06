@@ -10,6 +10,7 @@ import {
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
+import { useClickAway } from 'react-use'
 
 function Controls({
   setPageIndex,
@@ -75,13 +76,20 @@ export default function NavigationOverlay({
   setPageIndex: Dispatch<number>
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
-  const ref = useRef<HTMLDivElement>(null)
+
+  const controlsRef = useRef<HTMLDivElement>(null)
+  useClickAway(controlsRef, () => {
+    setShowOverlay(false)
+  })
 
   return (
-    <div ref={ref} className="relative" style={props.dimensions}>
+    <div className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
         <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
-          <div className="px-5 py-3 bg-white border-t border-gray-300">
+          <div
+            className="px-5 py-3 bg-white border-t border-gray-300"
+            ref={controlsRef}
+          >
             <Controls
               pageCount={pageCount}
               pageIndex={pageIndex}
