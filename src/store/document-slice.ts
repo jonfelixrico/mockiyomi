@@ -6,11 +6,15 @@ interface DocumentSlice {
   pageIndex: number
 }
 
+const INITIAL_URLS = new Array(8)
+  .fill(null)
+  .map((_, index) => `/placeholder/${index + 1}.jpg`)
+
 const documentSlice = createSlice({
   name: 'document',
 
   initialState: {
-    pageUrls: [],
+    pageUrls: INITIAL_URLS,
     pageIndex: 0,
   } as DocumentSlice,
 
