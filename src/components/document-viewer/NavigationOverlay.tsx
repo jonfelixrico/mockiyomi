@@ -1,10 +1,15 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { ReactNode, useRef, useState } from 'react'
+import { Dispatch, ReactNode, useRef, useState } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
+import NavigationControls from './NavigationControls'
 
 export default function NavigationOverlay(props: {
   dimensions: Dimensions
   children: ReactNode
+
+  pageUrls: string[]
+  pageIndex: number
+  setPageIndex: Dispatch<number>
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
@@ -14,7 +19,13 @@ export default function NavigationOverlay(props: {
       <div onClick={() => setShowOverlay(true)}>{props.children}</div>
 
       <ConditionallyRender render={showOverlay}>
-        <div className="absoltue h-full w-full"></div>
+        <div className="absoltue h-full w-full flex flex-column justify-end">
+          <NavigationControls
+            pageIndex={props.pageIndex}
+            pageUrls={props.pageUrls}
+            setPageIndex={props.setPageIndex}
+          />
+        </div>
       </ConditionallyRender>
     </div>
   )
