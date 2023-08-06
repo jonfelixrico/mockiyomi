@@ -7,6 +7,7 @@ import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
+import NavigationOverlay from './NavigationOverlay'
 
 function useDocumentData() {
   const dispatch = useAppDispatch()
@@ -46,13 +47,20 @@ export default function DocumentViewer({
   )
 
   return (
-    <PageNavigator
+    <NavigationOverlay
       dimensions={dimensions}
-      previousUrl={pageUrls[pageIndex - 1]}
-      nextUrl={pageUrls[pageIndex + 1]}
-      currentUrl={pageUrls[pageIndex]}
-      onChangePage={changePageIndex}
-      key={pageIndex}
-    />
+      pageIndex={pageIndex}
+      setPageIndex={setPageIndex}
+      pageUrls={pageUrls}
+    >
+      <PageNavigator
+        dimensions={dimensions}
+        previousUrl={pageUrls[pageIndex - 1]}
+        nextUrl={pageUrls[pageIndex + 1]}
+        currentUrl={pageUrls[pageIndex]}
+        onChangePage={changePageIndex}
+        key={pageIndex}
+      />
+    </NavigationOverlay>
   )
 }
