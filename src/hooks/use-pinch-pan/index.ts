@@ -103,6 +103,15 @@ export function usePinchPan(
     })
   }
 
+  function doAfterProcess() {
+    if (count >= 1) {
+      document.body.classList.add('dragging')
+      if (options?.className) {
+        document.body.classList.add(options.className)
+      }
+    }
+  }
+
   // pointer down
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -206,6 +215,7 @@ export function usePinchPan(
 
         setPointer(e)
         incrementCount()
+        doAfterProcess()
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
          * This simply continues the pinching behavior by adding more fingers.
@@ -253,6 +263,7 @@ export function usePinchPan(
 
         setPointer(e)
         incrementCount()
+        doAfterProcess()
       }
     }
 
@@ -332,6 +343,7 @@ export function usePinchPan(
 
         setPinchSession(null)
         incrementCount()
+        doAfterProcess()
       } else if (pointerCount > 2 && pinchSession) {
         /*
          * There are three or more fingers before the pointer up event occurred.
@@ -388,6 +400,7 @@ export function usePinchPan(
         })
 
         incrementCount()
+        doAfterProcess()
       }
 
       removePointer(e)
@@ -436,6 +449,7 @@ export function usePinchPan(
       setLastPoint(centerPoint)
       setPointer(e)
       incrementCount()
+      doAfterProcess()
     }
 
     window.addEventListener('pointermove', handler, { passive: true })
