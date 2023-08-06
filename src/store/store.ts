@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import pageMetadata from './page-metadata-slice'
+import document from './document-slice'
 
 export const store = configureStore({
   reducer: {
     pageMetadata,
+    document,
   },
 })
 
