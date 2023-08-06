@@ -1,7 +1,7 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import { Dispatch, ReactNode, useRef, useState, useCallback } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
-import { Button } from 'antd'
+import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
 
 export default function NavigationOverlay({
@@ -40,7 +40,13 @@ export default function NavigationOverlay({
               icon={<VerticalRightOutlined />}
             />
 
-            <div className="grow">testing</div>
+            <div className="grow">
+              <Slider
+                value={pageIndex + 1}
+                onChange={(value) => setPageIndex(value - 1)}
+                max={pageCount}
+              />
+            </div>
 
             <Button
               type="primary"
