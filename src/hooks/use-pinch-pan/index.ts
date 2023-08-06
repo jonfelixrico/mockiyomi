@@ -281,7 +281,7 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        if (count === 1) {
+        if (count > 1) {
           const currentPoint = extractPoint(e)
           emit({
             panDelta: getDelta(currentPoint),
