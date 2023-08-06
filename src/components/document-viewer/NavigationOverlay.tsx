@@ -16,10 +16,8 @@ export default function NavigationOverlay(props: {
 
   return (
     <div ref={ref} className="relative" style={props.dimensions}>
-      <div onClick={() => setShowOverlay(true)}>{props.children}</div>
-
       <ConditionallyRender render={showOverlay}>
-        <div className="absoltue h-full w-full flex flex-column justify-end">
+        <div className="absolute h-full w-full flex flex-col justify-end items-stretch">
           <NavigationControls
             pageIndex={props.pageIndex}
             pageCount={props.pageCount}
@@ -27,6 +25,8 @@ export default function NavigationOverlay(props: {
           />
         </div>
       </ConditionallyRender>
+
+      <div onClick={() => setShowOverlay(true)}>{props.children}</div>
     </div>
   )
 }
