@@ -415,7 +415,7 @@ export function usePinchPan(
       const points = extractPoints([...pointers, e])
       const centerPoint = getCentroid(points)
 
-      if (pointerCount === 1) {
+      if (pointerCount > 1) {
         emit({
           ...getDeltaAndVelocity(centerPoint),
 
