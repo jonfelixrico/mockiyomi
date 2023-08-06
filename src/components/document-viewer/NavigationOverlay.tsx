@@ -35,7 +35,7 @@ function Controls({
   const pageNo = useMemo(() => pageIndex + 1, [pageIndex])
 
   return (
-    <div className="flex flex-row items-center">
+    <div className="flex flex-row items-center gap-x-5">
       <Button
         type="primary"
         shape="circle"
@@ -43,9 +43,13 @@ function Controls({
         icon={<VerticalRightOutlined />}
       />
 
-      <div className="grow mx-5">
+      <div>{pageNo}</div>
+
+      <div className="grow">
         <Slider value={pageNo} onChange={setPageNo} max={pageCount} min={1} />
       </div>
+
+      <div>{pageCount}</div>
 
       <Button
         type="primary"
