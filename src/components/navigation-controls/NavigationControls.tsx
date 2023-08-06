@@ -20,12 +20,12 @@ export default function NavigationControls({
   }, [setPageIndex, pageIndex])
 
   return (
-    <div>
+    <div className="flex flex-row items-center">
       <Button type="primary" shape="circle" onClick={goNext}>
         <VerticalRightOutlined />
       </Button>
 
-      <div>{/* do something */}</div>
+      <div className="grow">testing</div>
 
       <Button type="primary" shape="circle" onClick={goPrev}>
         <VerticalLeftOutlined />
