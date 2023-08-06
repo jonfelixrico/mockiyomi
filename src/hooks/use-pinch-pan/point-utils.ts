@@ -57,3 +57,10 @@ export function getAreaOfPoints(points: Point[]): number {
   }
   return Math.abs(area / 2)
 }
+
+export function getDeltaOfPoints(current: Point, previous: Point) {
+  return {
+    x: current.x - previous.x,
+    y: current.y - previous.y,
+  }
+}
