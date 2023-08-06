@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { getDeltaOfPoints } from './point-utils'
+
+const DELTA_THRESHOLD = 3
 
 export function usePointerTracker() {
   const [pointerCache, setPointerCache] = useState<
@@ -22,6 +25,19 @@ export function usePointerTracker() {
     })
   }
 
+  function shouldIgnorePointer(e: PointerEvent): boolean {
+    const stored = pointerCache[e.pointerId]
+
+    if (!stored) {
+      return false
+    }
+
+    const delta = getDeltaOfPoints(e, pointerCache[e.pointerId])
+    return (
+      Math.abs(delta.x) < DELTA_THRESHOLD && Math.abs(delta.y) < DELTA_THRESHOLD
+    )
+  }
+
   const asArray = Object.values(pointerCache).sort(
     (a, b) => a.pointerId - b.pointerId
   )
@@ -31,6 +47,6 @@ export function usePointerTracker() {
     removePointer,
     pointers: asArray,
     pointerCount: asArray.length,
-    pointerMap: pointerCache,
+    shouldIgnorePointer,
   }
 }

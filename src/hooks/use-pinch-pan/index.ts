@@ -71,8 +71,13 @@ export function usePinchPan(
   hookListener: (event: PinchPanEvent) => void,
   options?: Options
 ) {
-  const { pointerCount, removePointer, setPointer, pointers } =
-    usePointerTracker()
+  const {
+    pointerCount,
+    removePointer,
+    setPointer,
+    pointers,
+    shouldIgnorePointer,
+  } = usePointerTracker()
 
   const {
     panSession,
@@ -399,7 +404,7 @@ export function usePinchPan(
   // pointer move
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!ref.current || !panSession) {
+      if (!ref.current || !panSession || shouldIgnorePointer(e)) {
         return
       }
 
