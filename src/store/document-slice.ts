@@ -23,7 +23,7 @@ const documentSlice = createSlice({
       state.pageUrls = payload
     },
 
-    setPageIndx(state, { payload }: ReducerActionHelper<number>) {
+    setPageIndex(state, { payload }: ReducerActionHelper<number>) {
       state.pageIndex = payload
     },
   },
