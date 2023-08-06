@@ -33,15 +33,21 @@ export default function NavigationOverlay({
       <ConditionallyRender render={showOverlay}>
         <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
           <div className="flex flex-row items-center">
-            <Button type="primary" shape="circle" onClick={goNext}>
-              <VerticalRightOutlined />
-            </Button>
+            <Button
+              type="primary"
+              shape="circle"
+              onClick={goNext}
+              icon={<VerticalRightOutlined />}
+            />
 
             <div className="grow">testing</div>
 
-            <Button type="primary" shape="circle" onClick={goPrev}>
-              <VerticalLeftOutlined />
-            </Button>
+            <Button
+              type="primary"
+              shape="circle"
+              onClick={goPrev}
+              icon={<VerticalLeftOutlined />}
+            />
           </div>
         </div>
       </ConditionallyRender>
