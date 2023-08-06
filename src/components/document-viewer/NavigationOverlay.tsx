@@ -82,11 +82,13 @@ export default function NavigationOverlay({
     <div ref={ref} className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
         <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
-          <Controls
-            pageCount={pageCount}
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-          />
+          <div className="px-5 py-3 bg-white border-t border-gray-300">
+            <Controls
+              pageCount={pageCount}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+            />
+          </div>
         </div>
       </ConditionallyRender>
 
