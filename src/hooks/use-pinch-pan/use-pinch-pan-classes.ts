@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 export function usePinchPanClasses(className?: string) {
-  const addClasses = useCallback(() => {
+  const applyClasses = useCallback(() => {
     document.body.classList.add('dragging')
     if (className) {
       document.body.classList.add(className)
@@ -16,7 +16,7 @@ export function usePinchPanClasses(className?: string) {
   }, [className])
 
   return {
-    addClasses,
+    applyClasses,
     removeClasses,
   }
 }
