@@ -35,7 +35,6 @@ type ToEmit = Omit<
   PinchPanEvent,
   'count' | 'isFirst' | 'isFinal' | 'elapsedTime'
 > & {
-  isFirst?: boolean
   isFinal?: boolean
 }
 
@@ -93,7 +92,7 @@ export function usePinchPan(
     hookListener({
       ...event,
 
-      isFirst: !!event?.isFirst,
+      isFirst: eventCount === 1 && !event.isFinal,
       isFinal: !!event?.isFinal,
       count: eventCount,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
