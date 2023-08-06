@@ -87,7 +87,7 @@ export function usePinchPan(
   const { pinchSession, setPinchSession, setLastDistance, getScale } =
     usePinchSession()
 
-  const [count, setCount] = useState(1)
+  const [eventCount, setEventCount] = useState(1)
 
   function emit(event: ToEmit) {
     hookListener({
@@ -95,20 +95,20 @@ export function usePinchPan(
 
       isFirst: !!event?.isFirst,
       isFinal: !!event?.isFinal,
-      count,
+      count: eventCount,
       elapsedTime: panSession ? Date.now() - panSession.startTimestamp : 0,
     })
   }
 
   function doAfterProcess() {
-    if (count >= 1) {
+    if (eventCount >= 1) {
       document.body.classList.add('dragging')
       if (options?.className) {
         document.body.classList.add(options.className)
       }
     }
 
-    setCount((count) => count + 1)
+    setEventCount((count) => count + 1)
   }
 
   // pointer down
@@ -173,7 +173,7 @@ export function usePinchPan(
         setPinchSession(null)
 
         setPointer(e)
-        setCount(1)
+        setEventCount(1)
       } else if (panSession && pointerCount === 1) {
         /*
          * Here, the user has added a second finger of the screen.
@@ -281,7 +281,7 @@ export function usePinchPan(
          * remain in the surface.
          */
 
-        if (count > 1) {
+        if (eventCount > 1) {
           const currentPoint = extractPoint(e)
           emit({
             panDelta: getDelta(currentPoint),
