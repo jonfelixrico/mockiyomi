@@ -282,14 +282,16 @@ export function usePinchPan(
          */
 
         const currentPoint = extractPoint(e)
-        emit({
-          panDelta: getDelta(currentPoint),
-          velocity: panSession.lastVelocity,
+        if (count === 1) {
+          emit({
+            panDelta: getDelta(currentPoint),
+            velocity: panSession.lastVelocity,
 
-          pinch: null,
+            pinch: null,
 
-          isFinal: true,
-        })
+            isFinal: true,
+          })
+        }
 
         // cleanup logic
         setPanSession(null)
