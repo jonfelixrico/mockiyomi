@@ -110,6 +110,8 @@ export function usePinchPan(
         document.body.classList.add(options.className)
       }
     }
+
+    incrementCount()
   }
 
   // pointer down
@@ -214,7 +216,6 @@ export function usePinchPan(
         })
 
         setPointer(e)
-        incrementCount()
         doAfterProcess()
       } else if (panSession && pinchSession && pointerCount >= 2) {
         /*
@@ -262,7 +263,6 @@ export function usePinchPan(
         })
 
         setPointer(e)
-        incrementCount()
         doAfterProcess()
       }
     }
@@ -342,7 +342,6 @@ export function usePinchPan(
         setLastPoint(remainingPoint)
 
         setPinchSession(null)
-        incrementCount()
         doAfterProcess()
       } else if (pointerCount > 2 && pinchSession) {
         /*
@@ -399,7 +398,6 @@ export function usePinchPan(
           }
         })
 
-        incrementCount()
         doAfterProcess()
       }
 
@@ -448,7 +446,6 @@ export function usePinchPan(
 
       setLastPoint(centerPoint)
       setPointer(e)
-      incrementCount()
       doAfterProcess()
     }
 
