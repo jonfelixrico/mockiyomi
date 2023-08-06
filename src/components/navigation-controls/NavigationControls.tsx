@@ -1,4 +1,3 @@
-import { Dimensions } from '@/types/dimensions.interface'
 import { Dispatch } from 'react'
 
 export default function NavigationControls(props: {
