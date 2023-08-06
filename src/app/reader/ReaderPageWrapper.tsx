@@ -3,26 +3,44 @@
 import PageNavigator, {
   OnChangePage,
 } from '@/components/page-navigator/PageNavigator'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useMeasure } from 'react-use'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { documentActions } from '@/store/document-slice'
 
-const URLS = new Array(8)
-  .fill(null)
-  .map((_, index) => `/placeholder/${index + 1}.jpg`)
+function useDocumentData() {
+  const dispatch = useAppDispatch()
 
-export default function Wrapper() {
+  const pageIndex = useAppSelector((state) => state.document.pageIndex)
+  const setPageIndex = useCallback(
+    (index: number) => {
+      dispatch(documentActions.setPageIndex(index))
+    },
+    [dispatch]
+  )
+
+  const pageUrls = useAppSelector((state) => state.document.pageUrls)
+
+  return {
+    pageIndex,
+    setPageIndex,
+    pageUrls,
+  }
+}
+
+export default function ReaderPageWrapper() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
-  const [pageIdx, setPageIdx] = useState(0)
-  const changePageIdx: OnChangePage = useCallback(
+  const { pageIndex, setPageIndex, pageUrls } = useDocumentData()
+  const changePageIndex: OnChangePage = useCallback(
     (value) => {
       if (value === 'next') {
-        setPageIdx((idx) => idx + 1)
+        setPageIndex(pageIndex + 1)
       } else {
-        setPageIdx((idx) => idx - 1)
+        setPageIndex(pageIndex - 1)
       }
     },
-    [setPageIdx]
+    [setPageIndex, pageIndex]
   )
 
   return (
@@ -32,11 +50,11 @@ export default function Wrapper() {
     >
       <PageNavigator
         dimensions={{ width, height }}
-        previousUrl={URLS[pageIdx - 1]}
-        nextUrl={URLS[pageIdx + 1]}
-        currentUrl={URLS[pageIdx]}
-        onChangePage={changePageIdx}
-        key={pageIdx}
+        previousUrl={pageUrls[pageIndex - 1]}
+        nextUrl={pageUrls[pageIndex + 1]}
+        currentUrl={pageUrls[pageIndex]}
+        onChangePage={changePageIndex}
+        key={pageIndex}
       />
     </div>
   )
