@@ -1,11 +1,13 @@
 import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
 
-export function useTap(ref: RefObject<HTMLElement>) {
+const TAP_TIME_THRESHOLD = 300
+
+export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
   const [pointerIds, setPointerIds] = useState(new Set<number>())
   const [startTime, setStartTime] = useState<Date | null>(null)
   const [initialPos, setIntialPos] = useState<Point | null>()
-  const [isTap, setIsTap] = useState(false)
+  const [qualifiesAsTap, setQualifiesAsTap] = useState(false)
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -20,7 +22,7 @@ export function useTap(ref: RefObject<HTMLElement>) {
           y: e.clientY,
         })
       } else if (pointerIds.size >= 1) {
-        setIsTap(false)
+        setQualifiesAsTap(false)
       }
 
       setPointerIds((set) => {
@@ -32,7 +34,14 @@ export function useTap(ref: RefObject<HTMLElement>) {
 
     window.addEventListener('pointerdown', handler)
     return () => window.removeEventListener('pointerdown', handler)
-  }, [ref, setStartTime, setPointerIds, setIsTap, setIntialPos, pointerIds])
+  }, [
+    ref,
+    setStartTime,
+    setPointerIds,
+    setQualifiesAsTap,
+    setIntialPos,
+    pointerIds,
+  ])
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
@@ -46,12 +55,28 @@ export function useTap(ref: RefObject<HTMLElement>) {
   }, [ref])
 
   useEffect(() => {
-    const handler = (e: PointerEvent) => {}
-    if (!ref.current) {
-      return
+    const handler = (e: PointerEvent) => {
+      if (!ref.current) {
+        return
+      }
+
+      if (
+        pointerIds.size === 1 &&
+        qualifiesAsTap &&
+        startTime &&
+        new Date().getTime() - startTime.getTime() <= TAP_TIME_THRESHOLD
+      ) {
+        hookListener()
+      }
+
+      setPointerIds((set) => {
+        const clone = new Set(set)
+        clone.delete(e.pointerId)
+        return clone
+      })
     }
 
     window.addEventListener('pointerup', handler)
     return () => window.removeEventListener('pointerup', handler)
-  }, [ref])
+  }, [ref, setPointerIds, pointerIds, qualifiesAsTap, hookListener, startTime])
 }
