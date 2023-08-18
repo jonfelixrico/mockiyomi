@@ -2,6 +2,7 @@ import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
 
 const TAP_TIME_THRESHOLD = 300
+const DISTANCE_THRESHOLD = 3
 
 export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
   const [pointerIds, setPointerIds] = useState(new Set<number>())
@@ -45,18 +46,25 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!ref.current) {
+      if (!ref.current || !pointerIds.has(e.pointerId) || !initialPos) {
         return
+      }
+
+      if (
+        Math.abs(e.clientX - initialPos.x) > DISTANCE_THRESHOLD ||
+        Math.abs(e.clientY - initialPos.y) > DISTANCE_THRESHOLD
+      ) {
+        setQualifiesAsTap(false)
       }
     }
 
     window.addEventListener('pointermove', handler)
     return () => window.removeEventListener('pointermove', handler)
-  }, [ref])
+  }, [ref, pointerIds, setQualifiesAsTap, initialPos])
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!ref.current) {
+      if (!ref.current || !pointerIds.has(e.pointerId)) {
         return
       }
 
