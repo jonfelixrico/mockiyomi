@@ -1,3 +1,9 @@
-export function isWithinElement(toTest: HTMLElement, container: HTMLElement) {
-  return toTest === container || container.contains(toTest as HTMLElement)
+function isPointerEventWithinElement(
+  event: PointerEvent,
+  element: HTMLElement
+) {
+  return (
+    event.target &&
+    (event.target === element || element.contains(event.target as HTMLElement))
+  )
 }
