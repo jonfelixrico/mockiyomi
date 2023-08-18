@@ -12,7 +12,7 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
 
   useEffect(() => {
     const handler = (e: PointerEvent) => {
-      if (!ref.current) {
+      if (!ref.current || isPointerEventWithinElement(e, ref.current)) {
         return
       }
 
