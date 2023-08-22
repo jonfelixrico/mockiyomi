@@ -51,7 +51,7 @@ const documentSlice = createSlice({
       if (typeof payload === 'number') {
         newPageIndex = payload
         intent = undefined
-      } else if (isPageIndexWithIntent(state)) {
+      } else if (isPageIndexWithIntent(payload)) {
         newPageIndex = payload.index
         intent = payload.intent
       } else {
