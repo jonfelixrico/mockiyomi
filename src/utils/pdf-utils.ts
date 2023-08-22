@@ -16,7 +16,7 @@ async function getPageImageAsBlob(page: pdfJsLib.PDFPageProxy): Promise<Blob> {
   await page.render({
     canvasContext: canvas.getContext('2d') as CanvasRenderingContext2D,
     viewport,
-  })
+  }).promise
 
   return await new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
