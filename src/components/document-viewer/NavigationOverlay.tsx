@@ -84,11 +84,7 @@ export default function NavigationOverlay({
       </ConditionallyRender>
 
       <div
-        onClick={() => {
-          setShowOverlay((v) => !v)
-        }}
-        // TouchMove is being used here because we want to close the overlay if page swipes are detected
-        onTouchMove={() => setShowOverlay(false)}
+        onClick={() => setShowOverlay((v) => !v)}
       >
         {props.children}
       </div>
