@@ -1,5 +1,12 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import { Dispatch, ReactNode, useState, useCallback, useMemo } from 'react'
+import {
+  Dispatch,
+  ReactNode,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
@@ -69,6 +76,16 @@ export default function NavigationOverlay({
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
 
+  useEffect(() => {
+    setShowOverlay((value) => {
+      if (!value) {
+        return value
+      }
+
+      return !value
+    })
+  }, [pageIndex, setShowOverlay])
+
   return (
     <div className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
@@ -83,11 +100,7 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
-      <div
-        onClick={() => setShowOverlay((v) => !v)}
-      >
-        {props.children}
-      </div>
+      <div onClick={() => setShowOverlay((v) => !v)}>{props.children}</div>
     </div>
   )
 }
