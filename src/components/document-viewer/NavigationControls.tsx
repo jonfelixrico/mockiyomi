@@ -2,7 +2,7 @@ import { VerticalLeftOutlined, VerticalRightOutlined } from '@ant-design/icons'
 import { Button, Slider } from 'antd'
 import { Dispatch, useCallback, useMemo } from 'react'
 
-export function Controls({
+export function NavigationControls({
   setPageIndex,
   pageCount,
   pageIndex,
