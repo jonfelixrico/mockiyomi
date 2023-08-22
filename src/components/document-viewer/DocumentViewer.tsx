@@ -3,7 +3,7 @@
 import PageNavigator, {
   OnChangePage,
 } from '@/components/page-navigator/PageNavigator'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ChangePageIndexPayload, documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
@@ -38,7 +38,8 @@ export default function DocumentViewer({
 }: {
   dimensions: Dimensions
 }) {
-  const { pageIndex, setPageIndex, pageUrls } = useDocumentData()
+  const { pageIndex, setPageIndex, pageUrls, pageChangeData } =
+    useDocumentData()
   const changePageIndex: OnChangePage = useCallback(
     (value) => {
       if (value === 'next') {
@@ -52,6 +53,11 @@ export default function DocumentViewer({
   const pageCount = useMemo(() => pageUrls.length, [pageUrls])
 
   const [showOverlay, setShowOverlay] = useState(true)
+  useEffect(() => {
+    if (pageChangeData?.intent !== 'FROM_OVERLAY') {
+      setShowOverlay(false)
+    }
+  }, [pageChangeData, setShowOverlay])
 
   return (
     <NavigationOverlay
