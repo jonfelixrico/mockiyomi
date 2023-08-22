@@ -2,15 +2,14 @@ import { Dimensions } from '@/types/dimensions.interface'
 import {
   Dispatch,
   ReactNode,
-  useRef,
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
-import { useClickAway } from 'react-use'
 
 function Controls({
   setPageIndex,
@@ -77,19 +76,29 @@ export default function NavigationOverlay({
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
 
-  const controlsRef = useRef<HTMLDivElement>(null)
-  useClickAway(controlsRef, () => {
-    setShowOverlay(false)
-  })
+  /*
+   * This will automatically close the overlay if it was already opened and the user
+   * changed to another page.
+   */
+  useEffect(() => {
+    setShowOverlay((showOverlay) => {
+      if (!showOverlay) {
+        return showOverlay
+      }
+
+      return !showOverlay
+    })
+  }, [pageIndex, setShowOverlay])
+
+  const toggleOverlay = useCallback(() => {
+    setShowOverlay((showOverlay) => !showOverlay)
+  }, [setShowOverlay])
 
   return (
     <div className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
-        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
-          <div
-            className="px-5 py-3 bg-white border-t border-gray-300"
-            ref={controlsRef}
-          >
+        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10 pointer-events-none">
+          <div className="px-5 py-3 bg-white border-t border-gray-300 pointer-events-auto">
             <Controls
               pageCount={pageCount}
               pageIndex={pageIndex}
@@ -99,7 +108,8 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
-      <div onClick={() => setShowOverlay(true)}>{props.children}</div>
+      {/* Clicking on the content will toggle showing of the overlay */}
+      <div onClick={toggleOverlay}>{props.children}</div>
     </div>
   )
 }
