@@ -20,6 +20,8 @@ function isPageIndexWithIntent(a: unknown): a is PageIndexWithIntent {
 
 interface DocumentSlice {
   pageUrls: string[]
+
+  // TODO consider moving out navigation-related state to another slice
   pageIndex: number
   pageChangeData?: PageChangeData
 }
