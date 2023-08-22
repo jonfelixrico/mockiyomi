@@ -1,12 +1,12 @@
 'use client'
 
-import pdfJsLib, { PDFPageProxy, getDocument } from 'pdfjs-dist'
+import * as pdfJsLib from 'pdfjs-dist'
 
 pdfJsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
 
-type GetDocumentParam = Parameters<typeof getDocument>[0]
+type GetDocumentParam = Parameters<typeof pdfJsLib.getDocument>[0]
 
-async function getPageImageAsBlob(page: PDFPageProxy): Promise<Blob> {
+async function getPageImageAsBlob(page: pdfJsLib.PDFPageProxy): Promise<Blob> {
   const viewport = page.getViewport({ scale: 1 })
 
   const canvas = document.createElement('canvas')
