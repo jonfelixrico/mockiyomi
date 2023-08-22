@@ -12,6 +12,8 @@ interface PageIndexWithIntent {
   index: number
 }
 
+export type ChangePageIndexPayload = number | PageIndexWithIntent
+
 function isPageIndexWithIntent(a: unknown): a is PageIndexWithIntent {
   return !!a && typeof a === 'object' && 'index' in a
 }
@@ -41,7 +43,7 @@ const documentSlice = createSlice({
 
     setPageIndex(
       state,
-      { payload }: ReducerActionHelper<number | PageIndexWithIntent>
+      { payload }: ReducerActionHelper<ChangePageIndexPayload>
     ) {
       let newPageIndex: number
       let intent: string | undefined
