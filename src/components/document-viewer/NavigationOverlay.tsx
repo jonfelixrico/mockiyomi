@@ -85,7 +85,21 @@ export default function NavigationOverlay({
 
   return (
     <div className="relative" style={props.dimensions}>
-      <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10 pointer-events-none">
+      <div className="absolute h-full w-full flex flex-col justify-between items-stretch z-10 pointer-events-none">
+        <div
+          className={classnames(
+            'px-5 py-3 bg-white border-b border-gray-300 transition-transform',
+            {
+              'pointer-events-auto': showOverlay,
+            }
+          )}
+          style={{
+            transform: `translateY(${showOverlay ? 0 : -100}%)`,
+          }}
+        >
+          {/* TODO add content */}
+        </div>
+
         <div
           className={classnames(
             'px-5 py-3 bg-white border-t border-gray-300 transition-transform',
