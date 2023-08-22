@@ -35,7 +35,7 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
       })
     }
 
-    window.addEventListener('pointerdown', handler)
+    window.addEventListener('pointerdown', handler, { passive: true })
     return () => window.removeEventListener('pointerdown', handler)
   }, [
     ref,
@@ -60,7 +60,7 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
       }
     }
 
-    window.addEventListener('pointermove', handler)
+    window.addEventListener('pointermove', handler, { passive: true })
     return () => window.removeEventListener('pointermove', handler)
   }, [ref, pointerIds, setQualifiesAsTap, initialPos])
 
@@ -86,7 +86,7 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
       })
     }
 
-    window.addEventListener('pointerup', handler)
+    window.addEventListener('pointerup', handler, { passive: true })
     return () => window.removeEventListener('pointerup', handler)
   }, [ref, setPointerIds, pointerIds, qualifiesAsTap, hookListener, startTime])
 }
