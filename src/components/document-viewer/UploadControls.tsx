@@ -21,7 +21,7 @@ export default function UploadControls() {
   return (
     <>
       <div>
-        <Button>Choose File</Button>
+        <Button onClick={() => setIsModalOpen(true)}>Choose File</Button>
       </div>
 
       <Modal
