@@ -2,14 +2,13 @@
 
 import { convertPDFToImageUrls } from '@/utils/pdf-utils'
 import { Button, Modal } from 'antd'
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 
 export default function UploadControls() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  async function handleUpload(evt: InputEvent) {
-    const file = evt.dataTransfer?.files[0]
-
+  async function handleUpload(evt: FormEvent<HTMLInputElement>) {
+    const file = evt.currentTarget.files?.[0]
     if (!file) {
       console.log('no file')
       return
