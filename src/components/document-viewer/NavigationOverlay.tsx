@@ -77,19 +77,11 @@ export default function NavigationOverlay({
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
 
-  const controlsRef = useRef<HTMLDivElement>(null)
-  useClickAway(controlsRef, () => {
-    setShowOverlay(false)
-  })
-
   return (
     <div className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
-        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10">
-          <div
-            className="px-5 py-3 bg-white border-t border-gray-300"
-            ref={controlsRef}
-          >
+        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10 pointer-events-none">
+          <div className="px-5 py-3 bg-white border-t border-gray-300 pointer-events-auto">
             <Controls
               pageCount={pageCount}
               pageIndex={pageIndex}
@@ -99,7 +91,15 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
-      <div onClick={() => setShowOverlay(true)}>{props.children}</div>
+      <div
+        onClick={() => {
+          setShowOverlay((v) => !v)
+        }}
+        // TouchMove is being used here because we want to close the overlay if page swipes are detected
+        onTouchMove={() => setShowOverlay(false)}
+      >
+        {props.children}
+      </div>
     </div>
   )
 }
