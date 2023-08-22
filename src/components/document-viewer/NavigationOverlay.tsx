@@ -7,7 +7,6 @@ import {
   useMemo,
   useEffect,
 } from 'react'
-import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
 import classnames from 'classnames'
