@@ -2,7 +2,7 @@ import { Dimensions } from '@/types/dimensions.interface'
 import { Dispatch, ReactNode, useCallback, SetStateAction } from 'react'
 import classnames from 'classnames'
 
-export default function NavigationOverlay({
+export default function OverlayLayout({
   showOverlay,
   setShowOverlay,
   topChildren,

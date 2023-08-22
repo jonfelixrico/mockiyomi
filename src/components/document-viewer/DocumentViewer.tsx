@@ -1,13 +1,13 @@
 'use client'
 
-import PageNavigator, {
+import OverlayLayout, {
   OnChangePage,
-} from '@/components/page-navigator/PageNavigator'
+} from '@/components/page-navigator/OverlayLayout'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ChangePageIndexPayload, documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
-import NavigationOverlay from './NavigationOverlay'
+import NavigationOverlay from './OverlayLayout'
 
 function useDocumentData() {
   const dispatch = useAppDispatch()
@@ -84,7 +84,7 @@ export default function DocumentViewer({
       showOverlay={showOverlay}
       setShowOverlay={setShowOverlay}
     >
-      <PageNavigator
+      <OverlayLayout
         dimensions={dimensions}
         previousUrl={pageUrls[pageIndex - 1]}
         nextUrl={pageUrls[pageIndex + 1]}
