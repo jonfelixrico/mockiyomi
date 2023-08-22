@@ -1,5 +1,6 @@
 import { Point } from '@/types/point.interface'
 import { RefObject, useEffect, useState } from 'react'
+import { isPointerEventWithinElement } from '@/utils/dom-utils'
 
 const TAP_TIME_THRESHOLD = 300
 const DISTANCE_THRESHOLD = 3

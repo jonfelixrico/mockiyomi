@@ -1,4 +1,4 @@
-function isPointerEventWithinElement(
+export function isPointerEventWithinElement(
   event: PointerEvent,
   element: HTMLElement
 ) {
