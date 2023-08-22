@@ -53,11 +53,18 @@ export default function DocumentViewer({
   const pageCount = useMemo(() => pageUrls.length, [pageUrls])
 
   const [showOverlay, setShowOverlay] = useState(true)
+
+  // This will cause the overlay to close if the page was changed by swiping
   useEffect(() => {
     if (pageChangeData?.intent !== 'FROM_OVERLAY') {
       setShowOverlay(false)
     }
   }, [pageChangeData, setShowOverlay])
+
+  /*
+   * Custom page change method for the overlay. This causes page changes via the
+   * overlay to not cause the overlay to close.
+   */
   const setPageIndexViaOverlay = useCallback(
     (index: number) => {
       setPageIndex({
