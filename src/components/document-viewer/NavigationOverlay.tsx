@@ -6,6 +6,7 @@ import {
   useCallback,
   useMemo,
   useEffect,
+  SetStateAction,
 } from 'react'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
@@ -65,17 +66,21 @@ export default function NavigationOverlay({
   setPageIndex,
   pageCount,
   pageIndex,
+  showOverlay,
+  setShowOverlay,
   ...props
 }: {
   dimensions: Dimensions
   children: ReactNode
 
   pageCount: number
+
   pageIndex: number
   setPageIndex: Dispatch<number>
-}) {
-  const [showOverlay, setShowOverlay] = useState(true)
 
+  showOverlay: boolean
+  setShowOverlay: Dispatch<SetStateAction<boolean>>
+}) {
   /*
    * This will automatically close the overlay if it was already opened and the user
    * changed to another page.

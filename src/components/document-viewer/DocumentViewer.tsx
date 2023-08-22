@@ -3,7 +3,7 @@
 import PageNavigator, {
   OnChangePage,
 } from '@/components/page-navigator/PageNavigator'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
@@ -47,12 +47,18 @@ export default function DocumentViewer({
   )
   const pageCount = useMemo(() => pageUrls.length, [pageUrls])
 
+  const [showOverlay, setShowOverlay] = useState(true)
+
   return (
     <NavigationOverlay
       dimensions={dimensions}
       pageIndex={pageIndex}
+      
       setPageIndex={setPageIndex}
       pageCount={pageCount}
+
+      showOverlay={showOverlay}
+      setShowOverlay={setShowOverlay}
     >
       <PageNavigator
         dimensions={dimensions}
