@@ -5,7 +5,7 @@ import PageNavigator, {
 } from '@/components/page-navigator/PageNavigator'
 import { useCallback, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { documentActions } from '@/store/document-slice'
+import { ChangePageIndexPayload, documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
 import NavigationOverlay from './NavigationOverlay'
 
@@ -14,10 +14,13 @@ function useDocumentData() {
 
   const pageIndex = useAppSelector((state) => state.document.pageIndex)
   const setPageIndex = useCallback(
-    (index: number) => {
-      dispatch(documentActions.setPageIndex(index))
+    (payload: ChangePageIndexPayload) => {
+      dispatch(documentActions.setPageIndex(payload))
     },
     [dispatch]
+  )
+  const pageChangeData = useAppSelector(
+    (state) => state.document.pageChangeData
   )
 
   const pageUrls = useAppSelector((state) => state.document.pageUrls)
@@ -26,6 +29,7 @@ function useDocumentData() {
     pageIndex,
     setPageIndex,
     pageUrls,
+    pageChangeData,
   }
 }
 
