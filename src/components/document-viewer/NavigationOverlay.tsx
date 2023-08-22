@@ -1,16 +1,8 @@
 import { Dimensions } from '@/types/dimensions.interface'
-import {
-  Dispatch,
-  ReactNode,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from 'react'
+import { Dispatch, ReactNode, useState, useCallback, useMemo } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
-import { useClickAway } from 'react-use'
 
 function Controls({
   setPageIndex,
