@@ -23,6 +23,7 @@ export function useTap(ref: RefObject<HTMLElement>, hookListener: () => void) {
           x: e.clientX,
           y: e.clientY,
         })
+        setQualifiesAsTap(true)
       } else if (pointerIds.size >= 1) {
         setQualifiesAsTap(false)
       }
