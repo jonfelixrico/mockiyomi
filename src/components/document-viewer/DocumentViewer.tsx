@@ -52,12 +52,9 @@ export default function DocumentViewer({
   return (
     <NavigationOverlay
       dimensions={dimensions}
-
+      pageCount={pageCount}
       pageIndex={pageIndex}
       setPageIndex={setPageIndex}
-
-      pageCount={pageCount}
-
       showOverlay={showOverlay}
       setShowOverlay={setShowOverlay}
     >
