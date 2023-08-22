@@ -81,20 +81,6 @@ export default function NavigationOverlay({
   showOverlay: boolean
   setShowOverlay: Dispatch<SetStateAction<boolean>>
 }) {
-  /*
-   * This will automatically close the overlay if it was already opened and the user
-   * changed to another page.
-   */
-  useEffect(() => {
-    setShowOverlay((showOverlay) => {
-      if (!showOverlay) {
-        return showOverlay
-      }
-
-      return !showOverlay
-    })
-  }, [pageIndex, setShowOverlay])
-
   const toggleOverlay = useCallback(() => {
     setShowOverlay((showOverlay) => !showOverlay)
   }, [setShowOverlay])
