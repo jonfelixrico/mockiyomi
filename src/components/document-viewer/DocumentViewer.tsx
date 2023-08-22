@@ -58,13 +58,22 @@ export default function DocumentViewer({
       setShowOverlay(false)
     }
   }, [pageChangeData, setShowOverlay])
+  const setPageIndexViaOverlay = useCallback(
+    (index: number) => {
+      setPageIndex({
+        index,
+        intent: 'FROM_OVERLAY',
+      })
+    },
+    [setPageIndex]
+  )
 
   return (
     <NavigationOverlay
       dimensions={dimensions}
       pageCount={pageCount}
       pageIndex={pageIndex}
-      setPageIndex={setPageIndex}
+      setPageIndex={setPageIndexViaOverlay}
       showOverlay={showOverlay}
       setShowOverlay={setShowOverlay}
     >
