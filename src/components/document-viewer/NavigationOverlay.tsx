@@ -10,6 +10,7 @@ import {
 import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
+import classnames from 'classnames'
 
 function Controls({
   setPageIndex,
@@ -96,17 +97,19 @@ export default function NavigationOverlay({
 
   return (
     <div className="relative" style={props.dimensions}>
-      <ConditionallyRender render={showOverlay}>
-        <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10 pointer-events-none">
-          <div className="px-5 py-3 bg-white border-t border-gray-300 pointer-events-auto">
-            <Controls
-              pageCount={pageCount}
-              pageIndex={pageIndex}
-              setPageIndex={setPageIndex}
-            />
-          </div>
+      <div className="absolute h-full w-full flex flex-col justify-end items-stretch z-10 pointer-events-none">
+        <div
+          className={classnames('px-5 py-3 bg-white border-t border-gray-300', {
+            'pointer-events-auto': showOverlay,
+          })}
+        >
+          <Controls
+            pageCount={pageCount}
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+          />
         </div>
-      </ConditionallyRender>
+      </div>
 
       {/* Clicking on the content will toggle showing of the overlay */}
       <div onClick={toggleOverlay}>{props.children}</div>
