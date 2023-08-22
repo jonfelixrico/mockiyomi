@@ -77,14 +77,18 @@ export default function NavigationOverlay({
   const [showOverlay, setShowOverlay] = useState(true)
 
   useEffect(() => {
-    setShowOverlay((value) => {
-      if (!value) {
-        return value
+    setShowOverlay((showOverlay) => {
+      if (!showOverlay) {
+        return showOverlay
       }
 
-      return !value
+      return !showOverlay
     })
   }, [pageIndex, setShowOverlay])
+
+  const toggleOverlay = useCallback(() => {
+    setShowOverlay((showOverlay) => !showOverlay)
+  }, [setShowOverlay])
 
   return (
     <div className="relative" style={props.dimensions}>
@@ -100,7 +104,7 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
-      <div onClick={() => setShowOverlay((v) => !v)}>{props.children}</div>
+      <div onClick={toggleOverlay}>{props.children}</div>
     </div>
   )
 }
