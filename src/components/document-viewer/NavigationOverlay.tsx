@@ -11,6 +11,7 @@ import ConditionallyRender from '../common/ConditionallyRender'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
 import { useClickAway } from 'react-use'
+import { useTap } from '@/hooks/use-tap'
 
 function Controls({
   setPageIndex,
@@ -82,6 +83,11 @@ export default function NavigationOverlay({
     setShowOverlay(false)
   })
 
+  const overlayRef = useRef<HTMLDivElement>(null)
+  useTap(overlayRef, () => {
+    setShowOverlay(true)
+  })
+
   return (
     <div className="relative" style={props.dimensions}>
       <ConditionallyRender render={showOverlay}>
@@ -99,7 +105,7 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
-      <div onClick={() => setShowOverlay(true)}>{props.children}</div>
+      <div ref={overlayRef}>{props.children}</div>
     </div>
   )
 }
