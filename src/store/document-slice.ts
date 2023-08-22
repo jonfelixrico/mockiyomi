@@ -3,7 +3,7 @@ import { ReducerActionHelper } from './store-utils'
 
 export interface PageChangeData {
   previousPage: number
-  timestamp: Date
+  timestamp: number
   intent?: string
 }
 
@@ -60,7 +60,7 @@ const documentSlice = createSlice({
 
       state.pageChangeData = {
         previousPage: state.pageIndex,
-        timestamp: new Date(),
+        timestamp: Date.now(),
         intent,
       }
       state.pageIndex = newPageIndex
