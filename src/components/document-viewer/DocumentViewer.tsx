@@ -3,9 +3,9 @@
 import PageNavigator, {
   OnChangePage,
 } from '@/components/page-navigator/PageNavigator'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { documentActions } from '@/store/document-slice'
+import { ChangePageIndexPayload, documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
 import NavigationOverlay from './NavigationOverlay'
 
@@ -14,10 +14,13 @@ function useDocumentData() {
 
   const pageIndex = useAppSelector((state) => state.document.pageIndex)
   const setPageIndex = useCallback(
-    (index: number) => {
-      dispatch(documentActions.setPageIndex(index))
+    (payload: ChangePageIndexPayload) => {
+      dispatch(documentActions.setPageIndex(payload))
     },
     [dispatch]
+  )
+  const pageChangeData = useAppSelector(
+    (state) => state.document.pageChangeData
   )
 
   const pageUrls = useAppSelector((state) => state.document.pageUrls)
@@ -26,6 +29,7 @@ function useDocumentData() {
     pageIndex,
     setPageIndex,
     pageUrls,
+    pageChangeData,
   }
 }
 
@@ -34,7 +38,8 @@ export default function DocumentViewer({
 }: {
   dimensions: Dimensions
 }) {
-  const { pageIndex, setPageIndex, pageUrls } = useDocumentData()
+  const { pageIndex, setPageIndex, pageUrls, pageChangeData } =
+    useDocumentData()
   const changePageIndex: OnChangePage = useCallback(
     (value) => {
       if (value === 'next') {
@@ -47,12 +52,37 @@ export default function DocumentViewer({
   )
   const pageCount = useMemo(() => pageUrls.length, [pageUrls])
 
+  const [showOverlay, setShowOverlay] = useState(true)
+
+  // This will cause the overlay to close if the page was changed by swiping
+  useEffect(() => {
+    if (pageChangeData?.intent !== 'FROM_OVERLAY') {
+      setShowOverlay(false)
+    }
+  }, [pageChangeData, setShowOverlay])
+
+  /*
+   * Custom page change method for the overlay. This causes page changes via the
+   * overlay to not cause the overlay to close.
+   */
+  const setPageIndexViaOverlay = useCallback(
+    (index: number) => {
+      setPageIndex({
+        index,
+        intent: 'FROM_OVERLAY',
+      })
+    },
+    [setPageIndex]
+  )
+
   return (
     <NavigationOverlay
       dimensions={dimensions}
-      pageIndex={pageIndex}
-      setPageIndex={setPageIndex}
       pageCount={pageCount}
+      pageIndex={pageIndex}
+      setPageIndex={setPageIndexViaOverlay}
+      showOverlay={showOverlay}
+      setShowOverlay={setShowOverlay}
     >
       <PageNavigator
         dimensions={dimensions}

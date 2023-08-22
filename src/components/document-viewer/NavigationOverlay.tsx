@@ -2,10 +2,9 @@ import { Dimensions } from '@/types/dimensions.interface'
 import {
   Dispatch,
   ReactNode,
-  useState,
   useCallback,
   useMemo,
-  useEffect,
+  SetStateAction,
 } from 'react'
 import { Button, Slider } from 'antd'
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons'
@@ -65,31 +64,21 @@ export default function NavigationOverlay({
   setPageIndex,
   pageCount,
   pageIndex,
+  showOverlay,
+  setShowOverlay,
   ...props
 }: {
   dimensions: Dimensions
   children: ReactNode
 
   pageCount: number
+
   pageIndex: number
   setPageIndex: Dispatch<number>
+
+  showOverlay: boolean
+  setShowOverlay: Dispatch<SetStateAction<boolean>>
 }) {
-  const [showOverlay, setShowOverlay] = useState(true)
-
-  /*
-   * This will automatically close the overlay if it was already opened and the user
-   * changed to another page.
-   */
-  useEffect(() => {
-    setShowOverlay((showOverlay) => {
-      if (!showOverlay) {
-        return showOverlay
-      }
-
-      return !showOverlay
-    })
-  }, [pageIndex, setShowOverlay])
-
   const toggleOverlay = useCallback(() => {
     setShowOverlay((showOverlay) => !showOverlay)
   }, [setShowOverlay])
