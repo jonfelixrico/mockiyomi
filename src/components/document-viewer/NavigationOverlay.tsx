@@ -76,6 +76,10 @@ export default function NavigationOverlay({
 }) {
   const [showOverlay, setShowOverlay] = useState(true)
 
+  /*
+   * This will automatically close the overlay if it was already opened and the user
+   * changed to another page.
+   */
   useEffect(() => {
     setShowOverlay((showOverlay) => {
       if (!showOverlay) {
@@ -104,6 +108,7 @@ export default function NavigationOverlay({
         </div>
       </ConditionallyRender>
 
+      {/* Clicking on the content will toggle showing of the overlay */}
       <div onClick={toggleOverlay}>{props.children}</div>
     </div>
   )
