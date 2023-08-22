@@ -2,10 +2,8 @@ import { Dimensions } from '@/types/dimensions.interface'
 import {
   Dispatch,
   ReactNode,
-  useState,
   useCallback,
   useMemo,
-  useEffect,
   SetStateAction,
 } from 'react'
 import { Button, Slider } from 'antd'
