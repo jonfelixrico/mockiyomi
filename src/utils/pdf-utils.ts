@@ -32,14 +32,14 @@ async function getPageImageAsBlob(page: pdfJsLib.PDFPageProxy): Promise<Blob> {
 export async function convertPDFToImageUrls(
   src: GetDocumentParam
 ): Promise<string[]> {
-  const loadingTask = getDocument(src)
+  const loadingTask = pdfJsLib.getDocument(src)
   const documentData = await loadingTask.promise
 
   const pageCount = documentData.numPages
   const urls: string[] = []
 
   for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
-    let pageData: PDFPageProxy | null = null
+    let pageData: pdfJsLib.PDFPageProxy | null = null
 
     try {
       pageData = await documentData.getPage(pageNumber)
