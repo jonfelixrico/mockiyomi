@@ -61,30 +61,28 @@ function Controls({
 }
 
 export default function NavigationOverlay({
-  setPageIndex,
-  pageCount,
-  pageIndex,
   showOverlay,
   setShowOverlay,
-  ...props
+  topChildren,
+  bottomChildren,
+  dimensions,
+  children,
 }: {
   dimensions: Dimensions
-  children: ReactNode
-
-  pageCount: number
-
-  pageIndex: number
-  setPageIndex: Dispatch<number>
+  children?: ReactNode
 
   showOverlay: boolean
   setShowOverlay: Dispatch<SetStateAction<boolean>>
+
+  topChildren?: ReactNode
+  bottomChildren?: ReactNode
 }) {
   const toggleOverlay = useCallback(() => {
     setShowOverlay((showOverlay) => !showOverlay)
   }, [setShowOverlay])
 
   return (
-    <div className="relative" style={props.dimensions}>
+    <div className="relative" style={dimensions}>
       <div className="absolute h-full w-full flex flex-col justify-between items-stretch z-10 pointer-events-none">
         <div
           className={classnames(
@@ -97,7 +95,7 @@ export default function NavigationOverlay({
             transform: `translateY(${showOverlay ? 0 : -100}%)`,
           }}
         >
-          {/* TODO add content */}
+          {topChildren}
         </div>
 
         <div
@@ -111,16 +109,12 @@ export default function NavigationOverlay({
             transform: `translateY(${showOverlay ? 0 : 100}%)`,
           }}
         >
-          <Controls
-            pageCount={pageCount}
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-          />
+          {bottomChildren}
         </div>
       </div>
 
       {/* Clicking on the content will toggle showing of the overlay */}
-      <div onClick={toggleOverlay}>{props.children}</div>
+      <div onClick={toggleOverlay}>{children}</div>
     </div>
   )
 }
