@@ -36,6 +36,18 @@ function ProcessingStage(props: {
   return <Spin />
 }
 
+function ConfirmationStage(props: {
+  urls: string[]
+  onNext: (urls: string[]) => void
+}) {
+  return (
+    <div>
+      {/* TODO i18nize */}
+      <Button onClick={() => props.onNext(props.urls)}>Start Reading</Button>
+    </div>
+  )
+}
+
 export default function UploadProcessModal(props: {
   onOk: (file: UploadFile) => void
   onCancel: () => void
