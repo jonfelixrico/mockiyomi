@@ -1,7 +1,21 @@
 'use client'
 
-import { Modal, Upload, UploadFile } from 'antd'
+import { Button, Modal, Upload, UploadFile } from 'antd'
 import { useState } from 'react'
+
+function UploadStage(props: { onNext: (file: UploadFile) => void }) {
+  const [file, setFile] = useState<UploadFile | null>(null)
+
+  return (
+    <>
+      <Upload onRemove={() => setFile(null)} beforeUpload={setFile} />
+      <Button
+        disabled={!file}
+        onClick={() => props.onNext(file as UploadFile)}
+      />
+    </>
+  )
+}
 
 export default function UploadProcessModal(props: {
   onOk: (file: UploadFile) => void
