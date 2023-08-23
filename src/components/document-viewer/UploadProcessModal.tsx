@@ -1,7 +1,8 @@
 'use client'
 
-import { Button, Modal, Upload, UploadFile } from 'antd'
-import { useState } from 'react'
+import { convertPDFToImageUrls } from '@/utils/pdf-utils'
+import { Button, Modal, Spin, Upload, UploadFile } from 'antd'
+import { useEffect, useState } from 'react'
 
 function UploadStage(props: { onNext: (file: UploadFile) => void }) {
   const [file, setFile] = useState<UploadFile | null>(null)
@@ -15,6 +16,24 @@ function UploadStage(props: { onNext: (file: UploadFile) => void }) {
       />
     </>
   )
+}
+
+function ProcessingStage(props: {
+  file: UploadFile
+  onNext: (urls: string[]) => void
+}) {
+  useEffect(() => {
+    const runProcess = async () => {
+      const urls = await convertPDFToImageUrls(props.file)
+      props.onNext(urls)
+    }
+
+    runProcess().catch((e) => {
+      // TODO add proper error handling
+      console.error(e, 'pdf error')
+    })
+  })
+  return <Spin />
 }
 
 export default function UploadProcessModal(props: {
