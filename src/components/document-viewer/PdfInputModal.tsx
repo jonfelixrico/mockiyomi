@@ -3,7 +3,7 @@
 import { Modal, Upload, UploadFile } from 'antd'
 import { useState } from 'react'
 
-export default function UploadControls(props: {
+export default function PDFInputModal(props: {
   onOk: (file: UploadFile) => void
   onCancel: () => void
   openModal: boolean
