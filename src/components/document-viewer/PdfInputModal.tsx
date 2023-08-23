@@ -6,13 +6,13 @@ import { useState } from 'react'
 export default function PDFInputModal(props: {
   onOk: (file: UploadFile) => void
   onCancel: () => void
-  openModal: boolean
+  open: boolean
 }) {
   const [file, setFile] = useState<UploadFile | null>(null)
 
   return (
     <Modal
-      open={props.openModal}
+      open={props.open}
       onCancel={props.onCancel}
       onOk={() => props.onOk(file as UploadFile)}
       okButtonProps={{
