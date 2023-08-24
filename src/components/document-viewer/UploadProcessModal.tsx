@@ -95,7 +95,7 @@ function getStepIndex(payload?: string[] | RcFile) {
 }
 
 export default function UploadProcessModal(props: {
-  onOk: (file: RcFile) => void
+  onOk: (urls: string[]) => void
   onCancel: () => void
   open: boolean
 }) {
@@ -127,6 +127,10 @@ export default function UploadProcessModal(props: {
             setPayload(urls)
           }}
         />
+      </ConditionallyRender>
+
+      <ConditionallyRender render={stepIndex === 2}>
+        <ConfirmationStage onNext={props.onOk} urls={payload as string[]} />
       </ConditionallyRender>
     </Modal>
   )
