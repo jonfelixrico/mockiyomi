@@ -14,6 +14,9 @@ dependencies:
   '@reduxjs/toolkit':
     specifier: ^1.9.5
     version: 1.9.5(react-redux@8.1.2)(react@18.2.0)
+  '@types/canvas-size':
+    specifier: ^1.2.0
+    version: 1.2.0
   '@types/node':
     specifier: 20.4.2
     version: 20.4.2
@@ -29,6 +32,9 @@ dependencies:
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.26)
+  canvas-size:
+    specifier: ^1.2.6
+    version: 1.2.6
   classnames:
     specifier: ^2.3.2
     version: 2.3.2
@@ -586,6 +592,10 @@ packages:
     resolution: {integrity: sha512-sJ902EfIzn1Fa+qYmjdQqh8tPsoxyBz+8yBKC2HKUxyezKJFwPGOn7pv4WY6QuQW//ySQi5lJjA/ZT9sNWWNTg==}
     dependencies:
       tslib: 2.6.0
+    dev: false
+
+  /@types/canvas-size@1.2.0:
+    resolution: {integrity: sha512-s0q6dNwuCT33836UAkAT30OfTDGlhnqPYFREw16/UBSSiaUHO9mBC+kR/e6AL5Rdo9XzV0jMBW7W1S2vyclWTw==}
     dev: false
 
   /@types/eslint-scope@3.7.4:
@@ -1324,6 +1334,10 @@ packages:
 
   /caniuse-lite@1.0.30001516:
     resolution: {integrity: sha512-Wmec9pCBY8CWbmI4HsjBeQLqDTqV91nFVR83DnZpYyRnPI1wePDsTg0bGLPC5VU/3OIZV1fmxEea1b+tFKe86g==}
+
+  /canvas-size@1.2.6:
+    resolution: {integrity: sha512-x2iVHOrZ5x9V0Hwx6kBz+Yxf/VCAII+jrD6WLjJbytJLozHq/oDJjEva432Os0eHxWMFR0vYlLJwTr6QxyxQqw==}
+    dev: false
 
   /canvas@2.11.2:
     resolution: {integrity: sha512-ItanGBMrmRV7Py2Z+Xhs7cT+FNt5K0vPL4p9EZ/UX/Mu7hFbkxSjKF2KVtPwX7UYWp7dRKnrTvReflgrItJbdw==}
