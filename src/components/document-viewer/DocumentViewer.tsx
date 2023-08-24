@@ -1,13 +1,12 @@
 'use client'
 
-import PageNavigator, {
-  OnChangePage,
-} from '@/components/page-navigator/PageNavigator'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ChangePageIndexPayload, documentActions } from '@/store/document-slice'
 import { Dimensions } from '@/types/dimensions.interface'
-import NavigationOverlay from './NavigationOverlay'
+import OverlayLayout from './OverlayLayout'
+import PageNavigator, { OnChangePage } from '../page-navigator/PageNavigator'
+import { NavigationControls } from './NavigationControls'
 
 function useDocumentData() {
   const dispatch = useAppDispatch()
@@ -76,13 +75,17 @@ export default function DocumentViewer({
   )
 
   return (
-    <NavigationOverlay
+    <OverlayLayout
       dimensions={dimensions}
-      pageCount={pageCount}
-      pageIndex={pageIndex}
-      setPageIndex={setPageIndexViaOverlay}
       showOverlay={showOverlay}
       setShowOverlay={setShowOverlay}
+      bottomChildren={
+        <NavigationControls
+          pageCount={pageCount}
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndexViaOverlay}
+        />
+      }
     >
       <PageNavigator
         dimensions={dimensions}
@@ -92,6 +95,6 @@ export default function DocumentViewer({
         onChangePage={changePageIndex}
         key={pageIndex}
       />
-    </NavigationOverlay>
+    </OverlayLayout>
   )
 }
