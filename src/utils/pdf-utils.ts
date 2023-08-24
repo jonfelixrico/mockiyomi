@@ -3,7 +3,6 @@
 import { Dimensions } from '@/types/dimensions.interface'
 import canvasSize from 'canvas-size'
 import * as pdfJsLib from 'pdfjs-dist'
-import { getDimensionsToFitContainer } from './scale-utils'
 
 pdfJsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
 
