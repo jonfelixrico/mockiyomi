@@ -16,7 +16,11 @@ export default function UploadControls() {
       </Button>
 
       <ConditionallyRender render={opened}>
-        <UploadProcessModal open={opened} onOk={() => {}} onCancel={() => {}} />
+        <UploadProcessModal
+          open={opened}
+          onOk={() => {}}
+          onCancel={() => setOpened(false)}
+        />
       </ConditionallyRender>
     </>
   )
