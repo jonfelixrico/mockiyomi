@@ -3,18 +3,28 @@
 import { convertPDFToImageUrls } from '@/utils/pdf-utils'
 import { Button, Modal, Spin, Steps, Upload, UploadFile } from 'antd'
 import { useEffect, useState } from 'react'
+import ConditionallyRender from '../common/ConditionallyRender'
 
 function UploadStage(props: { onNext: (file: UploadFile) => void }) {
   const [file, setFile] = useState<UploadFile | null>(null)
 
   return (
-    <>
-      <Upload onRemove={() => setFile(null)} beforeUpload={setFile} />
+    <div className="mt-3 gap-2 flex flex-col">
+      <div className="flex flex-col justify-center items-center">
+        <Upload onRemove={() => setFile(null)} beforeUpload={setFile}>
+          {/* TODO i18nize */}
+          <Button>Upload File</Button>
+        </Upload>
+      </div>
       <Button
         disabled={!file}
         onClick={() => props.onNext(file as UploadFile)}
-      />
-    </>
+        type="primary"
+      >
+        {/* TODO i18nize */}
+        Next
+      </Button>
+    </div>
   )
 }
 
@@ -80,6 +90,10 @@ export default function UploadProcessModal(props: {
       closeIcon={null}
     >
       <StepsWrapper stepIndex={stepIndex} />
+
+      <ConditionallyRender render={stepIndex === 0}>
+        <UploadStage onNext={() => {}} />
+      </ConditionallyRender>
     </Modal>
   )
 }
