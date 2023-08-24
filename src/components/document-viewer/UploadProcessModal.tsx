@@ -1,10 +1,11 @@
 'use client'
 
-import { convertPDFToImageUrls } from '@/utils/pdf-utils'
-import { Button, Modal, Spin, Steps, Upload } from 'antd'
+import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
+import { Button, Modal, Progress, Spin, Steps, Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
+import { useMount } from 'react-use'
 
 function UploadStage(props: { onNext: (file: RcFile) => void }) {
   const [file, setFile] = useState<RcFile | null>(null)
@@ -41,9 +42,28 @@ function ProcessingStage(props: {
   file: RcFile
   onNext: (urls: string[]) => void
 }) {
-  useEffect(() => {
+  const [conversionProgress, setConversionProgress] = useState<{
+    pageNo: number
+    pageCount: number
+  }>()
+
+  useMount(() => {
     const runProcess = async () => {
-      const urls = await convertPDFToImageUrls(await props.file.arrayBuffer())
+      const pdfData = await getPDFDocumentProxy(await props.file.arrayBuffer())
+
+      const pageCount = pdfData.numPages
+      let pageNo = 0
+
+      const urls: string[] = []
+
+      for await (const blob of getPDFPagesAsBlobs(pdfData)) {
+        urls.push(URL.createObjectURL(blob))
+        setConversionProgress({
+          pageCount,
+          pageNo: ++pageNo,
+        })
+      }
+
       props.onNext(urls)
     }
 
@@ -52,7 +72,14 @@ function ProcessingStage(props: {
       console.error(e, 'pdf error')
     })
   })
-  return <Spin />
+  return conversionProgress ? (
+    <Progress
+      type="line"
+      percent={(conversionProgress.pageNo / conversionProgress.pageCount) * 100}
+    />
+  ) : (
+    <Spin />
+  )
 }
 
 function ConfirmationStage(props: {

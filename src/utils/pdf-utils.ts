@@ -29,28 +29,24 @@ async function getPageImageAsBlob(page: pdfJsLib.PDFPageProxy): Promise<Blob> {
   })
 }
 
-export async function convertPDFToImageUrls(
-  src: GetDocumentParam
-): Promise<string[]> {
+export async function getPDFDocumentProxy(src: GetDocumentParam) {
   const loadingTask = pdfJsLib.getDocument(src)
-  const documentData = await loadingTask.promise
+  return await loadingTask.promise
+}
 
-  const pageCount = documentData.numPages
-  const urls: string[] = []
-
-  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+export async function* getPDFPagesAsBlobs(
+  documentData: pdfJsLib.PDFDocumentProxy
+) {
+  for (let pageNumber = 1; pageNumber <= documentData.numPages; pageNumber++) {
     let pageData: pdfJsLib.PDFPageProxy | null = null
 
     try {
       pageData = await documentData.getPage(pageNumber)
-      const pageBlob = await getPageImageAsBlob(pageData)
-      urls.push(URL.createObjectURL(pageBlob))
+      yield await getPageImageAsBlob(pageData)
     } finally {
       if (pageData) {
         pageData.cleanup()
       }
     }
   }
-
-  return urls
 }
