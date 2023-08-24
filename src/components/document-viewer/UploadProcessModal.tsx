@@ -1,7 +1,7 @@
 'use client'
 
 import { convertPDFToImageUrls } from '@/utils/pdf-utils'
-import { Button, Modal, Spin, Upload, UploadFile } from 'antd'
+import { Button, Modal, Spin, Steps, Upload, UploadFile } from 'antd'
 import { useEffect, useState } from 'react'
 
 function UploadStage(props: { onNext: (file: UploadFile) => void }) {
@@ -48,12 +48,28 @@ function ConfirmationStage(props: {
   )
 }
 
+const STEP_ITEMS = [
+  {
+    title: 'Upload',
+  },
+  {
+    title: 'Conversion',
+  },
+  {
+    title: 'Finalization',
+  },
+]
+
+function StepsWrapper(props: { stepIndex: number }) {
+  return <Steps current={props.stepIndex} />
+}
+
 export default function UploadProcessModal(props: {
   onOk: (file: UploadFile) => void
   onCancel: () => void
   open: boolean
 }) {
-  const [file, setFile] = useState<UploadFile | null>(null)
+  const [stepIndex, setStepIndex] = useState(0)
 
   return (
     <Modal
@@ -62,7 +78,7 @@ export default function UploadProcessModal(props: {
       // TODO i18nize this
       title="Select File"
     >
-      <Upload onRemove={() => setFile(null)} beforeUpload={setFile} />
+      <StepsWrapper stepIndex={stepIndex} />
     </Modal>
   )
 }
