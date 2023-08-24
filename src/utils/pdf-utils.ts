@@ -1,13 +1,46 @@
 'use client'
 
+import { Dimensions } from '@/types/dimensions.interface'
+import canvasSize from 'canvas-size'
 import * as pdfJsLib from 'pdfjs-dist'
+import { getDimensionsToFitContainer } from './scale-utils'
 
 pdfJsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
 
 type GetDocumentParam = Parameters<typeof pdfJsLib.getDocument>[0]
 
+let cachedMaxSize: Promise<Dimensions> | null = null
+async function getMaxCanvasSize() {
+  if (cachedMaxSize) {
+    return await cachedMaxSize
+  }
+
+  const promise = new Promise<Dimensions>((resolve, reject) => {
+    canvasSize.maxArea({
+      onSuccess: (width, height) =>
+        resolve({
+          width,
+          height,
+        }),
+      onError: reject,
+    })
+  })
+  cachedMaxSize = promise
+  return await promise
+}
+
+function getFitScale(container: Dimensions, toTest: Dimensions) {
+  return Math.min(
+    container.width / toTest.width,
+    container.height / toTest.height
+  )
+}
+
 async function getPageImageAsBlob(page: pdfJsLib.PDFPageProxy): Promise<Blob> {
-  const viewport = page.getViewport({ scale: 1 })
+  const sourceViewport = page.getViewport({ scale: 1 })
+
+  const scale = getFitScale(await getMaxCanvasSize(), sourceViewport)
+  const viewport = page.getViewport({ scale: Math.min(scale, 3) })
 
   const canvas = document.createElement('canvas')
   canvas.width = viewport.width
