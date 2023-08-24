@@ -118,6 +118,15 @@ export default function UploadProcessModal(props: {
           }}
         />
       </ConditionallyRender>
+
+      <ConditionallyRender render={stepIndex === 1}>
+        <ProcessingStage
+          file={payload as UploadFile}
+          onNext={(urls) => {
+            setPayload(urls)
+          }}
+        />
+      </ConditionallyRender>
     </Modal>
   )
 }
