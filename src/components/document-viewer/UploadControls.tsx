@@ -10,7 +10,7 @@ export default function UploadControls() {
 
   return (
     <>
-      <Button>
+      <Button onClick={() => setOpened(true)}>
         {/* i18nize this */}
         Upload a File
       </Button>
