@@ -47,35 +47,30 @@ function ProcessingStage(props: {
     pageCount: number
   }>()
 
-  useMount(() => {
-    const runProcess = async () => {
-      const pdfData = await getPDFDocumentProxy(await props.file.arrayBuffer())
+  useMount(async () => {
+    const pdfData = await getPDFDocumentProxy(await props.file.arrayBuffer())
 
-      const pageCount = pdfData.numPages
-      let pageNo = 0
+    const pageCount = pdfData.numPages
+    let pageNo = 0
 
-      const urls: string[] = []
+    const urls: string[] = []
 
-      for await (const blob of getPDFPagesAsBlobs(pdfData)) {
-        urls.push(URL.createObjectURL(blob))
-        setConversionProgress({
-          pageCount,
-          pageNo: ++pageNo,
-        })
-      }
-
-      props.onNext(urls)
+    for await (const blob of getPDFPagesAsBlobs(pdfData)) {
+      urls.push(URL.createObjectURL(blob))
+      setConversionProgress({
+        pageCount,
+        pageNo: ++pageNo,
+      })
     }
 
-    runProcess().catch((e) => {
-      // TODO add proper error handling
-      console.error(e, 'pdf error')
-    })
+    props.onNext(urls)
   })
   return conversionProgress ? (
     <Progress
       type="line"
-      percent={(conversionProgress.pageNo / conversionProgress.pageCount) * 100}
+      percent={Math.round(
+        (conversionProgress.pageNo / conversionProgress.pageCount) * 100
+      )}
     />
   ) : (
     <Spin />
