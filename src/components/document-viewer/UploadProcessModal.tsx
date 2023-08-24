@@ -82,12 +82,24 @@ function StepsWrapper(props: { stepIndex: number }) {
   return <Steps current={props.stepIndex} items={STEP_ITEMS} />
 }
 
+function getStepIndex(payload?: string[] | UploadFile) {
+  if (!payload) {
+    return 0
+  } else if (Array.isArray(payload)) {
+    return 2
+  } else {
+    // is UploadFile
+    return 1
+  }
+}
+
 export default function UploadProcessModal(props: {
   onOk: (file: UploadFile) => void
   onCancel: () => void
   open: boolean
 }) {
-  const [stepIndex, setStepIndex] = useState(0)
+  const [payload, setPayload] = useState<string[] | UploadFile>()
+  const stepIndex = getStepIndex(payload)
 
   return (
     <Modal
@@ -100,7 +112,11 @@ export default function UploadProcessModal(props: {
       <StepsWrapper stepIndex={stepIndex} />
 
       <ConditionallyRender render={stepIndex === 0}>
-        <UploadStage onNext={() => {}} />
+        <UploadStage
+          onNext={(file) => {
+            setPayload(file)
+          }}
+        />
       </ConditionallyRender>
     </Modal>
   )
