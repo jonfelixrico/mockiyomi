@@ -8,6 +8,7 @@ import ImgWrapper from './ImgWrapper'
 import PinchPanLayer from '../pinch-pan-layer/PinchPanLayer'
 import { pageMetadataActions } from '@/store/page-metadata-slice'
 import useRatioStore from './use-ratio-store'
+import { getDimensionsToFitContainer } from '@/utils/scale-utils'
 
 export type OverscrollEvent = Omit<PinchPanEvent, 'pinch'>
 export interface OverscrollOptions {
@@ -15,39 +16,6 @@ export interface OverscrollOptions {
   bottom?: boolean
   left?: boolean
   right?: boolean
-}
-
-function getDimensionsToFitContainer(
-  containerDims: Dimensions,
-  imageRatio: number
-): Dimensions {
-  const containerRatio = containerDims.width / containerDims.height
-
-  if (imageRatio <= containerRatio) {
-    /*
-     * Scenarios:
-     * Landscape container, portrait image
-     * Landscape container, landscape image, but image has smaller height
-     */
-
-    // Fit height
-    return {
-      height: containerDims.height,
-      width: containerDims.height * imageRatio,
-    }
-  } else {
-    /*
-     * Scenarios:
-     * Portrait container, landscape image
-     * Portrait container, portrait image, but image has narrower width
-     */
-
-    // Fit width
-    return {
-      width: containerDims.width,
-      height: containerDims.width / imageRatio,
-    }
-  }
 }
 
 export default function PageViewer({
