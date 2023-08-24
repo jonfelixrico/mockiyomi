@@ -61,7 +61,7 @@ const STEP_ITEMS = [
 ]
 
 function StepsWrapper(props: { stepIndex: number }) {
-  return <Steps current={props.stepIndex} />
+  return <Steps current={props.stepIndex} items={STEP_ITEMS} />
 }
 
 export default function UploadProcessModal(props: {
@@ -76,8 +76,8 @@ export default function UploadProcessModal(props: {
       open={props.open}
       footer={null}
       // TODO i18nize this
-      title="Select File"
       onCancel={props.onCancel}
+      closeIcon={null}
     >
       <StepsWrapper stepIndex={stepIndex} />
     </Modal>
