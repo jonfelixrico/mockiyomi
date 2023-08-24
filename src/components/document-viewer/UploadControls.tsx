@@ -4,9 +4,17 @@ import { Button } from 'antd'
 import UploadProcessModal from './UploadProcessModal'
 import { useState } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
+import { useAppDispatch } from '@/store/hooks'
+import { documentActions } from '@/store/document-slice'
 
 export default function UploadControls() {
   const [opened, setOpened] = useState(false)
+  const dispatch = useAppDispatch()
+
+  function openViewerWithNewPDF(urls: string[]) {
+    dispatch(documentActions.updatePageUrls(urls))
+    setOpened(false)
+  }
 
   return (
     <>
@@ -18,10 +26,7 @@ export default function UploadControls() {
       <ConditionallyRender render={opened}>
         <UploadProcessModal
           open={opened}
-          onOk={(urls) => {
-            // TODO do something
-            setOpened(false)
-          }}
+          onOk={openViewerWithNewPDF}
           onCancel={() => setOpened(false)}
         />
       </ConditionallyRender>
