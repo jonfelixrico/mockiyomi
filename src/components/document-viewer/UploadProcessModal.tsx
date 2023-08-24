@@ -22,6 +22,7 @@ function UploadStage(props: { onNext: (file: RcFile) => void }) {
         beforeUpload={acceptFile}
         maxCount={1}
         className="w-full"
+        accept="application/pdf"
       >
         {/* TODO i18nize */}
         <Button>Upload File</Button>
