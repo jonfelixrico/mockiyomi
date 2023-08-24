@@ -77,6 +77,7 @@ export default function UploadProcessModal(props: {
       footer={null}
       // TODO i18nize this
       title="Select File"
+      onCancel={props.onCancel}
     >
       <StepsWrapper stepIndex={stepIndex} />
     </Modal>
