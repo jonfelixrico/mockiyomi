@@ -8,14 +8,22 @@ import ConditionallyRender from '../common/ConditionallyRender'
 function UploadStage(props: { onNext: (file: UploadFile) => void }) {
   const [file, setFile] = useState<UploadFile | null>(null)
 
+  function acceptFile(file: UploadFile) {
+    setFile(file)
+    return false
+  }
+
   return (
     <div className="mt-3 gap-2 flex flex-col">
-      <div className="flex flex-col justify-center items-center">
-        <Upload onRemove={() => setFile(null)} beforeUpload={setFile}>
-          {/* TODO i18nize */}
-          <Button>Upload File</Button>
-        </Upload>
-      </div>
+      <Upload
+        onRemove={() => setFile(null)}
+        beforeUpload={acceptFile}
+        maxCount={1}
+        className="w-full"
+      >
+        {/* TODO i18nize */}
+        <Button>Upload File</Button>
+      </Upload>
       <Button
         disabled={!file}
         onClick={() => props.onNext(file as UploadFile)}
