@@ -7,6 +7,7 @@ import { Dimensions } from '@/types/dimensions.interface'
 import OverlayLayout from './OverlayLayout'
 import PageNavigator, { OnChangePage } from '../page-navigator/PageNavigator'
 import { NavigationControls } from './NavigationControls'
+import UploadControls from './UploadControls'
 
 function useDocumentData() {
   const dispatch = useAppDispatch()
@@ -86,6 +87,7 @@ export default function DocumentViewer({
           setPageIndex={setPageIndexViaOverlay}
         />
       }
+      topChildren={<UploadControls />}
     >
       <PageNavigator
         dimensions={dimensions}

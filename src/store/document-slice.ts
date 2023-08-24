@@ -67,6 +67,12 @@ const documentSlice = createSlice({
       }
       state.pageIndex = newPageIndex
     },
+
+    updatePageUrls(state, { payload }: ReducerActionHelper<string[]>) {
+      state.pageChangeData = undefined
+      state.pageIndex = 0
+      state.pageUrls = payload
+    },
   },
 })
 
