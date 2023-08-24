@@ -1,14 +1,15 @@
 'use client'
 
 import { convertPDFToImageUrls } from '@/utils/pdf-utils'
-import { Button, Modal, Spin, Steps, Upload, UploadFile } from 'antd'
+import { Button, Modal, Spin, Steps, Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import ConditionallyRender from '../common/ConditionallyRender'
+import { RcFile } from 'antd/es/upload'
 
-function UploadStage(props: { onNext: (file: UploadFile) => void }) {
-  const [file, setFile] = useState<UploadFile | null>(null)
+function UploadStage(props: { onNext: (file: RcFile) => void }) {
+  const [file, setFile] = useState<RcFile | null>(null)
 
-  function acceptFile(file: UploadFile) {
+  function acceptFile(file: RcFile) {
     setFile(file)
     return false
   }
@@ -26,7 +27,7 @@ function UploadStage(props: { onNext: (file: UploadFile) => void }) {
       </Upload>
       <Button
         disabled={!file}
-        onClick={() => props.onNext(file as UploadFile)}
+        onClick={() => props.onNext(file as RcFile)}
         type="primary"
       >
         {/* TODO i18nize */}
@@ -37,12 +38,12 @@ function UploadStage(props: { onNext: (file: UploadFile) => void }) {
 }
 
 function ProcessingStage(props: {
-  file: UploadFile
+  file: RcFile
   onNext: (urls: string[]) => void
 }) {
   useEffect(() => {
     const runProcess = async () => {
-      const urls = await convertPDFToImageUrls(props.file)
+      const urls = await convertPDFToImageUrls(await props.file.arrayBuffer())
       props.onNext(urls)
     }
 
@@ -82,23 +83,23 @@ function StepsWrapper(props: { stepIndex: number }) {
   return <Steps current={props.stepIndex} items={STEP_ITEMS} />
 }
 
-function getStepIndex(payload?: string[] | UploadFile) {
+function getStepIndex(payload?: string[] | RcFile) {
   if (!payload) {
     return 0
   } else if (Array.isArray(payload)) {
     return 2
   } else {
-    // is UploadFile
+    // is RcFile
     return 1
   }
 }
 
 export default function UploadProcessModal(props: {
-  onOk: (file: UploadFile) => void
+  onOk: (file: RcFile) => void
   onCancel: () => void
   open: boolean
 }) {
-  const [payload, setPayload] = useState<string[] | UploadFile>()
+  const [payload, setPayload] = useState<string[] | RcFile>()
   const stepIndex = getStepIndex(payload)
 
   return (
@@ -121,7 +122,7 @@ export default function UploadProcessModal(props: {
 
       <ConditionallyRender render={stepIndex === 1}>
         <ProcessingStage
-          file={payload as UploadFile}
+          file={payload as RcFile}
           onNext={(urls) => {
             setPayload(urls)
           }}
