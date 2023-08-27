@@ -26,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.DOCKER_IMAGE }}
+          images: ${{ secrets.DOCKER_IMAGE }}
           tags: |
             type=raw,alpha-${{ steps.get_version.outputs.major }}.${{ steps.get_version.outputs.minor }}
             type=raw,alpha-${{ steps.get_version.outputs.major }}
