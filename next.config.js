@@ -17,6 +17,9 @@ const nextConfig = {
 
     return config
   },
+
+  // This is needed to make Next.js work with Docker
+  output: 'standalone',
 }
 
 module.exports = nextConfig
