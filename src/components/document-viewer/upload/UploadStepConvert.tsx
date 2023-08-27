@@ -4,14 +4,17 @@ import { RcFile } from 'antd/es/upload'
 import { useState } from 'react'
 import { useMount } from 'react-use'
 
+interface ConversionProgress {
+  pageNo: number
+  pageCount: number
+}
+
 export default function UploadStepConvert(props: {
   file: RcFile
   onNext: (urls: string[]) => void
 }) {
-  const [conversionProgress, setConversionProgress] = useState<{
-    pageNo: number
-    pageCount: number
-  }>()
+  const [conversionProgress, setConversionProgress] =
+    useState<ConversionProgress>()
 
   useMount(async () => {
     const pdfData = await getPDFDocumentProxy(await props.file.arrayBuffer())
@@ -31,18 +34,25 @@ export default function UploadStepConvert(props: {
 
     props.onNext(urls)
   })
-  return (
-    <div className="h-[10vh] flex flex-col justify-center items-center">
-      {conversionProgress ? (
-        <Progress
-          type="line"
-          percent={Math.round(
-            (conversionProgress.pageNo / conversionProgress.pageCount) * 100
-          )}
-        />
-      ) : (
+
+  if (!conversionProgress) {
+    return (
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div>Reading your file...</div>
         <Spin />
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="gap-2 p-5">
+      <div>Preparing your file for viewing...</div>
+      <Progress
+        type="line"
+        percent={Math.round(
+          (conversionProgress.pageNo / conversionProgress.pageCount) * 100
+        )}
+      />
     </div>
   )
 }
