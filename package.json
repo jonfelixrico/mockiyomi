@@ -13,7 +13,7 @@
     "component:headless": "cypress run --component",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx)\"",
     "docker:build": "docker build . -t jonfelixrico/mockiyomi:pre-alpha",
-    "docker:run": "docker run -p 3000:3000 jonfelixrico/mockiyomi:pre-alpha"
+    "docker:run": "docker run -p 3000:3000 --name mockiyomi-pre-alpha jonfelixrico/mockiyomi:pre-alpha"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.16.1",
