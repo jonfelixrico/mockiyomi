@@ -45,7 +45,7 @@ export default function UploadStepConvert(props: {
   }
 
   return (
-    <div className="gap-2 p-5">
+    <div className="gap-2">
       <div>Preparing your file for viewing...</div>
       <Progress
         type="line"
