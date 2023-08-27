@@ -66,15 +66,19 @@ function ProcessingStage(props: {
 
     props.onNext(urls)
   })
-  return conversionProgress ? (
-    <Progress
-      type="line"
-      percent={Math.round(
-        (conversionProgress.pageNo / conversionProgress.pageCount) * 100
+  return (
+    <div className="h-[10vh] flex flex-col justify-center items-center">
+      {conversionProgress ? (
+        <Progress
+          type="line"
+          percent={Math.round(
+            (conversionProgress.pageNo / conversionProgress.pageCount) * 100
+          )}
+        />
+      ) : (
+        <Spin />
       )}
-    />
-  ) : (
-    <Spin />
+    </div>
   )
 }
 
