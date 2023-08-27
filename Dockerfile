@@ -1,9 +1,11 @@
 # From Next.js' Docker examples
 
-FROM node:18-alpine AS base
-
 # Step 1. Rebuild the source code only when needed
-FROM base AS builder
+FROM node:18 AS builder
+# We need to use a "full" Node image for building because some of our dependencies need node-gyp.
+# We can't use alpine here since it doesn't ship with the stuff needed for node-gyp.
+# See https://github.com/nodejs/docker-node/issues/1706 and
+# https://github.com/nodejs/docker-node/issues/384#issuecomment-1097082551 for more details.
 
 WORKDIR /app
 
@@ -35,7 +37,9 @@ RUN pnpm build
 # Note: It is not necessary to add an intermediate step that does a full copy of `node_modules` here
 
 # Step 2. Production image, copy all the files and run next
-FROM base AS runner
+FROM node:18-alpine AS runner
+# Unlike the build stage, we can use the alpine image of Node here since we won't be executing commands that involves node-gyp.
+# Using alpine keps our image small.
 
 WORKDIR /app
 
