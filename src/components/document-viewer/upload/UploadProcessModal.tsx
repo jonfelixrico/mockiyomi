@@ -1,13 +1,14 @@
 'use client'
 
 import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
-import { Button, Modal, Progress, Spin } from 'antd'
+import { Modal, Progress, Spin } from 'antd'
 import { useState } from 'react'
 import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
 import { useMount } from 'react-use'
 import UploadSteps from './UploadSteps'
 import UploadStepFileSelect from './UploadStepFileSelect'
+import UploadStepRead from './UploadStepRead'
 
 function ProcessingStage(props: {
   file: RcFile
@@ -48,23 +49,6 @@ function ProcessingStage(props: {
       ) : (
         <Spin />
       )}
-    </div>
-  )
-}
-
-function ConfirmationStage(props: {
-  urls: string[]
-  onNext: (urls: string[]) => void
-}) {
-  return (
-    <div className="h-[10vh] flex flex-col">
-      {/* TODO i18nize */}
-      <div className="grow flex flex-col justify-center items-center">
-        Your file is now ready for reading.
-      </div>
-      <Button type="primary" onClick={() => props.onNext(props.urls)} block>
-        Start Reading
-      </Button>
     </div>
   )
 }
@@ -116,7 +100,7 @@ export default function UploadProcessModal(props: {
       </ConditionallyRender>
 
       <ConditionallyRender render={stepIndex === 2}>
-        <ConfirmationStage onNext={props.onOk} urls={payload as string[]} />
+        <UploadStepRead onNext={props.onOk} urls={payload as string[]} />
       </ConditionallyRender>
     </Modal>
   )
