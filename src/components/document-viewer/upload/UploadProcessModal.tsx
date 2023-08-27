@@ -36,28 +36,32 @@ export default function UploadProcessModal(props: {
       onCancel={props.onCancel}
       closeIcon={null}
     >
-      <UploadSteps stepIndex={stepIndex} />
+      <div className="gap-5 flex flex-col">
+        <UploadSteps stepIndex={stepIndex} />
 
-      <ConditionallyRender render={stepIndex === 0}>
-        <UploadStepFileSelect
-          onNext={(file) => {
-            setPayload(file)
-          }}
-        />
-      </ConditionallyRender>
+        <div>
+          <ConditionallyRender render={stepIndex === 0}>
+            <UploadStepFileSelect
+              onNext={(file) => {
+                setPayload(file)
+              }}
+            />
+          </ConditionallyRender>
 
-      <ConditionallyRender render={stepIndex === 1}>
-        <UploadStepConvert
-          file={payload as RcFile}
-          onNext={(urls) => {
-            setPayload(urls)
-          }}
-        />
-      </ConditionallyRender>
+          <ConditionallyRender render={stepIndex === 1}>
+            <UploadStepConvert
+              file={payload as RcFile}
+              onNext={(urls) => {
+                setPayload(urls)
+              }}
+            />
+          </ConditionallyRender>
 
-      <ConditionallyRender render={stepIndex === 2}>
-        <UploadStepRead onNext={props.onOk} urls={payload as string[]} />
-      </ConditionallyRender>
+          <ConditionallyRender render={stepIndex === 2}>
+            <UploadStepRead onNext={props.onOk} urls={payload as string[]} />
+          </ConditionallyRender>
+        </div>
+      </div>
     </Modal>
   )
 }
