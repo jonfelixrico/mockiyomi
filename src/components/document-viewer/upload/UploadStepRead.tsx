@@ -4,9 +4,9 @@ export default function UploadStepRead(props: {
   urls: string[]
   onNext: (urls: string[]) => void
 }) {
+  // TODO i18nize
   return (
     <div className="h-[10vh] flex flex-col">
-      {/* TODO i18nize */}
       <div className="grow flex flex-col justify-center items-center">
         Your file is now ready for reading.
       </div>
