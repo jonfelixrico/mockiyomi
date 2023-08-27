@@ -1,57 +1,13 @@
 'use client'
 
-import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
-import { Modal, Progress, Spin } from 'antd'
+import { Modal } from 'antd'
 import { useState } from 'react'
 import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
-import { useMount } from 'react-use'
 import UploadSteps from './UploadSteps'
 import UploadStepFileSelect from './UploadStepFileSelect'
 import UploadStepRead from './UploadStepRead'
-
-function ProcessingStage(props: {
-  file: RcFile
-  onNext: (urls: string[]) => void
-}) {
-  const [conversionProgress, setConversionProgress] = useState<{
-    pageNo: number
-    pageCount: number
-  }>()
-
-  useMount(async () => {
-    const pdfData = await getPDFDocumentProxy(await props.file.arrayBuffer())
-
-    const pageCount = pdfData.numPages
-    let pageNo = 0
-
-    const urls: string[] = []
-
-    for await (const blob of getPDFPagesAsBlobs(pdfData)) {
-      urls.push(URL.createObjectURL(blob))
-      setConversionProgress({
-        pageCount,
-        pageNo: ++pageNo,
-      })
-    }
-
-    props.onNext(urls)
-  })
-  return (
-    <div className="h-[10vh] flex flex-col justify-center items-center">
-      {conversionProgress ? (
-        <Progress
-          type="line"
-          percent={Math.round(
-            (conversionProgress.pageNo / conversionProgress.pageCount) * 100
-          )}
-        />
-      ) : (
-        <Spin />
-      )}
-    </div>
-  )
-}
+import UploadStepConvert from './UploadStepConvert'
 
 function getStepIndex(payload?: string[] | RcFile) {
   if (!payload) {
@@ -91,7 +47,7 @@ export default function UploadProcessModal(props: {
       </ConditionallyRender>
 
       <ConditionallyRender render={stepIndex === 1}>
-        <ProcessingStage
+        <UploadStepConvert
           file={payload as RcFile}
           onNext={(urls) => {
             setPayload(urls)
