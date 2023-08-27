@@ -19,7 +19,15 @@ COPY src ./src
 COPY public ./public
 COPY next.config.js .
 COPY tsconfig.json .
+
+# Without this, ts will throw an error since we defined some modules
+# in declarations.d.ts
 COPY declarations.d.ts .
+
+# This is needed to make tailwind work
+# See https://github.com/vercel/next.js/discussions/48156
+COPY postcss.config.js .
+COPY tailwind.config.js .
 
 # Environment variables must be present at build time
 # https://github.com/vercel/next.js/discussions/14030
