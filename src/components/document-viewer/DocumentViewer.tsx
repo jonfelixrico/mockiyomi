@@ -56,7 +56,23 @@ export default function DocumentViewer({
 
   // This will cause the overlay to close if the page was changed by swiping
   useEffect(() => {
-    if (pageChangeData?.intent !== 'FROM_OVERLAY') {
+    if (
+      /*
+       * We want the overlay to show on load of the viwer.
+       *
+       * Additionally, on load of the viewer, the `pageChangeData` is nullish since there's
+       * no page changes done by the user yet.
+       *
+       * If we use `pageChangeData?.intent === ...` directly, the overlay will end up being
+       * not shown on load of the viewer since the condition will fail.
+       *
+       * To make the overlay still show on load of the viewer, we need to do the explicit
+       * `pageChangeData` check.
+       *
+       */
+      pageChangeData &&
+      pageChangeData.intent === 'FROM_OVERLAY'
+    ) {
       setShowOverlay(false)
     }
   }, [pageChangeData, setShowOverlay])
