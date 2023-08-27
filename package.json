@@ -11,7 +11,8 @@
     "test:e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\"",
     "test:component": "cypress open --component",
     "component:headless": "cypress run --component",
-    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx)\""
+    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx)\"",
+    "docker:pre-alpha:build": "docker build . -t jonfelixrico/mockiyomi:pre-alpha"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.16.1",
