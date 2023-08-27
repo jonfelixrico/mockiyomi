@@ -3,7 +3,7 @@
 import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
 import { Button, Modal, Progress, Spin, Steps, Upload } from 'antd'
 import { useState } from 'react'
-import ConditionallyRender from '../common/ConditionallyRender'
+import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
 import { useMount } from 'react-use'
 

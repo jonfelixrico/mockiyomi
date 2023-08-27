@@ -7,7 +7,7 @@ import { Dimensions } from '@/types/dimensions.interface'
 import OverlayLayout from './OverlayLayout'
 import PageNavigator, { OnChangePage } from '../page-navigator/PageNavigator'
 import { NavigationControls } from './NavigationControls'
-import UploadControls from './UploadControls'
+import UploadControls from './upload/UploadControls'
 
 function useDocumentData() {
   const dispatch = useAppDispatch()
