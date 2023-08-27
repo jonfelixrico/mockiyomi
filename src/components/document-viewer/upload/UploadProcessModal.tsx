@@ -1,7 +1,7 @@
 'use client'
 
 import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
-import { Button, Modal, Progress, Spin, Upload } from 'antd'
+import { Button, Modal, Progress, Spin } from 'antd'
 import { useState } from 'react'
 import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
