@@ -104,10 +104,10 @@ const STEP_ITEMS = [
     title: 'Upload',
   },
   {
-    title: 'Conversion',
+    title: 'Convert',
   },
   {
-    title: 'Finalization',
+    title: 'Finalize',
   },
 ]
 
