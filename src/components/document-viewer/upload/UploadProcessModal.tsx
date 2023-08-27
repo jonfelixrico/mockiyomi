@@ -1,11 +1,12 @@
 'use client'
 
 import { getPDFDocumentProxy, getPDFPagesAsBlobs } from '@/utils/pdf-utils'
-import { Button, Modal, Progress, Spin, Steps, Upload } from 'antd'
+import { Button, Modal, Progress, Spin, Upload } from 'antd'
 import { useState } from 'react'
 import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
 import { useMount } from 'react-use'
+import UploadSteps from './UploadSteps'
 
 function UploadStage(props: { onNext: (file: RcFile) => void }) {
   const [file, setFile] = useState<RcFile | null>(null)
@@ -99,22 +100,6 @@ function ConfirmationStage(props: {
   )
 }
 
-const STEP_ITEMS = [
-  {
-    title: 'Upload',
-  },
-  {
-    title: 'Convert',
-  },
-  {
-    title: 'Finalize',
-  },
-]
-
-function StepsWrapper(props: { stepIndex: number }) {
-  return <Steps current={props.stepIndex} items={STEP_ITEMS} />
-}
-
 function getStepIndex(payload?: string[] | RcFile) {
   if (!payload) {
     return 0
@@ -142,7 +127,7 @@ export default function UploadProcessModal(props: {
       onCancel={props.onCancel}
       closeIcon={null}
     >
-      <StepsWrapper stepIndex={stepIndex} />
+      <UploadSteps stepIndex={stepIndex} />
 
       <ConditionallyRender render={stepIndex === 0}>
         <UploadStage
