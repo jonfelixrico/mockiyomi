@@ -7,38 +7,7 @@ import ConditionallyRender from '@/components/common/ConditionallyRender'
 import { RcFile } from 'antd/es/upload'
 import { useMount } from 'react-use'
 import UploadSteps from './UploadSteps'
-
-function UploadStage(props: { onNext: (file: RcFile) => void }) {
-  const [file, setFile] = useState<RcFile | null>(null)
-
-  function acceptFile(file: RcFile) {
-    setFile(file)
-    return false
-  }
-
-  return (
-    <div className="mt-3 gap-2 flex flex-col">
-      <Upload
-        onRemove={() => setFile(null)}
-        beforeUpload={acceptFile}
-        maxCount={1}
-        className="w-full"
-        accept="application/pdf"
-      >
-        {/* TODO i18nize */}
-        <Button>Upload File</Button>
-      </Upload>
-      <Button
-        disabled={!file}
-        onClick={() => props.onNext(file as RcFile)}
-        type="primary"
-      >
-        {/* TODO i18nize */}
-        Next
-      </Button>
-    </div>
-  )
-}
+import UploadStepFileSelect from './UploadStepFileSelect'
 
 function ProcessingStage(props: {
   file: RcFile
@@ -130,7 +99,7 @@ export default function UploadProcessModal(props: {
       <UploadSteps stepIndex={stepIndex} />
 
       <ConditionallyRender render={stepIndex === 0}>
-        <UploadStage
+        <UploadStepFileSelect
           onNext={(file) => {
             setPayload(file)
           }}
